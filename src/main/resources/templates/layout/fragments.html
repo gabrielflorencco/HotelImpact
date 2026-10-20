@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' · HotelImpact'">HotelImpact</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap-icons/bootstrap-icons.min.css}">
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+
+<!-- Barra superior -->
+<header th:fragment="topbar" class="topbar d-flex align-items-center justify-content-between px-3 px-md-4 border-bottom bg-white">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary btn-sm d-lg-none" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-label="Abrir menu">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="text-secondary small" th:text="${hoje} ?: ''">hoje</span>
+    </div>
+    <div class="d-flex align-items-center gap-2 text-secondary">
+        <i class="bi bi-person-circle fs-4"></i>
+        <span class="d-none d-sm-inline small">Recepção</span>
+    </div>
+</header>
+
+<!-- Menu lateral (sidebar fixa em telas grandes, offcanvas em telas pequenas) -->
+<aside th:fragment="sidebar(ativo)" id="menuLateral" class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" aria-label="Menu principal">
+    <div class="offcanvas-header d-lg-none">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
+    </div>
+    <div class="sidebar-brand">
+        <i class="bi bi-building-fill"></i>
+        <span>HotelImpact</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a th:href="@{/}" th:classappend="${ativo} == 'dashboard' ? 'active' : ''">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+        </a>
+        <a th:href="@{/quartos}" th:classappend="${ativo} == 'quartos' ? 'active' : ''">
+            <i class="bi bi-door-open"></i><span>Quartos</span>
+        </a>
+        <a th:href="@{/hospedes}" th:classappend="${ativo} == 'hospedes' ? 'active' : ''">
+            <i class="bi bi-people"></i><span>Hóspedes</span>
+        </a>
+        <a th:href="@{/reservas}" th:classappend="${ativo} == 'reservas' ? 'active' : ''">
+            <i class="bi bi-calendar-check"></i><span>Reservas</span>
+        </a>
+        <a th:href="@{/hospedagens}" th:classappend="${ativo} == 'hospedagens' ? 'active' : ''">
+            <i class="bi bi-key"></i><span>Hospedagens</span>
+        </a>
+        <a th:href="@{/consumos}" th:classappend="${ativo} == 'consumos' ? 'active' : ''">
+            <i class="bi bi-cup-straw"></i><span>Consumos</span>
+        </a>
+        <a th:href="@{/pagamentos}" th:classappend="${ativo} == 'pagamentos' ? 'active' : ''">
+            <i class="bi bi-cash-coin"></i><span>Pagamentos</span>
+        </a>
+        <a th:href="@{/manutencao}" th:classappend="${ativo} == 'manutencao' ? 'active' : ''">
+            <i class="bi bi-tools"></i><span>Manutenção</span>
+        </a>
+        <a th:href="@{/relatorios}" th:classappend="${ativo} == 'relatorios' ? 'active' : ''">
+            <i class="bi bi-clipboard-data"></i><span>Relatórios</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">Gestão hoteleira · v0.1</div>
+</aside>
+
+<!-- Mensagens de feedback (flash via query string: sucesso/erro) -->
+<div th:fragment="mensagens">
+    <div class="alert alert-success alert-dismissible fade show" th:if="${param.sucesso}" role="alert">
+        <i class="bi bi-check-circle me-1"></i><span th:text="${param.sucesso[0]}">Operação realizada.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${param.erro}" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i><span th:text="${param.erro[0]}">Ocorreu um erro.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<div th:fragment="scripts">
+    <script th:src="@{/vendor/bootstrap/bootstrap.bundle.min.js}"></script>
+</div>
+
+</body>
+</html>

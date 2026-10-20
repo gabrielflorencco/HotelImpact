@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head('Erro')}"></head>
+<body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
+<main class="container text-center py-5">
+    <div class="card shadow-sm mx-auto" style="max-width: 520px;">
+        <div class="card-body p-4 p-md-5">
+            <i class="bi bi-exclamation-triangle display-4 text-secondary"></i>
+            <h1 class="h3 mt-3" th:text="${titulo} ?: 'Erro'">Erro</h1>
+            <p class="text-secondary" th:text="${mensagem} ?: 'Ocorreu um erro inesperado.'">
+                Ocorreu um erro inesperado.
+            </p>
+            <a class="btn btn-primary" th:href="@{/}">
+                <i class="bi bi-house me-1"></i>Voltar ao início
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

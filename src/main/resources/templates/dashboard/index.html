@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head('Dashboard')}"></head>
+<body>
+<div class="app-wrapper">
+
+    <aside th:replace="~{layout/fragments :: sidebar('dashboard')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{layout/fragments :: topbar}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{layout/fragments :: mensagens}"></div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                <h1 class="h3 mb-0">Dashboard</h1>
+                <span class="badge text-bg-warning">Painel de indicadores será implementado na Fase 6</span>
+            </div>
+
+            <div class="alert alert-info d-flex align-items-start gap-2">
+                <i class="bi bi-info-circle fs-5"></i>
+                <div>
+                    A fundação do sistema está pronta: entidades, banco de dados PostgreSQL e layout.
+                    Os módulos abaixo serão ativados ao longo das próximas fases do desenvolvimento.
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-door-open me-2"></i>Quartos</h2>
+                                <span class="badge text-bg-secondary">Fase 3</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Categorias, cadastro de quartos e estados operacionais.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-people me-2"></i>Hóspedes</h2>
+                                <span class="badge text-bg-secondary">Fase 3</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Cadastro, pesquisa e histórico de hóspedes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-calendar-check me-2"></i>Reservas</h2>
+                                <span class="badge text-bg-secondary">Fase 4</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Disponibilidade, reservas, check-in e check-out.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-cup-straw me-2"></i>Consumos</h2>
+                                <span class="badge text-bg-secondary">Fase 5</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Catálogo de produtos e serviços com controle de estoque.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-cash-coin me-2"></i>Pagamentos</h2>
+                                <span class="badge text-bg-secondary">Fase 5</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Fechamento de contas, pagamentos e estornos.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 module-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-tools me-2"></i>Manutenção</h2>
+                                <span class="badge text-bg-secondary">Fase 5</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Tarefas de limpeza e ordens de manutenção.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

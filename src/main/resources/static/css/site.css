@@ -1,0 +1,142 @@
+/* HotelImpact — estilos próprios sobre o Bootstrap 5 */
+
+:root {
+    --hi-sidebar-width: 250px;
+    --hi-sidebar-bg: #1e293b;
+    --hi-sidebar-bg-hover: #334155;
+    --hi-sidebar-text: #cbd5e1;
+    --hi-accent: #f59e0b;
+}
+
+body {
+    background-color: #f1f5f9;
+}
+
+/* Layout geral: sidebar + área principal */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.app-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+@media (min-width: 992px) {
+    .app-main {
+        margin-left: var(--hi-sidebar-width);
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--hi-sidebar-width);
+    background-color: var(--hi-sidebar-bg);
+    color: var(--hi-sidebar-text);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        --bs-offcanvas-width: var(--hi-sidebar-width);
+    }
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.25rem 1rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.sidebar-brand i {
+    color: var(--hi-accent);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 0.75rem;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    color: var(--hi-sidebar-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.sidebar-nav a i {
+    font-size: 1.1rem;
+}
+
+.sidebar-nav a:hover {
+    background-color: var(--hi-sidebar-bg-hover);
+    color: #fff;
+}
+
+.sidebar-nav a.active {
+    background-color: var(--hi-sidebar-bg-hover);
+    color: #fff;
+    box-shadow: inset 3px 0 0 var(--hi-accent);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.25rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+/* Barra superior */
+.topbar {
+    min-height: 56px;
+    background-color: #fff;
+}
+
+/* Cartões de módulos */
+.module-card {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.module-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.08);
+}
+
+/* Tabelas */
+.table > :not(caption) > * > * {
+    vertical-align: middle;
+}
+
+/* Badges de estado (paleta consistente em todo o sistema) */
+.badge-estado-ok        { color: #047857; background-color: #d1fae5; }
+.badge-estado-atencao   { color: #b45309; background-color: #fef3c7; }
+.badge-estado-neutro    { color: #475569; background-color: #e2e8f0; }
+.badge-estado-erro      { color: #b91c1c; background-color: #fee2e2; }
+.badge-estado-info      { color: #1d4ed8; background-color: #dbeafe; }

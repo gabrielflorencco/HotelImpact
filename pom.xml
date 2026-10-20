@@ -11,23 +11,12 @@
 	<groupId>com.gabrielflorencco</groupId>
 	<artifactId>hotelimpact</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+	<name>HotelImpact</name>
+	<description>Sistema de gestão hoteleira (PMS) — trabalho acadêmico de desenvolvimento de software</description>
 	<properties>
 		<java.version>21</java.version>
+		<!-- Versão fixa: o BOM do Spring Boot 4.2.0-M2 não gerencia o Testcontainers. -->
+		<testcontainers.version>1.21.4</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -81,6 +70,15 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Testcontainers: executa os testes de integração contra um PostgreSQL real e efêmero.
+		     Única dependência adicional do projeto (escopo test), justificada pela exigência de
+		     testar em PostgreSQL sem depender de H2/SQLite. -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

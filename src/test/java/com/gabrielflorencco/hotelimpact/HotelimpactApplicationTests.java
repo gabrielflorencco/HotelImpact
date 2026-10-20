@@ -1,13 +1,13 @@
 package com.gabrielflorencco.hotelimpact;
 
+import com.gabrielflorencco.hotelimpact.support.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class HotelimpactApplicationTests {
+@SpringBootTest(properties = "app.seed-demo=true")
+class HotelimpactApplicationTests extends AbstractIntegrationTest {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextoSobeComBancoEConstraints() {
+    }
 }

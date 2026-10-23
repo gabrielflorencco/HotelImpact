@@ -8,6 +8,7 @@ trabalho acadêmico de desenvolvimento de software.
 - Java 21 · Spring Boot (4.2.0-M2) · Maven
 - Spring MVC + Thymeleaf (renderização no servidor)
 - Spring Data JPA + Hibernate
+- Flyway (migrações de esquema)
 - PostgreSQL (via Docker em desenvolvimento)
 - Bootstrap 5 (vendorizado em `src/main/resources/static/vendor`)
 
@@ -103,3 +104,16 @@ O painel inicial (Fase 6) exibe indicadores reais calculados no banco:
 ocupação atual, quartos por estado, chegadas e saídas previstas para o
 dia, receita confirmada do dia e alerta de itens com estoque baixo.
 Páginas de relatórios históricos serão avaliadas como evolução futura.
+
+## Migrações de esquema (Flyway)
+
+O esquema é versionado por migrações Flyway em `db/migration`. A `V1` é a
+fotografia fiel do esquema existente (gerada por `pg_dump` do próprio
+esquema criado pelo Hibernate, incluindo as constraints específicas do
+PostgreSQL). Bancos novos executam a `V1` normalmente; bancos já populados
+anteriores ao Flyway recebem baseline na versão 1
+(`spring.flyway.baseline-on-migrate=true`) e tratam a `V1` como já
+aplicada — nenhum dado é tocado. Evoluções futuras do esquema entram como
+`V2__...`, `V3__...` e assim por diante; nunca edite uma migração já
+publicada. O `ddl-auto` do Hibernate permanece como rede de segurança
+até a migração ser validada em produção.

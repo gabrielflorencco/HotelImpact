@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface TarefaLimpezaRepository extends JpaRepository<TarefaLimpeza, Long> {
 
+    boolean existsByQuartoId(Long quartoId);
+
     List<TarefaLimpeza> findByEstadoOrderByCriadaEmAsc(EstadoTarefaLimpeza estado);
 
     List<TarefaLimpeza> findByQuartoIdOrderByCriadaEmDesc(Long quartoId);

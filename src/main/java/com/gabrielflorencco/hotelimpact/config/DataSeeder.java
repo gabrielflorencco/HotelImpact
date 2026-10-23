@@ -114,7 +114,7 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     /** Gera um CPF matematicamente válido a partir de 9 dígitos base (dados fictícios). */
-    static String gerarCpfFicticio(int noveDigitos) {
+    public static String gerarCpfFicticio(int noveDigitos) {
         String base = String.format("%09d", noveDigitos);
         return base + digitoVerificador(base, 10) + digitoVerificador(base + digitoVerificador(base, 10), 11);
     }

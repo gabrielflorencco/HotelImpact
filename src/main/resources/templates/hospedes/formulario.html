@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head(${titulo})}"></head>
+<body>
+<a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
+<div class="app-wrapper">
+
+    <aside th:replace="~{layout/fragments :: sidebar('hospedes')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{layout/fragments :: topbar}"></header>
+
+        <main class="app-content" id="conteudoPrincipal">
+            <div th:replace="~{layout/fragments :: mensagens}"></div>
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/hospedes}" title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="h3 page-title mb-0" th:text="${titulo}">Novo hóspede</h1>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form th:action="${form.id == null} ? @{/hospedes} : @{'/hospedes/' + ${form.id}}"
+                                  th:object="${form}" method="post" novalidate>
+                                <div class="mb-3">
+                                    <label for="nome" class="form-label campo-obrigatorio">Nome completo</label>
+                                    <input type="text" class="form-control" id="nome" th:field="*{nome}"
+                                           th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
+                                           maxlength="120" placeholder="Ex.: Ana Souza">
+                                    <div class="invalid-feedback" th:errors="*{nome}"></div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="cpf" class="form-label">CPF</label>
+                                        <input type="text" class="form-control" id="cpf" th:field="*{cpf}"
+                                               th:classappend="${#fields.hasErrors('cpf')} ? 'is-invalid'"
+                                               maxlength="14" placeholder="000.000.000-00">
+                                        <div class="form-text">Opcional; validado pelos dígitos verificadores.</div>
+                                        <div class="invalid-feedback" th:errors="*{cpf}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dataNascimento" class="form-label">Data de nascimento</label>
+                                        <input type="date" class="form-control" id="dataNascimento"
+                                               th:field="*{dataNascimento}"
+                                               th:classappend="${#fields.hasErrors('dataNascimento')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{dataNascimento}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="telefone" class="form-label">Telefone</label>
+                                        <input type="text" class="form-control" id="telefone" th:field="*{telefone}"
+                                               th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid'"
+                                               maxlength="20" placeholder="(00) 00000-0000">
+                                        <div class="invalid-feedback" th:errors="*{telefone}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">E-mail</label>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}"
+                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                               maxlength="120" placeholder="hospede@exemplo.com">
+                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="observacoes" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
+                                              rows="2" maxlength="500"></textarea>
+                                    <div class="invalid-feedback" th:errors="*{observacoes}"></div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-1"></i>Salvar
+                                    </button>
+                                    <a class="btn btn-outline-secondary" th:href="@{/hospedes}">Cancelar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

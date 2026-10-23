@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
 <head th:replace="~{layout/fragments :: head('Dashboard')}"></head>
 <body>
+<a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
 <div class="app-wrapper">
 
     <aside th:replace="~{layout/fragments :: sidebar('dashboard')}"></aside>
@@ -9,7 +10,7 @@
     <div class="app-main">
         <header th:replace="~{layout/fragments :: topbar}"></header>
 
-        <main class="app-content">
+        <main class="app-content" id="conteudoPrincipal">
             <div th:replace="~{layout/fragments :: mensagens}"></div>
 
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -27,26 +28,37 @@
 
             <div class="row g-3">
                 <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 module-card">
+                    <a class="card h-100 module-card text-decoration-none" th:href="@{/quartos}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h2 class="h5 mb-0"><i class="bi bi-door-open me-2"></i>Quartos</h2>
-                                <span class="badge text-bg-secondary">Fase 3</span>
+                                <span class="badge badge-estado-ok">Ativo</span>
                             </div>
-                            <p class="text-secondary small mb-0 mt-2">Categorias, cadastro de quartos e estados operacionais.</p>
+                            <p class="text-secondary small mb-0 mt-2">Cadastro de quartos, estados operacionais e interdição.</p>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 module-card">
+                    <a class="card h-100 module-card text-decoration-none" th:href="@{/categorias}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0"><i class="bi bi-tags me-2"></i>Categorias</h2>
+                                <span class="badge badge-estado-ok">Ativo</span>
+                            </div>
+                            <p class="text-secondary small mb-0 mt-2">Tipos de acomodação, capacidade e preço-base da diária.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <a class="card h-100 module-card text-decoration-none" th:href="@{/hospedes}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h2 class="h5 mb-0"><i class="bi bi-people me-2"></i>Hóspedes</h2>
-                                <span class="badge text-bg-secondary">Fase 3</span>
+                                <span class="badge badge-estado-ok">Ativo</span>
                             </div>
-                            <p class="text-secondary small mb-0 mt-2">Cadastro, pesquisa e histórico de hóspedes.</p>
+                            <p class="text-secondary small mb-0 mt-2">Cadastro, busca por nome, CPF, telefone e e-mail.</p>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-sm-6 col-lg-4">
                     <div class="card h-100 module-card">
@@ -78,17 +90,6 @@
                                 <span class="badge text-bg-secondary">Fase 5</span>
                             </div>
                             <p class="text-secondary small mb-0 mt-2">Fechamento de contas, pagamentos e estornos.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 module-card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h2 class="h5 mb-0"><i class="bi bi-tools me-2"></i>Manutenção</h2>
-                                <span class="badge text-bg-secondary">Fase 5</span>
-                            </div>
-                            <p class="text-secondary small mb-0 mt-2">Tarefas de limpeza e ordens de manutenção.</p>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     boolean existsByCodigo(String codigo);
 
+    boolean existsByQuartoId(Long quartoId);
+
+    boolean existsByHospedeId(Long hospedeId);
+
     /**
      * Reservas ativas do quarto que conflitam com o período semiaberto
      * [inicio, fim). O banco reforça esta regra com constraint de exclusão.

@@ -15,6 +15,8 @@ public interface QuartoRepository extends JpaRepository<Quarto, Long> {
 
     boolean existsByNumero(String numero);
 
+    long countByCategoriaId(Long categoriaId);
+
     Optional<Quarto> findByNumero(String numero);
 
     List<Quarto> findAllByAtivoTrueOrderByNumeroAsc();
@@ -30,6 +32,23 @@ public interface QuartoRepository extends JpaRepository<Quarto, Long> {
             ORDER BY q.numero ASC
             """)
     List<Quarto> findAllComCategoria();
+
+    /**
+     * Busca com filtros opcionais: número (parcial), estado operacional e categoria.
+     * Parâmetros nulos são ignorados; os casts evitam vinculação bytea no PostgreSQL.
+     */
+    @Query("""
+            SELECT q FROM Quarto q
+            JOIN FETCH q.categoria
+            WHERE (cast(:numero AS String) IS NULL
+                   OR LOWER(q.numero) LIKE LOWER(CONCAT('%', cast(:numero AS String), '%')))
+              AND (:estado IS NULL OR q.estado = :estado)
+              AND (:categoriaId IS NULL OR q.categoria.id = :categoriaId)
+            ORDER BY q.numero ASC
+            """)
+    List<Quarto> buscar(@Param("numero") String numero,
+                        @Param("estado") EstadoQuarto estado,
+                        @Param("categoriaId") Long categoriaId);
 
     @Query("""
             SELECT q FROM Quarto q

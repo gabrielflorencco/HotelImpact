@@ -13,6 +13,10 @@ public interface HospedagemRepository extends JpaRepository<Hospedagem, Long> {
 
     boolean existsByReservaId(Long reservaId);
 
+    boolean existsByQuartoId(Long quartoId);
+
+    boolean existsByQuartoIdAndEstado(Long quartoId, EstadoHospedagem estado);
+
     Optional<Hospedagem> findByReservaId(Long reservaId);
 
     /** Uma única hospedagem EM_ANDAMENTO por quarto (reforçada por partial unique index). */

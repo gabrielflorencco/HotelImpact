@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head(${titulo})}"></head>
+<body>
+<a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
+<div class="app-wrapper">
+
+    <aside th:replace="~{layout/fragments :: sidebar('quartos')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{layout/fragments :: topbar}"></header>
+
+        <main class="app-content" id="conteudoPrincipal">
+            <div th:replace="~{layout/fragments :: mensagens}"></div>
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/quartos}" title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="h3 page-title mb-0" th:text="${titulo}">Novo quarto</h1>
+                <th:block th:if="${estadoAtual != null}">
+                    <span th:replace="~{layout/fragments :: badge-estado-quarto(${estadoAtual})}"></span>
+                </th:block>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 small" th:if="${form.id != null}">
+                                <i class="bi bi-info-circle me-1"></i>
+                                O estado operacional do quarto muda apenas pelas operações do sistema
+                                (check-in, limpeza, manutenção e interdição).
+                            </div>
+
+                            <form th:action="${form.id == null} ? @{/quartos} : @{'/quartos/' + ${form.id}}"
+                                  th:object="${form}" method="post" novalidate>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label for="numero" class="form-label campo-obrigatorio">Número</label>
+                                        <input type="text" class="form-control" id="numero" th:field="*{numero}"
+                                               th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'"
+                                               maxlength="10" placeholder="Ex.: 101">
+                                        <div class="invalid-feedback" th:errors="*{numero}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="categoriaId" class="form-label campo-obrigatorio">Categoria</label>
+                                        <select class="form-select" id="categoriaId" th:field="*{categoriaId}"
+                                                th:classappend="${#fields.hasErrors('categoriaId')} ? 'is-invalid'">
+                                            <option value="">Selecione…</option>
+                                            <option th:each="c : ${categorias}" th:value="${c.id}"
+                                                    th:text="${c.nome} + (${c.ativo} ? '' : ' (inativa)')">Standard</option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{categoriaId}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="andar" class="form-label campo-obrigatorio">Andar</label>
+                                        <input type="number" min="0" max="200" class="form-control" id="andar"
+                                               th:field="*{andar}"
+                                               th:classappend="${#fields.hasErrors('andar')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{andar}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="capacidadeOperacional" class="form-label">Capacidade operacional</label>
+                                    <div class="input-group">
+                                        <input type="number" min="1" max="20" class="form-control"
+                                               id="capacidadeOperacional" th:field="*{capacidadeOperacional}"
+                                               th:classappend="${#fields.hasErrors('capacidadeOperacional')} ? 'is-invalid'"
+                                               placeholder="Opcional">
+                                        <span class="input-group-text">hóspede(s)</span>
+                                    </div>
+                                    <div class="form-text">Quando informada, sobrepõe a capacidade da categoria para este quarto.</div>
+                                    <div class="invalid-feedback" th:errors="*{capacidadeOperacional}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="observacoes" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
+                                              rows="2" maxlength="500"></textarea>
+                                    <div class="invalid-feedback" th:errors="*{observacoes}"></div>
+                                </div>
+
+                                <div class="form-check form-switch mb-4">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="ativo"
+                                           th:field="*{ativo}">
+                                    <label class="form-check-label" for="ativo">Quarto ativo (pode receber reservas)</label>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-1"></i>Salvar
+                                    </button>
+                                    <a class="btn btn-outline-secondary" th:href="@{/quartos}">Cancelar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

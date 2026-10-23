@@ -65,7 +65,12 @@ src/main/java/com/gabrielflorencco/hotelimpact/
 
 ## Situação do desenvolvimento
 
-O projeto é desenvolvido em fases. Fase 1 (planejamento) e Fase 2 (fundação:
-entidades, persistência, layout e infraestrutura de testes) concluídas; os
-módulos funcionais (quartos, hóspedes, reservas, hospedagens, consumos,
-pagamentos, manutenção, relatórios) serão entregues nas próximas fases.
+O projeto é desenvolvido em fases. Fase 1 (planejamento), Fase 2 (fundação:
+entidades, persistência, layout e infraestrutura de testes) e Fase 3 (cadastros
+de categorias, quartos e hóspedes) concluídas.
+
+Fase 4 (reservas e hospedagens) em andamento: já é possível criar, listar,
+detalhar, confirmar e cancelar reservas, com verificação de disponibilidade,
+capacidade efetiva, exceção para datas passadas e total calculado no servidor.
+Check-in/check-out (hospedagens), consumos, pagamentos, manutenção e relatórios
+serão entregues nas próximas fases.

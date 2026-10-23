@@ -2,6 +2,8 @@ package com.gabrielflorencco.hotelimpact.repository;
 
 import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -54,4 +56,26 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     // Sufixo Equals necessário: o "In" de dataCheckIn seria parseado como operador de coleção.
     List<Reserva> findByEstadoInAndDataCheckInEquals(List<EstadoReserva> estados, LocalDate dataCheckIn);
+
+    /** Listagem completa com hóspede e quarto (anti-N+1), mais recentes primeiro. */
+    @Query("""
+            SELECT r FROM Reserva r
+            JOIN FETCH r.hospede
+            JOIN FETCH r.quarto
+            ORDER BY r.dataCheckIn DESC, r.id DESC
+            """)
+    Page<Reserva> buscarTodos(Pageable pageable);
+
+    /** Listagem filtrada por estado, com hóspede e quarto (anti-N+1). */
+    @Query("""
+            SELECT r FROM Reserva r
+            JOIN FETCH r.hospede
+            JOIN FETCH r.quarto
+            WHERE r.estado = :estado
+            ORDER BY r.dataCheckIn DESC, r.id DESC
+            """)
+    Page<Reserva> buscarPorEstado(@Param("estado") EstadoReserva estado, Pageable pageable);
+
+    /** Contagem por prefixo, usada na geração do código sequencial (RES-ANO-NNNNNN). */
+    long countByCodigoStartingWith(String prefixo);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface HospedeRepository extends JpaRepository<Hospede, Long> {
@@ -16,6 +17,9 @@ public interface HospedeRepository extends JpaRepository<Hospede, Long> {
     boolean existsByCpf(String cpf);
 
     Optional<Hospede> findByNome(String nome);
+
+    /** Hóspedes para seleção em formulários (ex.: nova reserva), ordenados por nome. */
+    List<Hospede> findAllByOrderByNomeAsc();
 
     /**
      * Busca por um único termo em nome, telefone ou e-mail (parcial) e, em

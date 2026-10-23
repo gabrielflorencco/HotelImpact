@@ -36,5 +36,27 @@
                 }
             });
         });
+
+        // Pré-preenche a diária acordada com o preço-base da categoria do quarto
+        // escolhido (ex.: formulário de reserva), sem sobrescrever um valor
+        // digitado manualmente pelo usuário.
+        var selecaoComPreco = document.querySelector('select[data-preco-alvo]');
+        if (selecaoComPreco) {
+            var campoDiaria = document.getElementById(selecaoComPreco.getAttribute('data-preco-alvo'));
+            if (campoDiaria) {
+                campoDiaria.addEventListener('input', function () {
+                    campoDiaria.setAttribute('data-editado', 'true');
+                });
+                var aplicarPrecoBase = function () {
+                    var opcao = selecaoComPreco.selectedOptions[0];
+                    var precoBase = opcao && opcao.getAttribute('data-preco-base');
+                    if (precoBase && !campoDiaria.getAttribute('data-editado')) {
+                        campoDiaria.value = precoBase;
+                    }
+                };
+                selecaoComPreco.addEventListener('change', aplicarPrecoBase);
+                aplicarPrecoBase();
+            }
+        }
     });
 })();

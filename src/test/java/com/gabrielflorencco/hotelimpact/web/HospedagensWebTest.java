@@ -9,6 +9,8 @@ import com.gabrielflorencco.hotelimpact.enums.EstadoHospedagem;
 import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.exception.RegistroNaoEncontradoException;
+import com.gabrielflorencco.hotelimpact.repository.ItemCatalogoRepository;
+import com.gabrielflorencco.hotelimpact.service.ConsumoService;
 import com.gabrielflorencco.hotelimpact.service.HospedagemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,12 @@ class HospedagensWebTest {
     @MockitoBean
     private HospedagemService hospedagemService;
 
+    @MockitoBean
+    private ConsumoService consumoService;
+
+    @MockitoBean
+    private ItemCatalogoRepository itens;
+
     @Test
     void listarRenderizaTabelaComCodigoDaReserva() throws Exception {
         when(hospedagemService.buscar(any(), any(Pageable.class)))
@@ -75,6 +83,7 @@ class HospedagensWebTest {
     void detalheDeHospedagemEmAndamentoExibeBotaoDeCheckOut() throws Exception {
         when(hospedagemService.buscarPorId(7L))
                 .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
+        when(consumoService.totalAtivos(7L)).thenReturn(BigDecimal.ZERO);
 
         mockMvc.perform(get("/hospedagens/7"))
                 .andExpect(status().isOk())
@@ -87,6 +96,7 @@ class HospedagensWebTest {
         Hospedagem encerrada = hospedagemMock(7L, EstadoHospedagem.ENCERRADA);
         encerrada.setCheckOutReal(LocalDateTime.now().plusHours(30));
         when(hospedagemService.buscarPorId(7L)).thenReturn(encerrada);
+        when(consumoService.totalAtivos(7L)).thenReturn(BigDecimal.ZERO);
 
         mockMvc.perform(get("/hospedagens/7"))
                 .andExpect(status().isOk())
@@ -123,6 +133,55 @@ class HospedagensWebTest {
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("error/erro-generico"))
                 .andExpect(content().string(containsString("Hospedagem não encontrada")));
+    }
+
+    // ---- Consumos da conta ------------------------------------------------------------
+
+    @Test
+    void lancarConsumoValidoRedirecionaParaODetalhe() throws Exception {
+        mockMvc.perform(post("/hospedagens/7/consumos")
+                        .param("itemId", "1")
+                        .param("quantidade", "2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/hospedagens/7"));
+
+        verify(consumoService).lancar(org.mockito.ArgumentMatchers.eq(7L), any());
+    }
+
+    @Test
+    void lancarConsumoInvalidoReRenderizaComErroDeCampo() throws Exception {
+        when(hospedagemService.buscarPorId(7L))
+                .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
+        when(consumoService.totalAtivos(7L)).thenReturn(BigDecimal.ZERO);
+
+        mockMvc.perform(post("/hospedagens/7/consumos").param("itemId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("hospedagens/detalhe"))
+                .andExpect(content().string(containsString("Campo obrigatório")));
+    }
+
+    @Test
+    void lancarConsumoComRegraVioladaReRenderizaComMensagem() throws Exception {
+        when(hospedagemService.buscarPorId(7L))
+                .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
+        when(consumoService.totalAtivos(7L)).thenReturn(BigDecimal.ZERO);
+        when(consumoService.lancar(org.mockito.ArgumentMatchers.eq(7L), any()))
+                .thenThrow(new NegocioException("Estoque insuficiente de \"Água mineral 500ml\": restam 1 unidade(s)."));
+
+        mockMvc.perform(post("/hospedagens/7/consumos")
+                        .param("itemId", "1")
+                        .param("quantidade", "2"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Estoque insuficiente")));
+    }
+
+    @Test
+    void cancelarConsumoRedirecionaDeVoltaParaODetalhe() throws Exception {
+        mockMvc.perform(post("/hospedagens/7/consumos/11/cancelar"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/hospedagens/7"));
+
+        verify(consumoService).cancelar(7L, 11L);
     }
 
     private Hospedagem hospedagemMock(Long id, EstadoHospedagem estado) {

@@ -74,6 +74,93 @@
                             </a>
                         </div>
                     </div>
+
+                    <div class="card shadow-sm mt-3">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h2 class="h5 mb-0"><i class="bi bi-cup-straw me-2"></i>Consumos da hospedagem</h2>
+                                <span class="text-secondary small">
+                                    Total consumido:
+                                    <span class="fw-semibold" th:replace="~{layout/fragments :: dinheiro(${totalConsumos})}">R$ 0,00</span>
+                                </span>
+                            </div>
+
+                            <form th:if="${podeLancar}" th:object="${consumoForm}" method="post" novalidate
+                                  th:action="@{'/hospedagens/' + ${hospedagem.id} + '/consumos'}"
+                                  class="row g-2 align-items-end mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="itemId" class="form-label campo-obrigatorio">Item</label>
+                                    <select class="form-select form-select-sm" id="itemId" th:field="*{itemId}"
+                                            th:classappend="${#fields.hasErrors('itemId')} ? 'is-invalid'">
+                                        <option value="">Selecione…</option>
+                                        <option th:each="item : ${itensAtivos}" th:value="${item.id}"
+                                                th:text="${item.nome} + ' · ' + ${item.tipo} + ' · R$ ' + ${item.precoUnitario}">
+                                            Água mineral 500ml · PRODUTO · R$ 5.00
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:errors="*{itemId}"></div>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <label for="quantidade" class="form-label campo-obrigatorio">Quantidade</label>
+                                    <input type="number" min="1" max="99" class="form-control form-control-sm"
+                                           id="quantidade" th:field="*{quantidade}"
+                                           th:classappend="${#fields.hasErrors('quantidade')} ? 'is-invalid'">
+                                    <div class="invalid-feedback" th:errors="*{quantidade}"></div>
+                                </div>
+                                <div class="col-6 col-md-2 d-grid">
+                                    <button type="submit" class="btn btn-sm btn-primary">Lançar</button>
+                                </div>
+                            </form>
+
+                            <div th:if="${#lists.isEmpty(consumos)}" class="text-secondary small py-2">
+                                Nenhum consumo lançado nesta hospedagem.
+                            </div>
+
+                            <div class="table-responsive" th:unless="${#lists.isEmpty(consumos)}">
+                                <table class="table table-hover table-sm mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-center">Qtd.</th>
+                                        <th>Preço unit.</th>
+                                        <th>Total</th>
+                                        <th>Lançado em</th>
+                                        <th>Estado</th>
+                                        <th style="width: 1%"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="consumo : ${consumos}"
+                                        th:classappend="${consumo.estado.name() == 'CANCELADO'} ? 'opacity-75'">
+                                        <td th:text="${consumo.itemNome}">Água mineral</td>
+                                        <td class="text-center" th:text="${consumo.quantidade}">2</td>
+                                        <td><span th:replace="~{layout/fragments :: dinheiro(${consumo.precoUnitario})}">R$ 5,00</span></td>
+                                        <td><span th:replace="~{layout/fragments :: dinheiro(${consumo.valorTotal})}">R$ 10,00</span></td>
+                                        <td class="text-secondary" th:text="${consumo.dataHora}">23/10/2026 15:00</td>
+                                        <td><span th:replace="~{layout/fragments :: badge-estado-consumo(${consumo.estado})}">ATIVO</span></td>
+                                        <td>
+                                            <form th:if="${podeLancar and consumo.estado.name() == 'ATIVO'}" method="post"
+                                                  th:action="@{'/hospedagens/' + ${hospedagem.id} + '/consumos/' + ${consumo.id} + '/cancelar'}"
+                                                  th:attr="data-confirmar='Cancelar o lançamento de ' + ${consumo.quantidade} + 'x ' + ${consumo.itemNome} + '? O estoque será restituído quando aplicável.'">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar lançamento">
+                                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2"
+                             th:unless="${#lists.isEmpty(consumos)}">
+                            <span class="small text-secondary">Conta: reserva + consumos ativos</span>
+                            <span class="fs-6 fw-semibold"
+                                  th:with="conta=${hospedagem.valorTotalReserva.add(totalConsumos)}">
+                                <span th:replace="~{layout/fragments :: dinheiro(${conta})}">R$ 370,00</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

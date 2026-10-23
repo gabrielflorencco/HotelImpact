@@ -152,6 +152,11 @@
       class="badge" th:classappend="${classe}"
       th:text="${estado}">EM_ANDAMENTO</span>
 
+<!-- Badge do estado do consumo -->
+<span th:fragment="badge-estado-consumo(estado)"
+      class="badge" th:classappend="${estado.name() == 'ATIVO'} ? 'badge-estado-ok' : 'badge-estado-neutro'"
+      th:text="${estado}">ATIVO</span>
+
 <!-- Badge genérico ativo/inativo -->
 <span th:fragment="badge-ativo(ativo)"
       class="badge" th:classappend="${ativo} ? 'badge-estado-ok' : 'badge-estado-neutro'"

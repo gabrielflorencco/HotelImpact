@@ -18,4 +18,7 @@ public interface ItemCatalogoRepository extends JpaRepository<ItemCatalogo, Long
 
     /** Produtos com controle de estoque no limite ou abaixo do mínimo. */
     List<ItemCatalogo> findByControlaEstoqueTrueAndTipoAndEstoqueAtualLessThanEqual(TipoItem tipo, Integer estoqueAtual);
+
+    /** Itens disponíveis para lançamento em consumos, ordenados por nome. */
+    List<ItemCatalogo> findAllByAtivoTrueOrderByNomeAsc();
 }

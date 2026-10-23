@@ -83,5 +83,8 @@ O ciclo operacional completo está disponível: criação de reservas com
 verificação de disponibilidade, capacidade efetiva e total calculado no
 servidor; confirmação, cancelamento e registro de no-show; check-in a partir
 de reservas elegíveis; check-out que conclui a reserva e envia o quarto para
-limpeza; e conclusão de limpeza que devolve o quarto ao estado disponível.
-Consumos, pagamentos, manutenção e relatórios serão entregues nas próximas fases.
+limpeza; conclusão de limpeza que devolve o quarto ao estado disponível; e
+lançamento/cancelamento de consumos na conta da hospedagem, com preço
+histórico, baixa de estoque e estorno lógico que restitui o estoque.
+Catálogo de itens, pagamentos, manutenção e relatórios serão entregues nas
+próximas fases.

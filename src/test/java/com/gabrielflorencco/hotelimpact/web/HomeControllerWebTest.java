@@ -23,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * de estoque baixo apenas quando existe e o caso sem dados sem alerta.
  */
 @WebMvcTest(controllers = HomeController.class)
+
+@org.springframework.security.test.context.support.WithMockUser
 class HomeControllerWebTest {
 
     @Autowired

@@ -105,9 +105,24 @@ ocupação atual, quartos por estado, chegadas e saídas previstas para o
 dia, receita confirmada do dia e alerta de itens com estoque baixo.
 Páginas de relatórios históricos serão avaliadas como evolução futura.
 
-## Migrações de esquema (Flyway)
+## Autenticação e execução em produção
 
-O esquema é versionado por migrações Flyway em `db/migration`. A `V1` é a
+Todo o sistema exige usuário autenticado (login por formulário, logout e
+proteção CSRF — padrões do Spring Security). Em desenvolvimento, o usuário
+`recepcao` com a senha `recepcao-dev` é criado automaticamente; em produção
+defina as credenciais por variável de ambiente:
+
+| Variável | Padrão local | Uso |
+|---|---|---|
+| `HOTELIMPACT_USER` | `recepcao` | usuário de acesso |
+| `HOTELIMPACT_PASSWORD` | `recepcao-dev` | senha (troque em produção) |
+| `SPRING_PROFILES_ACTIVE` | — | ative `prod` para validar o esquema contra o Flyway (`ddl-auto=validate`) |
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/hotelimpact` | conexão do banco |
+| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | `hotelimpact` / `hotelimpact_dev` | credenciais do banco |
+| `PORT` | `8080` | porta HTTP |
+| `APP_SEED_DEMO` | `false` | dados fictícios (apenas desenvolvimento) |
+
+## Migrações de esquema (Flyway)O esquema é versionado por migrações Flyway em `db/migration`. A `V1` é a
 fotografia fiel do esquema existente (gerada por `pg_dump` do próprio
 esquema criado pelo Hibernate, incluindo as constraints específicas do
 PostgreSQL). Bancos novos executam a `V1` normalmente; bancos já populados

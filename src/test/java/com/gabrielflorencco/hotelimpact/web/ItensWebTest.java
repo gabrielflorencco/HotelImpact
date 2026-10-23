@@ -20,6 +20,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * estoque baixo, validação de formulário, nome duplicado e PRG.
  */
 @WebMvcTest(controllers = ItemCatalogoController.class)
+
+@org.springframework.security.test.context.support.WithMockUser
 class ItensWebTest {
 
     @Autowired
@@ -69,7 +72,7 @@ class ItensWebTest {
 
     @Test
     void criarComFormularioInvalidoReRenderizaSemChamarOService() throws Exception {
-        mockMvc.perform(post("/itens").param("nome", "Só o nome"))
+        mockMvc.perform(post("/itens").with(csrf()).param("nome", "Só o nome"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("itens/formulario"))
                 .andExpect(content().string(containsString("Campo obrigatório")));
@@ -79,7 +82,7 @@ class ItensWebTest {
 
     @Test
     void criarValidoRedirecionaParaAListagem() throws Exception {
-        mockMvc.perform(post("/itens")
+        mockMvc.perform(post("/itens").with(csrf())
                         .param("nome", "Água mineral 500ml")
                         .param("tipo", "PRODUTO")
                         .param("precoUnitario", "5.00")
@@ -98,7 +101,7 @@ class ItensWebTest {
         when(itemService.salvar(any()))
                 .thenThrow(new NegocioException("Já existe um item com o nome informado."));
 
-        mockMvc.perform(post("/itens")
+        mockMvc.perform(post("/itens").with(csrf())
                         .param("nome", "Água mineral 500ml")
                         .param("tipo", "PRODUTO")
                         .param("precoUnitario", "5.00")
@@ -114,7 +117,7 @@ class ItensWebTest {
                         "Não é possível excluir o item: existem consumos registrados que preservam o histórico. Desative-o."))
                 .when(itemService).excluir(1L);
 
-        mockMvc.perform(post("/itens/1/excluir"))
+        mockMvc.perform(post("/itens/1/excluir").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/itens"));
 

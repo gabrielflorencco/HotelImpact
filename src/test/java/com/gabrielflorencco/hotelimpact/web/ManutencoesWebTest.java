@@ -27,6 +27,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * com ações conforme o estado, validação de formulário, PRG e 404.
  */
 @WebMvcTest(controllers = ManutencaoController.class)
+
+@org.springframework.security.test.context.support.WithMockUser
 class ManutencoesWebTest {
 
     @Autowired
@@ -82,7 +85,7 @@ class ManutencoesWebTest {
 
     @Test
     void criarComFormularioInvalidoReRenderizaSemChamarOService() throws Exception {
-        mockMvc.perform(post("/manutencoes").param("titulo", "Só o título"))
+        mockMvc.perform(post("/manutencoes").with(csrf()).param("titulo", "Só o título"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("manutencoes/formulario"))
                 .andExpect(content().string(containsString("Campo obrigatório")));
@@ -95,7 +98,7 @@ class ManutencoesWebTest {
         when(manutencaoService.abrir(any())).thenReturn(ordemMock(5L, EstadoManutencao.ABERTA,
                 PrioridadeManutencao.MEDIA, false));
 
-        mockMvc.perform(post("/manutencoes")
+        mockMvc.perform(post("/manutencoes").with(csrf())
                         .param("quartoId", "1")
                         .param("titulo", "Troca de lâmpada")
                         .param("prioridade", "MEDIA"))
@@ -111,7 +114,7 @@ class ManutencoesWebTest {
                 .thenThrow(new NegocioException(
                         "Não é possível abrir a manutenção: existe uma hospedagem em andamento no quarto 101."));
 
-        mockMvc.perform(post("/manutencoes")
+        mockMvc.perform(post("/manutencoes").with(csrf())
                         .param("quartoId", "1")
                         .param("titulo", "Reparo com hóspede")
                         .param("prioridade", "BAIXA"))
@@ -122,17 +125,17 @@ class ManutencoesWebTest {
 
     @Test
     void iniciarConcluirECancelarRedirecionamComPRG() throws Exception {
-        mockMvc.perform(post("/manutencoes/5/iniciar"))
+        mockMvc.perform(post("/manutencoes/5/iniciar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manutencoes/5"));
         verify(manutencaoService).iniciar(5L);
 
-        mockMvc.perform(post("/manutencoes/5/concluir"))
+        mockMvc.perform(post("/manutencoes/5/concluir").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manutencoes/5"));
         verify(manutencaoService).concluir(5L);
 
-        mockMvc.perform(post("/manutencoes/5/cancelar"))
+        mockMvc.perform(post("/manutencoes/5/cancelar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manutencoes/5"));
         verify(manutencaoService).cancelar(5L);

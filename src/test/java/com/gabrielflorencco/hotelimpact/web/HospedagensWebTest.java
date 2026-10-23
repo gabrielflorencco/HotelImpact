@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * de erros.
  */
 @WebMvcTest(controllers = HospedagemController.class)
+
+@org.springframework.security.test.context.support.WithMockUser
 class HospedagensWebTest {
 
     @Autowired
@@ -127,7 +130,7 @@ class HospedagensWebTest {
 
     @Test
     void checkOutSemJustificativaChamaServicoComMotivoNulo() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/check-out"))
+        mockMvc.perform(post("/hospedagens/7/check-out").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
 
@@ -136,7 +139,7 @@ class HospedagensWebTest {
 
     @Test
     void checkOutComJustificativaEncaminhaOMotivo() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/check-out")
+        mockMvc.perform(post("/hospedagens/7/check-out").with(csrf())
                         .param("motivoExcecao", "Hóspede se evadiu sem pagar."))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
@@ -150,7 +153,7 @@ class HospedagensWebTest {
                         + "Informe a justificativa do encerramento excepcional."))
                 .when(hospedagemService).checkOut(org.mockito.ArgumentMatchers.eq(7L), isNull());
 
-        mockMvc.perform(post("/hospedagens/7/check-out"))
+        mockMvc.perform(post("/hospedagens/7/check-out").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
 
@@ -161,7 +164,7 @@ class HospedagensWebTest {
 
     @Test
     void lancarConsumoValidoRedirecionaParaODetalhe() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/consumos")
+        mockMvc.perform(post("/hospedagens/7/consumos").with(csrf())
                         .param("itemId", "1")
                         .param("quantidade", "2"))
                 .andExpect(status().is3xxRedirection())
@@ -176,7 +179,7 @@ class HospedagensWebTest {
                 .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
         stubConta(new BigDecimal("360.00"), BigDecimal.ZERO);
 
-        mockMvc.perform(post("/hospedagens/7/consumos").param("itemId", "1"))
+        mockMvc.perform(post("/hospedagens/7/consumos").with(csrf()).param("itemId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("hospedagens/detalhe"))
                 .andExpect(content().string(containsString("Campo obrigatório")));
@@ -190,7 +193,7 @@ class HospedagensWebTest {
         when(consumoService.lancar(org.mockito.ArgumentMatchers.eq(7L), any()))
                 .thenThrow(new NegocioException("Estoque insuficiente de \"Água mineral 500ml\": restam 1 unidade(s)."));
 
-        mockMvc.perform(post("/hospedagens/7/consumos")
+        mockMvc.perform(post("/hospedagens/7/consumos").with(csrf())
                         .param("itemId", "1")
                         .param("quantidade", "2"))
                 .andExpect(status().isOk())
@@ -199,7 +202,7 @@ class HospedagensWebTest {
 
     @Test
     void cancelarConsumoRedirecionaDeVoltaParaODetalhe() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/consumos/11/cancelar"))
+        mockMvc.perform(post("/hospedagens/7/consumos/11/cancelar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
 
@@ -210,7 +213,7 @@ class HospedagensWebTest {
 
     @Test
     void registrarPagamentoValidoRedirecionaParaODetalhe() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/pagamentos")
+        mockMvc.perform(post("/hospedagens/7/pagamentos").with(csrf())
                         .param("valor", "250.00")
                         .param("forma", "PIX"))
                 .andExpect(status().is3xxRedirection())
@@ -225,7 +228,7 @@ class HospedagensWebTest {
                 .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
         stubConta(new BigDecimal("360.00"), BigDecimal.ZERO);
 
-        mockMvc.perform(post("/hospedagens/7/pagamentos").param("forma", "PIX"))
+        mockMvc.perform(post("/hospedagens/7/pagamentos").with(csrf()).param("forma", "PIX"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("hospedagens/detalhe"))
                 .andExpect(content().string(containsString("Campo obrigatório")));
@@ -240,7 +243,7 @@ class HospedagensWebTest {
                 .thenThrow(new NegocioException(
                         "A hospedagem foi encerrada excepcionalmente e não aceita novos pagamentos."));
 
-        mockMvc.perform(post("/hospedagens/7/pagamentos")
+        mockMvc.perform(post("/hospedagens/7/pagamentos").with(csrf())
                         .param("valor", "50.00")
                         .param("forma", "DINHEIRO"))
                 .andExpect(status().isOk())
@@ -249,7 +252,7 @@ class HospedagensWebTest {
 
     @Test
     void estornarPagamentoRedirecionaDeVoltaParaODetalhe() throws Exception {
-        mockMvc.perform(post("/hospedagens/7/pagamentos/3/estornar"))
+        mockMvc.perform(post("/hospedagens/7/pagamentos/3/estornar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
 

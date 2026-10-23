@@ -32,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,6 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * erros e ações de check-in/no-show — os services são simulados.
  */
 @WebMvcTest(controllers = ReservaController.class)
+
+@org.springframework.security.test.context.support.WithMockUser
 class ReservasWebTest {
 
     @Autowired
@@ -128,7 +131,7 @@ class ReservasWebTest {
 
     @Test
     void criarComFormularioInvalidoReRenderizaSemChamarOService() throws Exception {
-        mockMvc.perform(post("/reservas").param("hospedeId", "1"))
+        mockMvc.perform(post("/reservas").with(csrf()).param("hospedeId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reservas/formulario"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Campo obrigatório")));
@@ -140,7 +143,7 @@ class ReservasWebTest {
     void criarValidoRedirecionaParaDetalheDaReserva() throws Exception {
         when(reservaService.criar(any())).thenReturn(reservaMock(1L, "RES-2026-000123"));
 
-        mockMvc.perform(post("/reservas")
+        mockMvc.perform(post("/reservas").with(csrf())
                         .param("hospedeId", "1")
                         .param("quartoId", "1")
                         .param("dataCheckIn", "2026-11-01")
@@ -158,7 +161,7 @@ class ReservasWebTest {
         when(reservaService.criar(any()))
                 .thenThrow(new NegocioException("Já existe uma reserva ativa para o quarto 101 no período informado."));
 
-        mockMvc.perform(post("/reservas")
+        mockMvc.perform(post("/reservas").with(csrf())
                         .param("hospedeId", "1")
                         .param("quartoId", "1")
                         .param("dataCheckIn", "2026-11-01")
@@ -174,7 +177,7 @@ class ReservasWebTest {
 
     @Test
     void confirmarRedirecionaDeVoltaParaODetalhe() throws Exception {
-        mockMvc.perform(post("/reservas/1/confirmar"))
+        mockMvc.perform(post("/reservas/1/confirmar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/reservas/1"));
 
@@ -186,7 +189,7 @@ class ReservasWebTest {
         org.mockito.Mockito.doThrow(new NegocioException("Não é possível cancelar a reserva: o check-in já foi realizado."))
                 .when(reservaService).cancelar(1L);
 
-        mockMvc.perform(post("/reservas/1/cancelar"))
+        mockMvc.perform(post("/reservas/1/cancelar").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/reservas/1"));
 
@@ -202,7 +205,7 @@ class ReservasWebTest {
         hospedagem.setQuarto(quarto);
         when(hospedagemService.checkIn(1L)).thenReturn(hospedagem);
 
-        mockMvc.perform(post("/reservas/1/check-in"))
+        mockMvc.perform(post("/reservas/1/check-in").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/hospedagens/7"));
 
@@ -214,7 +217,7 @@ class ReservasWebTest {
         when(hospedagemService.checkIn(1L))
                 .thenThrow(new NegocioException("O quarto 101 está aguardando limpeza."));
 
-        mockMvc.perform(post("/reservas/1/check-in"))
+        mockMvc.perform(post("/reservas/1/check-in").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/reservas/1"));
 
@@ -223,7 +226,7 @@ class ReservasWebTest {
 
     @Test
     void registrarNoShowRedirecionaDeVoltaParaAReserva() throws Exception {
-        mockMvc.perform(post("/reservas/1/no-show"))
+        mockMvc.perform(post("/reservas/1/no-show").with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/reservas/1"));
 

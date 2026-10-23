@@ -84,10 +84,10 @@
             <i class="bi bi-cash-coin" aria-hidden="true"></i><span>Pagamentos</span>
             <span class="badge badge-estado-neutro ms-auto">Fase 5</span>
         </span>
-        <span class="sidebar-item-indisponivel" aria-disabled="true" title="Disponível na Fase 5">
+        <a th:href="@{/manutencoes}" th:classappend="${ativo} == 'manutencao' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'manutencao' ? 'page' : null">
             <i class="bi bi-tools" aria-hidden="true"></i><span>Manutenção</span>
-            <span class="badge badge-estado-neutro ms-auto">Fase 5</span>
-        </span>
+        </a>
         <span class="sidebar-item-indisponivel" aria-disabled="true" title="Disponível na Fase 6">
             <i class="bi bi-clipboard-data" aria-hidden="true"></i><span>Relatórios</span>
             <span class="badge badge-estado-neutro ms-auto">Fase 6</span>
@@ -151,6 +151,22 @@
                         (estado.name() == 'ENCERRADA' ? 'badge-estado-info' : 'badge-estado-neutro')}"
       class="badge" th:classappend="${classe}"
       th:text="${estado}">EM_ANDAMENTO</span>
+
+<!-- Badge do estado da ordem de manutenção -->
+<span th:fragment="badge-estado-manutencao(estado)"
+      th:with="classe=${estado.name() == 'ABERTA' ? 'badge-estado-atencao' :
+                        (estado.name() == 'EM_ANDAMENTO' ? 'badge-estado-ocupado' :
+                        (estado.name() == 'CONCLUIDA' ? 'badge-estado-ok' : 'badge-estado-neutro'))}"
+      class="badge" th:classappend="${classe}"
+      th:text="${estado}">ABERTA</span>
+
+<!-- Badge da prioridade da manutenção -->
+<span th:fragment="badge-prioridade-manutencao(prioridade)"
+      th:with="classe=${prioridade.name() == 'CRITICA' ? 'badge-estado-erro' :
+                        (prioridade.name() == 'ALTA' ? 'badge-estado-atencao' :
+                        (prioridade.name() == 'MEDIA' ? 'badge-estado-info' : 'badge-estado-neutro'))}"
+      class="badge" th:classappend="${classe}"
+      th:text="${prioridade}">MEDIA</span>
 
 <!-- Badge do estado do pagamento -->
 <span th:fragment="badge-estado-pagamento(estado)"

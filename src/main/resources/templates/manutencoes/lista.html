@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head(${titulo})}"></head>
+<body>
+<a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
+<div class="app-wrapper">
+
+    <aside th:replace="~{layout/fragments :: sidebar('manutencao')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{layout/fragments :: topbar}"></header>
+
+        <main class="app-content" id="conteudoPrincipal">
+            <div th:replace="~{layout/fragments :: mensagens}"></div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                <h1 class="h3 page-title mb-0" th:text="${titulo}">Manutenção</h1>
+                <a class="btn btn-primary" th:href="@{/manutencoes/novo}">
+                    <i class="bi bi-plus-lg me-1"></i>Nova ordem
+                </a>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body py-3">
+                    <form method="get" th:action="@{/manutencoes}" class="row g-2 align-items-end">
+                        <div class="col-6 col-md-3">
+                            <label for="f-estado" class="form-label small text-secondary mb-1">Estado</label>
+                            <select class="form-select form-select-sm" id="f-estado" name="estado">
+                                <option value="">Todos</option>
+                                <option th:each="e : ${estados}" th:value="${e}" th:text="${e}"
+                                        th:selected="${filtroEstado == e}">ABERTA</option>
+                            </select>
+                        </div>
+                        <div class="col-4 col-md-2 d-grid gap-1">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-search me-1"></i>Filtrar
+                            </button>
+                            <a class="btn btn-sm btn-link py-0" th:href="@{/manutencoes}">Limpar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div th:if="${#lists.isEmpty(pagina.content)}" class="py-2">
+                        <div th:replace="~{layout/fragments :: estado-vazio('bi-tools', 'Nenhuma ordem de manutenção encontrada.')}"></div>
+                        <div class="text-center pb-4">
+                            <a class="btn btn-primary" th:href="@{/manutencoes/novo}">Abrir a primeira</a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" th:unless="${#lists.isEmpty(pagina.content)}">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Quarto</th>
+                                <th>Título</th>
+                                <th>Prioridade</th>
+                                <th>Estado</th>
+                                <th>Aberta em</th>
+                                <th style="width: 1%">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="ordem : ${pagina.content}">
+                                <td>
+                                    <span class="fw-semibold" th:text="${ordem.quartoNumero}">101</span>
+                                    <span class="badge badge-estado-erro ms-1"
+                                          th:if="${ordem.interditouQuarto}">interditou</span>
+                                </td>
+                                <td>
+                                    <a class="text-decoration-none"
+                                       th:href="@{'/manutencoes/' + ${ordem.id}}"
+                                       th:text="${ordem.titulo}">Ar condicionado vazando</a>
+                                </td>
+                                <td>
+                                    <span th:replace="~{layout/fragments :: badge-prioridade-manutencao(${ordem.prioridade})}">MEDIA</span>
+                                </td>
+                                <td>
+                                    <span th:replace="~{layout/fragments :: badge-estado-manutencao(${ordem.estado})}">ABERTA</span>
+                                </td>
+                                <td class="text-secondary"
+                                    th:text="${#temporals.format(ordem.abertaEm, 'dd/MM/yyyy HH:mm')}">23/10/2026 14:00</td>
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a class="btn btn-sm btn-outline-secondary" title="Detalhes"
+                                           th:href="@{'/manutencoes/' + ${ordem.id}}">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2"
+                         th:if="${!#lists.isEmpty(pagina.content)}">
+                        <span class="small text-secondary">
+                            <span th:text="${pagina.numberOfElements}">15</span> registro(s) nesta página ·
+                            total de <span th:text="${pagina.totalElements}">0</span>
+                        </span>
+                        <span th:replace="~{layout/fragments :: paginacao(${pagina}, @{/manutencoes}, ${queryString})}"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

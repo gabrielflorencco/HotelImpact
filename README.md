@@ -93,5 +93,9 @@ encerramento excepcional, que marca a hospedagem como cancelada.
 
 O catálogo de produtos e serviços tem gestão própria (nome único, preço,
 controle de estoque apenas para produtos, alerta de estoque baixo e
-exclusão bloqueada por histórico de consumos). Manutenção e relatórios
-serão entregues nas próximas fases.
+exclusão bloqueada por histórico de consumos). As ordens de manutenção
+cobrem o ciclo completo: abertura proibida com hospedagem em andamento ou
+outra ordem ativa, prioridade CRÍTICA interdita o quarto, execução põe o
+quarto em manutenção e a conclusão/cancelamento restauram o estado apenas
+quando foi causado pela própria ordem. Relatórios serão entregues na
+próxima fase.

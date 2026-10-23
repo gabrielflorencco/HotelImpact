@@ -3,6 +3,7 @@ package com.gabrielflorencco.hotelimpact.integration;
 import com.gabrielflorencco.hotelimpact.config.DataSeeder;
 import com.gabrielflorencco.hotelimpact.dto.CategoriaForm;
 import com.gabrielflorencco.hotelimpact.dto.HospedeForm;
+import com.gabrielflorencco.hotelimpact.dto.PagamentoForm;
 import com.gabrielflorencco.hotelimpact.dto.QuartoForm;
 import com.gabrielflorencco.hotelimpact.dto.ReservaForm;
 import com.gabrielflorencco.hotelimpact.entity.CategoriaQuarto;
@@ -13,12 +14,14 @@ import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoHospedagem;
 import com.gabrielflorencco.hotelimpact.enums.EstadoQuarto;
 import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
+import com.gabrielflorencco.hotelimpact.enums.FormaPagamento;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.exception.RegistroNaoEncontradoException;
 import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
 import com.gabrielflorencco.hotelimpact.service.CategoriaQuartoService;
 import com.gabrielflorencco.hotelimpact.service.HospedeService;
 import com.gabrielflorencco.hotelimpact.service.HospedagemService;
+import com.gabrielflorencco.hotelimpact.service.PagamentoService;
 import com.gabrielflorencco.hotelimpact.service.QuartoService;
 import com.gabrielflorencco.hotelimpact.service.ReservaService;
 import com.gabrielflorencco.hotelimpact.support.AbstractIntegrationTest;
@@ -51,6 +54,9 @@ class HospedagensIntegracaoTest extends AbstractIntegrationTest {
 
     @Autowired
     private QuartoService quartoService;
+
+    @Autowired
+    private PagamentoService pagamentoService;
 
     @Autowired
     private CategoriaQuartoService categoriaService;
@@ -170,6 +176,7 @@ class HospedagensIntegracaoTest extends AbstractIntegrationTest {
         Cenario cenario = novoCenario("Check-out", "988");
         Reserva reserva = reservaService.criar(reservaForm(cenario, LocalDate.now(), LocalDate.now().plusDays(2)));
         Hospedagem hospedagem = hospedagemService.checkIn(reserva.getId());
+        pagarConta(hospedagem.getId());
 
         hospedagemService.checkOut(hospedagem.getId());
 
@@ -190,6 +197,7 @@ class HospedagensIntegracaoTest extends AbstractIntegrationTest {
         Cenario cenario = novoCenario("Limpeza Concluída", "989");
         Reserva reserva = reservaService.criar(reservaForm(cenario, LocalDate.now(), LocalDate.now().plusDays(2)));
         Hospedagem hospedagem = hospedagemService.checkIn(reserva.getId());
+        pagarConta(hospedagem.getId());
         hospedagemService.checkOut(hospedagem.getId());
 
         quartoService.concluirLimpeza(cenario.quarto().getId());
@@ -267,6 +275,7 @@ class HospedagensIntegracaoTest extends AbstractIntegrationTest {
         Reserva reservaEncerrada = reservaService.criar(
                 reservaForm(encerrada, LocalDate.now(), LocalDate.now().plusDays(2)));
         Hospedagem hospedagemEncerrada = hospedagemService.checkIn(reservaEncerrada.getId());
+        pagarConta(hospedagemEncerrada.getId());
         hospedagemService.checkOut(hospedagemEncerrada.getId());
 
         assertThat(hospedagemService.buscar(EstadoHospedagem.EM_ANDAMENTO, PageRequest.of(0, 50)).getContent())
@@ -311,6 +320,14 @@ class HospedagensIntegracaoTest extends AbstractIntegrationTest {
         Hospede hospede = hospedeService.salvar(hospedeForm);
 
         return new Cenario(categoria, quarto, hospede);
+    }
+
+    /** Quita a conta padrão (2 noites × R$ 200) para permitir check-out normal. */
+    private void pagarConta(Long hospedagemId) {
+        PagamentoForm pagamento = new PagamentoForm();
+        pagamento.setValor(new BigDecimal("400.00"));
+        pagamento.setForma(FormaPagamento.DINHEIRO);
+        pagamentoService.registrar(hospedagemId, pagamento);
     }
 
     private ReservaForm reservaForm(Cenario cenario, LocalDate checkIn, LocalDate checkOut) {

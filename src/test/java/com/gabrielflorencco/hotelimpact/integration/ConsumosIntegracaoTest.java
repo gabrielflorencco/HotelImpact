@@ -4,6 +4,7 @@ import com.gabrielflorencco.hotelimpact.config.DataSeeder;
 import com.gabrielflorencco.hotelimpact.dto.CategoriaForm;
 import com.gabrielflorencco.hotelimpact.dto.ConsumoForm;
 import com.gabrielflorencco.hotelimpact.dto.HospedeForm;
+import com.gabrielflorencco.hotelimpact.dto.PagamentoForm;
 import com.gabrielflorencco.hotelimpact.dto.QuartoForm;
 import com.gabrielflorencco.hotelimpact.dto.ReservaForm;
 import com.gabrielflorencco.hotelimpact.entity.CategoriaQuarto;
@@ -13,6 +14,7 @@ import com.gabrielflorencco.hotelimpact.entity.ItemCatalogo;
 import com.gabrielflorencco.hotelimpact.entity.Quarto;
 import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoConsumo;
+import com.gabrielflorencco.hotelimpact.enums.FormaPagamento;
 import com.gabrielflorencco.hotelimpact.enums.TipoItem;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.exception.RegistroNaoEncontradoException;
@@ -21,6 +23,7 @@ import com.gabrielflorencco.hotelimpact.service.CategoriaQuartoService;
 import com.gabrielflorencco.hotelimpact.service.ConsumoService;
 import com.gabrielflorencco.hotelimpact.service.HospedeService;
 import com.gabrielflorencco.hotelimpact.service.HospedagemService;
+import com.gabrielflorencco.hotelimpact.service.PagamentoService;
 import com.gabrielflorencco.hotelimpact.service.QuartoService;
 import com.gabrielflorencco.hotelimpact.service.ReservaService;
 import com.gabrielflorencco.hotelimpact.support.AbstractIntegrationTest;
@@ -63,6 +66,9 @@ class ConsumosIntegracaoTest extends AbstractIntegrationTest {
 
     @Autowired
     private ItemCatalogoRepository itens;
+
+    @Autowired
+    private PagamentoService pagamentoService;
 
     // ---- Lançamento -----------------------------------------------------------------
 
@@ -160,6 +166,7 @@ class ConsumosIntegracaoTest extends AbstractIntegrationTest {
         Cenario cenario = novoCenario("Consumo Encerrada", "1000");
         ItemCatalogo agua = novoItem("Água Teste 1000", TipoItem.PRODUTO, "5.00", false, 0);
         Hospedagem hospedagem = checkInRealizado(cenario);
+        pagarConta(hospedagem.getId(), "400.00");
         hospedagemService.checkOut(hospedagem.getId());
 
         ConsumoForm form = new ConsumoForm();
@@ -227,6 +234,7 @@ class ConsumosIntegracaoTest extends AbstractIntegrationTest {
         form.setItemId(agua.getId());
         form.setQuantidade(1);
         var lancado = consumoService.lancar(hospedagem.getId(), form);
+        pagarConta(hospedagem.getId(), "405.00");
         hospedagemService.checkOut(hospedagem.getId());
 
         assertThatThrownBy(() -> consumoService.cancelar(hospedagem.getId(), lancado.getId()))
@@ -286,6 +294,14 @@ class ConsumosIntegracaoTest extends AbstractIntegrationTest {
         Hospede hospede = hospedeService.salvar(hospedeForm);
 
         return new Cenario(categoria, quarto, hospede);
+    }
+
+    /** Quita a conta para permitir check-out normal (reserva 400 + consumos ativos). */
+    private void pagarConta(Long hospedagemId, String valor) {
+        PagamentoForm pagamento = new PagamentoForm();
+        pagamento.setValor(new BigDecimal(valor));
+        pagamento.setForma(FormaPagamento.DINHEIRO);
+        pagamentoService.registrar(hospedagemId, pagamento);
     }
 
     private Hospedagem checkInRealizado(Cenario cenario) {

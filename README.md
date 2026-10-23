@@ -83,8 +83,11 @@ O ciclo operacional completo está disponível: criação de reservas com
 verificação de disponibilidade, capacidade efetiva e total calculado no
 servidor; confirmação, cancelamento e registro de no-show; check-in a partir
 de reservas elegíveis; check-out que conclui a reserva e envia o quarto para
-limpeza; conclusão de limpeza que devolve o quarto ao estado disponível; e
+limpeza; conclusão de limpeza que devolve o quarto ao estado disponível;
 lançamento/cancelamento de consumos na conta da hospedagem, com preço
-histórico, baixa de estoque e estorno lógico que restitui o estoque.
-Catálogo de itens, pagamentos, manutenção e relatórios serão entregues nas
-próximas fases.
+histórico, baixa de estoque e estorno lógico que restitui o estoque; e
+registro/estorno de pagamentos com saldo devedor calculado no servidor
+(reserva + consumos ativos − pagamentos confirmados). O check-out exige a
+conta quitada; com saldo pendente, é preciso registrar a justificativa do
+encerramento excepcional, que marca a hospedagem como cancelada.
+Catálogo de itens, manutenção e relatórios serão entregues nas próximas fases.

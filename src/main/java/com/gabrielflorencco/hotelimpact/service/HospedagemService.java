@@ -40,6 +40,7 @@ public class HospedagemService {
     private final HospedagemRepository hospedagens;
     private final ReservaRepository reservas;
     private final QuartoRepository quartos;
+    private final PagamentoService pagamentoService;
 
     @Transactional(readOnly = true)
     public Page<Hospedagem> buscar(EstadoHospedagem estado, Pageable pageable) {
@@ -84,16 +85,38 @@ public class HospedagemService {
         return hospedagens.save(hospedagem);
     }
 
-    /** Check-out: encerra a hospedagem, conclui a reserva e envia o quarto para limpeza. */
+    /** Check-out com conta quitada: encerra normalmente, sem justificativa. */
     @Transactional
     public void checkOut(Long hospedagemId) {
+        checkOut(hospedagemId, null);
+    }
+
+    /**
+     * Check-out: conclui a reserva e envia o quarto para limpeza. Com a conta
+     * quitada (reserva + consumos ativos − pagamentos confirmados), a
+     * hospedagem é ENCERRADA normalmente. Com saldo pendente, exige
+     * justificativa e caracteriza o encerramento excepcional: a hospedagem
+     * fica CANCELADA com o motivo registrado.
+     */
+    @Transactional
+    public void checkOut(Long hospedagemId, String motivoExcecao) {
         Hospedagem hospedagem = buscarPorId(hospedagemId);
         if (hospedagem.getEstado() != EstadoHospedagem.EM_ANDAMENTO) {
             throw new NegocioException("Somente hospedagens em andamento podem ser encerradas.");
         }
 
+        java.math.BigDecimal saldo = pagamentoService.saldoDevedor(hospedagemId);
+        if (saldo.signum() > 0) {
+            if (motivoExcecao == null || motivoExcecao.isBlank()) {
+                throw new NegocioException("A conta possui saldo pendente de R$ "
+                        + saldo.toPlainString() + ". Informe a justificativa do encerramento excepcional.");
+            }
+            hospedagem.setMotivoExcecaoEncerramento(motivoExcecao.trim());
+            hospedagem.setEstado(EstadoHospedagem.CANCELADA);
+        } else {
+            hospedagem.setEstado(EstadoHospedagem.ENCERRADA);
+        }
         hospedagem.setCheckOutReal(LocalDateTime.now());
-        hospedagem.setEstado(EstadoHospedagem.ENCERRADA);
 
         Reserva reserva = hospedagem.getReserva();
         if (reserva.isAtiva()) {

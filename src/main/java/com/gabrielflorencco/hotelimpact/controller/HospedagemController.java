@@ -4,12 +4,16 @@ import com.gabrielflorencco.hotelimpact.dto.ConsumoForm;
 import com.gabrielflorencco.hotelimpact.dto.ConsumoResumoView;
 import com.gabrielflorencco.hotelimpact.dto.HospedagemDetalheView;
 import com.gabrielflorencco.hotelimpact.dto.HospedagemResumoView;
+import com.gabrielflorencco.hotelimpact.dto.PagamentoForm;
+import com.gabrielflorencco.hotelimpact.dto.PagamentoResumoView;
 import com.gabrielflorencco.hotelimpact.entity.Hospedagem;
 import com.gabrielflorencco.hotelimpact.enums.EstadoHospedagem;
+import com.gabrielflorencco.hotelimpact.enums.FormaPagamento;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.repository.ItemCatalogoRepository;
 import com.gabrielflorencco.hotelimpact.service.ConsumoService;
 import com.gabrielflorencco.hotelimpact.service.HospedagemService;
+import com.gabrielflorencco.hotelimpact.service.PagamentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,8 +33,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 /**
  * Navegação e operações de hospedagens. O check-in parte sempre de uma
  * reserva (ver ReservaController); aqui ficam a listagem, o detalhe — que
- * traz a conta com os consumos lançados —, o check-out e o lançamento e
- * cancelamento de consumos.
+ * traz a conta com consumos e pagamentos —, o check-out (normal ou
+ * excepcional, quando há saldo pendente), o lançamento/cancelamento de
+ * consumos e o registro/estorno de pagamentos.
  */
 @Controller
 @RequestMapping("/hospedagens")
@@ -41,6 +46,7 @@ public class HospedagemController {
 
     private final HospedagemService service;
     private final ConsumoService consumoService;
+    private final PagamentoService pagamentoService;
     private final ItemCatalogoRepository itens;
 
     @GetMapping
@@ -66,9 +72,11 @@ public class HospedagemController {
     }
 
     @PostMapping("/{id}/check-out")
-    public String checkOut(@PathVariable Long id, RedirectAttributes redirect) {
+    public String checkOut(@PathVariable Long id,
+                           @RequestParam(required = false) String motivoExcecao,
+                           RedirectAttributes redirect) {
         try {
-            service.checkOut(id);
+            service.checkOut(id, motivoExcecao);
             redirect.addAttribute("sucesso", "Check-out realizado. Quarto enviado para limpeza.");
         } catch (NegocioException ex) {
             redirect.addAttribute("erro", ex.getMessage());
@@ -106,7 +114,37 @@ public class HospedagemController {
         return "redirect:/hospedagens/" + id;
     }
 
-    /** Monta o modelo do detalhe: hospedagem, conta de consumos e itens disponíveis. */
+    @PostMapping("/{id}/pagamentos")
+    public String registrarPagamento(@PathVariable Long id, @Valid @ModelAttribute("pagamentoForm") PagamentoForm form,
+                                     BindingResult result, Model model, RedirectAttributes redirect) {
+        if (result.hasErrors()) {
+            prepararDetalhe(service.buscarPorId(id), model);
+            return "hospedagens/detalhe";
+        }
+        try {
+            pagamentoService.registrar(id, form);
+            redirect.addAttribute("sucesso", "Pagamento registrado na conta da hospedagem.");
+        } catch (NegocioException ex) {
+            prepararDetalhe(service.buscarPorId(id), model);
+            model.addAttribute("erroPagamento", ex.getMessage());
+            return "hospedagens/detalhe";
+        }
+        return "redirect:/hospedagens/" + id;
+    }
+
+    @PostMapping("/{id}/pagamentos/{pagamentoId}/estornar")
+    public String estornarPagamento(@PathVariable Long id, @PathVariable Long pagamentoId,
+                                    RedirectAttributes redirect) {
+        try {
+            pagamentoService.estornar(id, pagamentoId);
+            redirect.addAttribute("sucesso", "Pagamento estornado. O valor deixou de contar como recebido.");
+        } catch (NegocioException ex) {
+            redirect.addAttribute("erro", ex.getMessage());
+        }
+        return "redirect:/hospedagens/" + id;
+    }
+
+    /** Monta o modelo do detalhe: hospedagem, conta (consumos e pagamentos) e saldo. */
     private void prepararDetalhe(Hospedagem hospedagem, Model model) {
         model.addAttribute("hospedagem", HospedagemDetalheView.de(hospedagem));
         model.addAttribute("consumos", consumoService.listarPorHospedagem(hospedagem.getId()).stream()
@@ -115,8 +153,21 @@ public class HospedagemController {
         model.addAttribute("itensAtivos", itens.findAllByAtivoTrueOrderByNomeAsc());
         model.addAttribute("totalConsumos", consumoService.totalAtivos(hospedagem.getId()));
         model.addAttribute("podeLancar", hospedagem.getEstado() == EstadoHospedagem.EM_ANDAMENTO);
+
+        model.addAttribute("pagamentos", pagamentoService.listarPorHospedagem(hospedagem.getId()).stream()
+                .map(PagamentoResumoView::de)
+                .toList());
+        model.addAttribute("formas", FormaPagamento.values());
+        model.addAttribute("totalPago", pagamentoService.totalConfirmados(hospedagem.getId()));
+        model.addAttribute("totalConta", pagamentoService.totalConta(hospedagem.getId()));
+        model.addAttribute("saldo", pagamentoService.saldoDevedor(hospedagem.getId()));
+        model.addAttribute("podePagar", hospedagem.getEstado() != EstadoHospedagem.CANCELADA);
+
         if (!model.containsAttribute("consumoForm")) {
             model.addAttribute("consumoForm", new ConsumoForm());
+        }
+        if (!model.containsAttribute("pagamentoForm")) {
+            model.addAttribute("pagamentoForm", new PagamentoForm());
         }
         model.addAttribute("titulo", "Detalhes da hospedagem");
     }

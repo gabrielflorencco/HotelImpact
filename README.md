@@ -90,4 +90,8 @@ registro/estorno de pagamentos com saldo devedor calculado no servidor
 (reserva + consumos ativos − pagamentos confirmados). O check-out exige a
 conta quitada; com saldo pendente, é preciso registrar a justificativa do
 encerramento excepcional, que marca a hospedagem como cancelada.
-Catálogo de itens, manutenção e relatórios serão entregues nas próximas fases.
+
+O catálogo de produtos e serviços tem gestão própria (nome único, preço,
+controle de estoque apenas para produtos, alerta de estoque baixo e
+exclusão bloqueada por histórico de consumos). Manutenção e relatórios
+serão entregues nas próximas fases.

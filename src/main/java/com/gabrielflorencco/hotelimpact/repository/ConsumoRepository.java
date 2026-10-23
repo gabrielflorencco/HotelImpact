@@ -22,4 +22,7 @@ public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
     Optional<Consumo> findByIdAndHospedagemId(Long id, Long hospedagemId);
 
     List<Consumo> findByHospedagemIdAndEstado(Long hospedagemId, EstadoConsumo estado);
+
+    /** Itens com histórico de lançamento não podem ser excluídos do catálogo. */
+    boolean existsByItemId(Long itemId);
 }

@@ -78,4 +78,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     /** Contagem por prefixo, usada na geração do código sequencial (RES-ANO-NNNNNN). */
     long countByCodigoStartingWith(String prefixo);
+
+    /** Chegadas previstas para a data: reservas ativas com check-in naquele dia. */
+    // Sufixo Equals necessário: o "In" de DataCheckIn seria parseado como operador de coleção.
+    long countByEstadoInAndDataCheckInEquals(List<EstadoReserva> estados, LocalDate dataCheckIn);
+
+    /** Saídas previstas para a data: reservas ativas com check-out naquele dia. */
+    // Sufixo Equals pelo mesmo motivo do método acima.
+    long countByEstadoInAndDataCheckOutEquals(List<EstadoReserva> estados, LocalDate dataCheckOut);
 }

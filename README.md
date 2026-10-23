@@ -97,5 +97,9 @@ exclusão bloqueada por histórico de consumos). As ordens de manutenção
 cobrem o ciclo completo: abertura proibida com hospedagem em andamento ou
 outra ordem ativa, prioridade CRÍTICA interdita o quarto, execução põe o
 quarto em manutenção e a conclusão/cancelamento restauram o estado apenas
-quando foi causado pela própria ordem. Relatórios serão entregues na
-próxima fase.
+quando foi causado pela própria ordem.
+
+O painel inicial (Fase 6) exibe indicadores reais calculados no banco:
+ocupação atual, quartos por estado, chegadas e saídas previstas para o
+dia, receita confirmada do dia e alerta de itens com estoque baixo.
+Páginas de relatórios históricos serão avaliadas como evolução futura.

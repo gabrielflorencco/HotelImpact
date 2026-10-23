@@ -119,6 +119,17 @@ public class QuartoController {
         return "redirect:/quartos";
     }
 
+    @PostMapping("/{id}/concluir-limpeza")
+    public String concluirLimpeza(@PathVariable Long id, RedirectAttributes redirect) {
+        try {
+            service.concluirLimpeza(id);
+            redirect.addAttribute("sucesso", "Limpeza concluída. Quarto disponível novamente.");
+        } catch (NegocioException ex) {
+            redirect.addAttribute("erro", ex.getMessage());
+        }
+        return "redirect:/quartos";
+    }
+
     @PostMapping("/{id}/alternar-ativo")
     public String alternarAtivo(@PathVariable Long id, RedirectAttributes redirect) {
         try {

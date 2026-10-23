@@ -3,6 +3,7 @@ package com.gabrielflorencco.hotelimpact.controller;
 import com.gabrielflorencco.hotelimpact.dto.ReservaDetalheView;
 import com.gabrielflorencco.hotelimpact.dto.ReservaForm;
 import com.gabrielflorencco.hotelimpact.dto.ReservaResumoView;
+import com.gabrielflorencco.hotelimpact.entity.Hospedagem;
 import com.gabrielflorencco.hotelimpact.entity.Quarto;
 import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoQuarto;
@@ -10,6 +11,7 @@ import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.repository.HospedeRepository;
 import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
+import com.gabrielflorencco.hotelimpact.service.HospedagemService;
 import com.gabrielflorencco.hotelimpact.service.ReservaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,7 @@ public class ReservaController {
     private static final int REGISTROS_POR_PAGINA = 15;
 
     private final ReservaService service;
+    private final HospedagemService hospedagemService;
     private final HospedeRepository hospedes;
     private final QuartoRepository quartos;
 
@@ -87,9 +90,39 @@ public class ReservaController {
 
     @GetMapping("/{id}")
     public String detalhe(@PathVariable Long id, Model model) {
-        model.addAttribute("reserva", ReservaDetalheView.de(service.buscarPorId(id)));
+        Reserva reserva = service.buscarPorId(id);
+        model.addAttribute("reserva", ReservaDetalheView.de(reserva));
+        model.addAttribute("hospedagemId",
+                hospedagemService.buscarPorReserva(id).map(Hospedagem::getId).orElse(null));
+        model.addAttribute("podeCheckIn", hospedagemService.podeFazerCheckIn(reserva));
+        model.addAttribute("podeNoShow", service.podeRegistrarNoShow(reserva));
         model.addAttribute("titulo", "Detalhes da reserva");
         return "reservas/detalhe";
+    }
+
+    /** Check-in: cria a hospedagem e leva o usuário aos seus detalhes. */
+    @PostMapping("/{id}/check-in")
+    public String checkIn(@PathVariable Long id, RedirectAttributes redirect) {
+        try {
+            Hospedagem hospedagem = hospedagemService.checkIn(id);
+            redirect.addAttribute("sucesso", "Check-in realizado. Quarto "
+                    + hospedagem.getQuarto().getNumero() + " ocupado.");
+            return "redirect:/hospedagens/" + hospedagem.getId();
+        } catch (NegocioException ex) {
+            redirect.addAttribute("erro", ex.getMessage());
+            return "redirect:/reservas/" + id;
+        }
+    }
+
+    @PostMapping("/{id}/no-show")
+    public String registrarNoShow(@PathVariable Long id, RedirectAttributes redirect) {
+        try {
+            service.registrarNoShow(id);
+            redirect.addAttribute("sucesso", "No-show registrado. O período voltou a ficar disponível.");
+        } catch (NegocioException ex) {
+            redirect.addAttribute("erro", ex.getMessage());
+        }
+        return "redirect:/reservas/" + id;
     }
 
     @PostMapping("/{id}/confirmar")

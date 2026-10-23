@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{layout/fragments :: head(${titulo})}"></head>
+<body>
+<a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
+<div class="app-wrapper">
+
+    <aside th:replace="~{layout/fragments :: sidebar('hospedagens')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{layout/fragments :: topbar}"></header>
+
+        <main class="app-content" id="conteudoPrincipal">
+            <div th:replace="~{layout/fragments :: mensagens}"></div>
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/hospedagens}" title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="h3 page-title mb-0" th:text="${titulo}">Detalhes da hospedagem</h1>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                                <i class="bi bi-key display-5 text-secondary"></i>
+                                <div>
+                                    <h2 class="h4 mb-1" th:text="${hospedagem.reservaCodigo}">RES-2026-000123</h2>
+                                    <span th:replace="~{layout/fragments :: badge-estado-hospedagem(${hospedagem.estado})}">EM_ANDAMENTO</span>
+                                </div>
+                            </div>
+
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Hóspede</dt>
+                                <dd class="col-sm-8">
+                                    <a class="text-decoration-none" th:href="@{'/hospedes/' + ${hospedagem.hospedeId}}"
+                                       th:text="${hospedagem.hospedeNome}">Ana Souza</a>
+                                </dd>
+
+                                <dt class="col-sm-4">Quarto</dt>
+                                <dd class="col-sm-8" th:text="${hospedagem.quartoNumero}">101</dd>
+
+                                <dt class="col-sm-4">Período previsto</dt>
+                                <dd class="col-sm-8" th:text="${hospedagem.periodoPrevisto}">01/11/2026 a 03/11/2026</dd>
+
+                                <dt class="col-sm-4">Check-in real</dt>
+                                <dd class="col-sm-8" th:text="${hospedagem.checkInReal} ?: '—'">01/11/2026 14:00</dd>
+
+                                <dt class="col-sm-4">Check-out real</dt>
+                                <dd class="col-sm-8" th:text="${hospedagem.checkOutReal} ?: '—'">—</dd>
+
+                                <dt class="col-sm-4">Total da reserva</dt>
+                                <dd class="col-sm-8"><span th:replace="~{layout/fragments :: dinheiro(${hospedagem.valorTotalReserva})}">R$ 360,00</span></dd>
+
+                                <dt class="col-sm-4">Observações</dt>
+                                <dd class="col-sm-8" th:text="${hospedagem.observacoes} ?: '—'">—</dd>
+                            </dl>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2 flex-wrap">
+                            <form th:if="${hospedagem.estado.name() == 'EM_ANDAMENTO'}" method="post"
+                                  th:action="@{'/hospedagens/' + ${hospedagem.id} + '/check-out'}"
+                                  th:attr="data-confirmar='Realizar o check-out da hospedagem ' + ${hospedagem.reservaCodigo} + '? O quarto será enviado para limpeza.'">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Realizar check-out
+                                </button>
+                            </form>
+                            <a class="btn btn-outline-secondary btn-sm" th:href="@{'/reservas/' + ${hospedagem.reservaId}}">
+                                <i class="bi bi-calendar-check me-1"></i>Ver reserva
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm" th:href="@{/hospedagens}">
+                                <i class="bi bi-list me-1"></i>Voltar à listagem
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

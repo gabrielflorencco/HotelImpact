@@ -124,6 +124,17 @@ public class QuartoService {
         quartos.save(quarto);
     }
 
+    /** Conclui a limpeza pós-check-out: o quarto volta a ficar disponível. */
+    @Transactional
+    public void concluirLimpeza(Long id) {
+        Quarto quarto = buscarPorId(id);
+        if (quarto.getEstado() != EstadoQuarto.LIMPEZA) {
+            throw new NegocioException("Somente quartos aguardando limpeza podem ser liberados.");
+        }
+        quarto.setEstado(EstadoQuarto.DISPONIVEL);
+        quartos.save(quarto);
+    }
+
     private void validarNumeroUnico(String numero, Long id) {
         boolean duplicado = id == null
                 ? quartos.existsByNumero(numero)

@@ -109,6 +109,13 @@
                                                 <i class="bi bi-unlock"></i>
                                             </button>
                                         </form>
+                                        <form th:if="${quarto.estado.name() == 'LIMPEZA'}"
+                                              th:action="@{'/quartos/' + ${quarto.id} + '/concluir-limpeza'}" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    title="Concluir limpeza (quarto volta a ficar disponível)">
+                                                <i class="bi bi-stars"></i>
+                                            </button>
+                                        </form>
                                         <form th:action="@{'/quartos/' + ${quarto.id} + '/alternar-ativo'}" method="post"
                                               th:attr="data-confirmar=${quarto.ativo} ? 'Desativar o quarto ' + ${quarto.numero} + '?' : null">
                                             <button th:if="${quarto.ativo}" type="submit"

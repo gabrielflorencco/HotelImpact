@@ -9,6 +9,7 @@ import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.exception.RegistroNaoEncontradoException;
 import com.gabrielflorencco.hotelimpact.repository.HospedeRepository;
+import com.gabrielflorencco.hotelimpact.repository.HospedagemRepository;
 import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
 import com.gabrielflorencco.hotelimpact.repository.ReservaRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class ReservaService {
     private final ReservaRepository reservas;
     private final HospedeRepository hospedes;
     private final QuartoRepository quartos;
+    private final HospedagemRepository hospedagens;
 
     @Transactional(readOnly = true)
     public Page<Reserva> buscar(EstadoReserva estado, Pageable pageable) {
@@ -109,8 +111,40 @@ public class ReservaService {
         if (!reserva.isAtiva()) {
             throw new NegocioException("Somente reservas pendentes ou confirmadas podem ser canceladas.");
         }
+        if (hospedagens.existsByReservaId(id)) {
+            throw new NegocioException("Não é possível cancelar a reserva: o check-in já foi realizado.");
+        }
         reserva.setEstado(EstadoReserva.CANCELADA);
         reservas.save(reserva);
+    }
+
+    /**
+     * No-show: registra que o hóspede não apareceu. A reserva ativa cuja data
+     * de check-in já passou (e sem hospedagem) deixa de bloquear o período.
+     */
+    @Transactional
+    public void registrarNoShow(Long id) {
+        Reserva reserva = buscarPorId(id);
+        if (!podeRegistrarNoShow(reserva)) {
+            if (hospedagens.existsByReservaId(id)) {
+                throw new NegocioException("Não é possível registrar no-show: a reserva possui check-in.");
+            }
+            if (reserva.isAtiva()) {
+                throw new NegocioException(
+                        "No-show só pode ser registrado após a data prevista de check-in (" + reserva.getDataCheckIn() + ").");
+            }
+            throw new NegocioException("Somente reservas pendentes ou confirmadas podem ser registradas como no-show.");
+        }
+        reserva.setEstado(EstadoReserva.NO_SHOW);
+        reservas.save(reserva);
+    }
+
+    /** Elegibilidade de no-show para exibição em telas: ativa, sem check-in e data já passada. */
+    @Transactional(readOnly = true)
+    public boolean podeRegistrarNoShow(Reserva reserva) {
+        return reserva.isAtiva()
+                && LocalDate.now().isAfter(reserva.getDataCheckIn())
+                && !hospedagens.existsByReservaId(reserva.getId());
     }
 
     /** Períodos são semiabertos: o check-out deve ser posterior ao check-in. */

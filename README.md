@@ -48,6 +48,16 @@ Os testes de integração usam Testcontainers e exigem o daemon Docker ativo:
 ./mvnw test
 ```
 
+A suíte cobre validação de formulários (unitário), regras de negócio contra
+PostgreSQL real (integração) e a camada web com MockMvc (Post/Redirect/Get,
+validação, renderização e páginas de erro).
+
+## Integração contínua
+
+O GitHub Actions (`.github/workflows/ci.yml`) roda a suíte completa a cada
+push e pull request em `main`, com Java 21 e o Docker do runner para os
+Testcontainers.
+
 ## Estrutura
 
 ```

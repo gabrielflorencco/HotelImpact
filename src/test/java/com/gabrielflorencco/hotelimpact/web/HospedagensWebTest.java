@@ -1,0 +1,158 @@
+package com.gabrielflorencco.hotelimpact.web;
+
+import com.gabrielflorencco.hotelimpact.controller.HospedagemController;
+import com.gabrielflorencco.hotelimpact.entity.Hospede;
+import com.gabrielflorencco.hotelimpact.entity.Hospedagem;
+import com.gabrielflorencco.hotelimpact.entity.Quarto;
+import com.gabrielflorencco.hotelimpact.entity.Reserva;
+import com.gabrielflorencco.hotelimpact.enums.EstadoHospedagem;
+import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
+import com.gabrielflorencco.hotelimpact.exception.RegistroNaoEncontradoException;
+import com.gabrielflorencco.hotelimpact.service.HospedagemService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+/**
+ * Fatia web das hospedagens (MockMvc sem banco): listagem, detalhe com
+ * botão de check-out apenas para hospedagens em andamento, redirecionamento
+ * pós check-out e tratamento global de erros.
+ */
+@WebMvcTest(controllers = HospedagemController.class)
+class HospedagensWebTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private HospedagemService hospedagemService;
+
+    @Test
+    void listarRenderizaTabelaComCodigoDaReserva() throws Exception {
+        when(hospedagemService.buscar(any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO))));
+
+        mockMvc.perform(get("/hospedagens"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("hospedagens/lista"))
+                .andExpect(content().string(containsString("RES-2026-000123")))
+                .andExpect(content().string(containsString("EM_ANDAMENTO")));
+    }
+
+    @Test
+    void listarSemHospedagensExibeEstadoVazio() throws Exception {
+        when(hospedagemService.buscar(any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/hospedagens"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Nenhuma hospedagem encontrada")));
+    }
+
+    @Test
+    void detalheDeHospedagemEmAndamentoExibeBotaoDeCheckOut() throws Exception {
+        when(hospedagemService.buscarPorId(7L))
+                .thenReturn(hospedagemMock(7L, EstadoHospedagem.EM_ANDAMENTO));
+
+        mockMvc.perform(get("/hospedagens/7"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Realizar check-out")))
+                .andExpect(content().string(containsString("RES-2026-000123")));
+    }
+
+    @Test
+    void detalheDeHospedagemEncerradaNaoExibeBotaoDeCheckOut() throws Exception {
+        Hospedagem encerrada = hospedagemMock(7L, EstadoHospedagem.ENCERRADA);
+        encerrada.setCheckOutReal(LocalDateTime.now().plusHours(30));
+        when(hospedagemService.buscarPorId(7L)).thenReturn(encerrada);
+
+        mockMvc.perform(get("/hospedagens/7"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Realizar check-out"))));
+    }
+
+    @Test
+    void checkOutRedirecionaDeVoltaParaODetalhe() throws Exception {
+        mockMvc.perform(post("/hospedagens/7/check-out"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/hospedagens/7"));
+
+        verify(hospedagemService).checkOut(7L);
+    }
+
+    @Test
+    void checkOutBloqueadoPorRegraRedirecionaComErro() throws Exception {
+        org.mockito.Mockito.doThrow(new NegocioException("Somente hospedagens em andamento podem ser encerradas."))
+                .when(hospedagemService).checkOut(7L);
+
+        mockMvc.perform(post("/hospedagens/7/check-out"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/hospedagens/7"));
+
+        verify(hospedagemService).checkOut(7L);
+    }
+
+    @Test
+    void detalheDeHospedagemInexistenteRetorna404ComPaginaDeErro() throws Exception {
+        when(hospedagemService.buscarPorId(anyLong()))
+                .thenThrow(new RegistroNaoEncontradoException("Hospedagem não encontrada."));
+
+        mockMvc.perform(get("/hospedagens/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error/erro-generico"))
+                .andExpect(content().string(containsString("Hospedagem não encontrada")));
+    }
+
+    private Hospedagem hospedagemMock(Long id, EstadoHospedagem estado) {
+        Hospede hospede = new Hospede();
+        hospede.setId(10L);
+        hospede.setNome("Ana Souza");
+
+        Quarto quarto = new Quarto();
+        quarto.setId(20L);
+        quarto.setNumero("101");
+
+        Reserva reserva = new Reserva();
+        reserva.setId(30L);
+        reserva.setCodigo("RES-2026-000123");
+        reserva.setHospede(hospede);
+        reserva.setQuarto(quarto);
+        reserva.setDataCheckIn(LocalDate.now());
+        reserva.setDataCheckOut(LocalDate.now().plusDays(2));
+        reserva.setQuantidadeHospedes(2);
+        reserva.setValorDiaria(new BigDecimal("180.00"));
+        reserva.setDesconto(BigDecimal.ZERO);
+        reserva.setValorTotal(new BigDecimal("360.00"));
+        reserva.setEstado(EstadoReserva.CONFIRMADA);
+
+        Hospedagem hospedagem = new Hospedagem();
+        hospedagem.setId(id);
+        hospedagem.setReserva(reserva);
+        hospedagem.setQuarto(quarto);
+        hospedagem.setCheckInReal(LocalDateTime.now().minusHours(2));
+        hospedagem.setEstado(estado);
+        return hospedagem;
+    }
+}

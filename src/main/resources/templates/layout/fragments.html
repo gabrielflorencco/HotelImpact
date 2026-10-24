@@ -46,11 +46,6 @@
         <div class="d-flex align-items-center gap-2 text-secondary">
             <i class="bi bi-person-circle fs-5" aria-hidden="true"></i>
             <span class="d-none d-sm-inline small">Recepção</span>
-            <form th:action="@{/logout}" method="post" class="ms-1">
-                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Encerrar sessão" aria-label="Encerrar sessão">
-                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                </button>
-            </form>
         </div>
     </div>
 </header>
@@ -134,15 +129,36 @@
         </div>
     </nav>
     <footer class="sidebar-footer">
-        <span class="sidebar-brand-nome">HotelImpact · Gestão hoteleira</span>
+        <div class="sidebar-perfil">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+            <div>
+                <span class="perfil-nome sidebar-brand-nome">Recepção</span>
+                <span class="perfil-papel">Sessão autenticada</span>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Encerrar sessão" aria-label="Encerrar sessão">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
     </footer>
 </aside>
 
-<!-- Cabeçalho de página padrão: contexto do módulo + título -->
-<div th:fragment="page-header(contexto, titulo)" class="page-header">
+<!-- Cabeçalho de página padrão: breadcrumb do módulo + ícone-quadro + título -->
+<div th:fragment="page-header(contexto, titulo)" class="page-header"
+     th:with="icone=${contexto == 'Operação' ? 'bi-speedometer2' :
+                   (contexto == 'Quartos & insumos' ? 'bi-door-open' :
+                   (contexto == 'Cadastros' ? 'bi-people' : 'bi-clipboard-data'))}">
     <div>
-        <div class="page-context" th:text="${contexto}">Módulo</div>
-        <h1 th:text="${titulo}">Título da página</h1>
+        <nav class="page-breadcrumb" aria-label="Localização atual">
+            <span th:text="${contexto}">Módulo</span>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <span class="page-breadcrumb-atual" th:text="${titulo}">Página</span>
+        </nav>
+        <div class="d-flex align-items-center gap-3">
+            <span class="page-icone" aria-hidden="true"><i class="bi fs-5" th:classappend="${icone}"></i></span>
+            <h1 th:text="${titulo}">Título da página</h1>
+        </div>
     </div>
 </div>
 

@@ -59,16 +59,17 @@
     --hi-text: #e8ecf3;
     --hi-text-secondary: #8b98ab;
 
-    --hi-sidebar-bg: #101725;
-    --hi-sidebar-bg-hover: #1c2942;
+    --hi-sidebar-bg: #151d2e;
+    --hi-sidebar-bg-hover: #1e2a40;
     --hi-sidebar-text: #b6c2d2;
-    --hi-sidebar-muted: #5f6b7d;
-    --hi-sidebar-accent: #f59e0b;
+    --hi-sidebar-muted: #7d8aa0;
+    --hi-sidebar-accent: #4ade80;
 
-    --hi-accent: #f59e0b;
-    --hi-accent-hover: #fbbf24;
-    --hi-accent-text: #fbbf24;
-    --hi-accent-soft: rgba(245, 158, 11, .12);
+    --hi-accent: #34c383;
+    --hi-accent-hover: #4ade80;
+    --hi-accent-text: #6ee7b7;
+    --hi-accent-soft: rgba(52, 195, 131, .14);
+    --hi-destaque: #fbbf24;
 
     --hi-ok: #4ade80;
     --hi-warn: #fbbf24;
@@ -141,7 +142,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 [data-bs-theme="dark"] .btn-primary {
-    --bs-btn-color: #20130a;
+    --bs-btn-color: #06231a;
     --bs-btn-hover-color: #20130a;
     --bs-btn-active-color: #20130a;
 }
@@ -173,7 +174,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     color: var(--hi-sidebar-text);
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(255, 255, 255, .06);
+    border-right: 1px solid var(--hi-border);
 }
 
 @media (min-width: 992px) {
@@ -193,7 +194,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     font-weight: 650;
     letter-spacing: -.01em;
     color: #fff;
-    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    border-bottom: 1px solid var(--hi-border);
 }
 
 .sidebar-brand i { color: var(--hi-sidebar-accent); font-size: 1.15rem; }
@@ -206,11 +207,11 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     overflow-y: auto;
 }
 
-.sidebar-grupo {
-    padding: var(--hi-space-3) var(--hi-space-3) var(--hi-space-1);
+.sidebar-grupo-nome {
     font-size: .6875rem;
     font-weight: 600;
-    letter-spacing: .08em;
+    letter-spacing: .09em;
+    text-transform: uppercase;
     color: var(--hi-sidebar-muted);
 }
 
@@ -235,12 +236,13 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     flex-shrink: 0;
 }
 
-.sidebar-nav a:hover { background-color: var(--hi-sidebar-bg-hover); color: #fff; }
+.sidebar-nav a:hover { background-color: var(--hi-sidebar-bg-hover); color: var(--hi-text); }
 
 .sidebar-nav a.active {
-    background-color: var(--hi-sidebar-bg-hover);
-    color: #fff;
-    box-shadow: inset 2px 0 0 var(--hi-sidebar-accent);
+    background-color: var(--hi-accent-soft);
+    color: var(--hi-accent-text);
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--hi-accent);
 }
 
 .sidebar-item-indisponivel { opacity: .4; cursor: not-allowed; }
@@ -251,8 +253,19 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     padding: var(--hi-space-3) var(--hi-space-4);
     font-size: .75rem;
     color: var(--hi-sidebar-muted);
-    border-top: 1px solid rgba(255, 255, 255, .07);
+    border-top: 1px solid var(--hi-border);
 }
+
+.sidebar-perfil {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+}
+
+.sidebar-perfil i { font-size: 1.375rem; color: var(--hi-sidebar-muted); }
+.sidebar-perfil .perfil-nome { color: var(--hi-text); font-weight: 600; font-size: .8125rem; }
+.sidebar-perfil .perfil-papel { display: block; font-size: .6875rem; }
+.sidebar-perfil form { margin-left: auto; }
 
 /* ---- Topbar ------------------------------------------------------------------- */
 .topbar {
@@ -277,13 +290,31 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     margin-bottom: var(--hi-space-4);
 }
 
-.page-header .page-context {
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
     font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .06em;
-    color: var(--hi-accent-text);
-    margin-bottom: .125rem;
+    color: var(--hi-text-secondary);
+    margin-bottom: .5rem;
 }
+
+.page-breadcrumb i { font-size: .5rem; }
+.page-breadcrumb-atual { color: var(--hi-accent-text); font-weight: 600; }
+
+.page-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: .625rem;
+    background-color: var(--hi-text);
+    color: var(--hi-surface);
+    flex-shrink: 0;
+}
+
+[data-bs-theme="dark"] .page-icone { background-color: var(--hi-accent-soft); color: var(--hi-accent-text); }
 
 .page-header h1 {
     font-size: 1.25rem;
@@ -688,6 +719,37 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     font-size: .875rem;
     margin-right: .5rem;
 }
+
+/* Cards escuros sob o hero (referência FinaX): ícone, título, descrição. */
+.site-cards-escuros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: var(--hi-space-4);
+}
+
+.site-card-escuro {
+    background-color: rgba(21, 29, 46, .85);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: .625rem;
+    padding: 1.25rem 1.375rem;
+    color: #b6c2d2;
+}
+
+.site-card-escuro .card-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .5rem;
+    background-color: rgba(255, 255, 255, .08);
+    color: #e8ecf3;
+    margin-bottom: .75rem;
+}
+
+.site-card-escuro h3 { color: #f1f4f9; font-size: .9375rem; font-weight: 650; margin-bottom: .375rem; }
+.site-card-escuro p { font-size: .8125rem; line-height: 1.55; margin: 0; }
 
 /* Faixa de módulos: superfície quente sutil, não card colorido */
 .site-faixa { background-color: var(--hi-accent-soft); }

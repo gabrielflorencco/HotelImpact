@@ -28,13 +28,13 @@
 
             <div class="card shadow-sm mb-3">
                 <div class="card-body py-3">
-                    <form method="get" th:action="@{/quartos}" class="row g-2 align-items-end">
-                        <div class="col-6 col-md-3">
+                    <form method="get" th:action="@{/quartos}" class="filtro-barra d-flex flex-wrap align-items-end gap-2">
+                        <div style="min-width: 180px">
                             <label for="f-numero" class="form-label small text-secondary mb-1">Número</label>
                             <input type="text" class="form-control form-control-sm" id="f-numero" name="numero"
                                    th:value="${filtroNumero}" placeholder="Ex.: 101">
                         </div>
-                        <div class="col-6 col-md-3">
+                        <div style="min-width: 180px">
                             <label for="f-estado" class="form-label small text-secondary mb-1">Estado</label>
                             <select class="form-select form-select-sm" id="f-estado" name="estado">
                                 <option value="">Todos</option>
@@ -42,7 +42,7 @@
                                         th:selected="${filtroEstado == e}">DISPONIVEL</option>
                             </select>
                         </div>
-                        <div class="col-8 col-md-4">
+                        <div style="min-width: 220px">
                             <label for="f-categoria" class="form-label small text-secondary mb-1">Categoria</label>
                             <select class="form-select form-select-sm" id="f-categoria" name="categoriaId">
                                 <option value="">Todas</option>
@@ -50,7 +50,7 @@
                                         th:selected="${filtroCategoriaId == c.id}">Standard</option>
                             </select>
                         </div>
-                        <div class="col-4 col-md-2 d-grid gap-1">
+                        <div class="filtro-acao">
                             <button type="submit" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-search me-1" aria-hidden="true"></i>Filtrar
                             </button>

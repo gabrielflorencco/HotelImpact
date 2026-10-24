@@ -43,6 +43,9 @@
         if (dados) opcoes.values = dados;
         window.htmx.ajax(verbo, url, opcoes).then(function () {
             esconderIndicador();
+            // Título do documento a partir do h1 do conteúdo recém-trocado.
+            var h1 = document.querySelector(ALVO_CONTEUDO + ' h1');
+            document.title = (h1 ? h1.textContent.trim() + ' · ' : '') + 'HotelImpact';
             var foco = document.getElementById('conteudoPrincipal');
             if (foco && foco.focus) foco.focus({preventScroll: true});
         }).catch(function () {

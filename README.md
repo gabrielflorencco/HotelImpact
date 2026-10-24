@@ -12,6 +12,19 @@ trabalho acadêmico de desenvolvimento de software.
 - PostgreSQL (via Docker em desenvolvimento)
 - Bootstrap 5 (vendorizado em `src/main/resources/static/vendor`)
 
+## Interface
+
+O design system "operação hoteleira" vive em `static/css/site.css` como
+tokens CSS custom properties (cores semânticas por tema claro/escuro,
+escala de espaçamento, raios e estados) sobre a fundação do Bootstrap 5.
+Os componentes compartilhados — sidebar agrupada pela rotina do hotel,
+cabeçalho de página com contexto do módulo, badges de status com ponto e
+rótulo legível, tabela operacional densa com numerais tabulares e
+mensagens de feedback acessíveis — ficam nos fragments de
+`templates/layout/fragments.html` e são reutilizados por todas as telas.
+O painel inicial mostra a rotina de abertura da recepção: indicadores do
+dia, barra de estados dos quartos e as listas de chegadas e saídas.
+
 ## Execução local
 
 Pré-requisitos: Java 21 e Docker.

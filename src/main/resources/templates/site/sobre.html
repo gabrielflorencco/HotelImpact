@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{site/fragments :: head('Sobre')}"></head>
+<body>
+<a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-sm btn-primary" href="#conteudoPrincipal">Pular para o conteúdo</a>
+
+<header th:replace="~{site/fragments :: navbar('sobre')}"></header>
+
+<main id="conteudoPrincipal" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <p class="site-hero-kicker">Sobre o projeto</p>
+                <h1 class="site-serif h2 mb-4">Um PMS de hotel construído como deve ser</h1>
+
+                <p class="lead mb-4">
+                    O HotelImpact é um sistema de gestão hoteleira (PMS — <em>Property
+                    Management System</em>) desenvolvido como trabalho acadêmico de
+                    engenharia de software. O objetivo é demonstrar, em um domínio real e
+                    exigente, como um sistema operacional deve se comportar: regras de
+                    negócio aplicadas pelo servidor, integridade garantida pelo banco de
+                    dados e uma interface que respeita quem trabalha nela o dia inteiro.
+                </p>
+
+                <h2 class="site-serif h4 mt-5 mb-3">Decisões de engenharia</h2>
+                <p>
+                    O projeto é construído em Java 21 com Spring Boot, renderização no
+                    servidor via Thymeleaf e persistência em PostgreSQL. O esquema é
+                    versionado por migrações Flyway. As regras que dependem de concorrência
+                    — duas reservas sobrepostas no mesmo quarto, duas hospedagens simultâneas,
+                    estoque negativo — são reforçadas por constraints específicas do
+                    PostgreSQL (exclusão por intervalo, índice único parcial e CHECK), e não
+                    apenas por validações da aplicação.
+                </p>
+                <p>
+                    Todo cálculo de dinheiro (totais, saldo devedor, receita) é feito pelo
+                    servidor; a interface nunca inventa números. Valores são históricos: a
+                    diária acordada na reserva e o preço do consumo no momento do lançamento
+                    não mudam quando o catálogo muda.
+                </p>
+
+                <h2 class="site-serif h4 mt-5 mb-3">Qualidade verificável</h2>
+                <p>
+                    A suíte de testes cobre validação de formulários (unitário), regras de
+                    negócio contra um PostgreSQL real e efêmero via Testcontainers
+                    (integração), a camada web com MockMvc e a segurança da autenticação —
+                    login, logout, CSRF e proteção de rotas. A integração contínua roda a
+                    suíte completa a cada push.
+                </p>
+
+                <h2 class="site-serif h4 mt-5 mb-3">Contexto</h2>
+                <p>
+                    Este é um projeto acadêmico de desenvolvimento de software. Não há
+                    clientes reais, depoimentos ou números de mercado por trás dele — apenas
+                    um sistema construído com o rigor que a operação de um hotel exige.
+                </p>
+
+                <div class="mt-5 pt-3">
+                    <a class="btn btn-primary" th:href="@{/funcionalidades}">Ver as funcionalidades implementadas</a>
+                    <a class="btn btn-outline-secondary ms-2" th:href="@{/login}">Entrar no sistema</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{site/fragments :: footer}"></footer>
+<div th:replace="~{site/fragments :: scripts}"></div>
+</body>
+</html>

@@ -58,7 +58,7 @@
     </div>
     <nav class="sidebar-nav" aria-label="Módulos do sistema">
         <span class="sidebar-grupo" aria-hidden="true">Operação</span>
-        <a th:href="@{/}" th:classappend="${ativo} == 'dashboard' ? 'active' : ''"
+        <a th:href="@{/painel}" th:classappend="${ativo} == 'dashboard' ? 'active' : ''"
            th:attr="aria-current=${ativo} == 'dashboard' ? 'page' : null">
             <i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span>
         </a>

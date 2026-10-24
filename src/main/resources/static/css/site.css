@@ -505,6 +505,121 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     --bs-btn-active-color: var(--hi-text);
 }
 
+/* ---- Site institucional público --------------------------------------------------------- */
+/* Tipografia editorial: serifada de sistema só no site (o ERP é sans operacional). */
+.site-serif {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: -.01em;
+}
+
+.site-nav {
+    background-color: var(--hi-surface);
+    border-bottom: 1px solid var(--hi-border);
+}
+
+.site-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.05rem;
+    font-weight: 650;
+    color: var(--hi-text);
+    text-decoration: none;
+}
+
+.site-brand i { color: var(--hi-accent); font-size: 1.15rem; }
+
+.site-nav-link {
+    font-size: .875rem;
+    color: var(--hi-text-secondary);
+    text-decoration: none;
+}
+
+.site-nav-link:hover { color: var(--hi-text); }
+.site-nav-link.active { color: var(--hi-accent-text); font-weight: 600; }
+
+/* Hero: a luz de hotel acesa na noite — superfície azul-noite, não gradiente. */
+.site-hero {
+    background-color: #0b1220;
+    color: #e8ecf3;
+    padding: var(--hi-space-5) 0;
+}
+
+.site-hero .text-secondary { color: #8b98ab !important; }
+
+.site-hero-kicker {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--hi-accent, #f59e0b);
+    margin-bottom: .75rem;
+}
+
+.site-hero-title {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: -.015em;
+    margin-bottom: 1rem;
+}
+
+.site-hero-lede {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: #b6c2d2;
+    max-width: 34rem;
+    margin-bottom: 1.5rem;
+}
+
+.site-fachada { width: 100%; height: auto; }
+
+/* Números editoriais dos pilares */
+.site-numeral {
+    font-variant-numeric: tabular-nums;
+    color: var(--hi-accent-text);
+    font-size: .875rem;
+    margin-right: .5rem;
+}
+
+/* Faixa de módulos: superfície quente sutil, não card colorido */
+.site-faixa { background-color: var(--hi-accent-soft); }
+
+.site-modulos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: .875rem 1.5rem;
+}
+
+.site-modulos li {
+    display: flex;
+    align-items: baseline;
+    gap: .625rem;
+    font-size: .9375rem;
+    color: var(--hi-text);
+}
+
+.site-modulos i { color: var(--hi-accent-text); }
+
+/* Bloco de funcionalidade: borda esquerda de leitura, sem sombra */
+.site-funcionalidade {
+    border-left: 3px solid var(--hi-border-strong);
+    padding-left: 1.25rem;
+}
+
+.site-funcionalidade h2 { color: var(--hi-text); }
+.site-funcionalidade h2 i { color: var(--hi-accent-text); }
+.site-funcionalidade p { color: var(--hi-text-secondary); font-size: .9375rem; line-height: 1.6; }
+
+.site-footer {
+    border-top: 1px solid var(--hi-border);
+    font-size: .875rem;
+}
+
 /* ---- Utilidades ------------------------------------------------------------------------------- */
 .text-secondary { color: var(--hi-text-secondary) !important; }
 .text-nowrap { white-space: nowrap; }

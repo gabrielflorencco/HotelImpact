@@ -41,9 +41,15 @@ class SecurityWebTest {
 
     @Test
     void acessoSemAutenticacaoRedirecionaParaOLogin() throws Exception {
-        mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+        mockMvc.perform(get("/painel").accept(MediaType.TEXT_HTML))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void rotaAdministrativaProtegidaRedirecionaAoLogin() throws Exception {
+        mockMvc.perform(get("/reservas").accept(MediaType.TEXT_HTML))
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -77,7 +83,7 @@ class SecurityWebTest {
     void loginComCredenciaisValidasAutenticaERedirecionaAoDestino() throws Exception {
         mockMvc.perform(formLogin("/login").user("teste").password("teste123"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/painel"));
     }
 
     @Test

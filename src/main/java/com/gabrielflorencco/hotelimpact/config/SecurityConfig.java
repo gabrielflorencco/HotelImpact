@@ -7,10 +7,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Segurança da aplicação (Fase 7): todo acesso exige usuário autenticado,
- * com login por formulário próprio (pt-BR, ver LoginController), logout via
- * POST na topbar e CSRF habilitado (padrão). Sem regras por papel por ora —
- * o sistema tem o papel único de recepção.
+ * Segurança da aplicação: o site institucional (página inicial, sobre e
+ * funcionalidades) e o login são públicos; toda a área administrativa exige
+ * usuário autenticado, com login por formulário próprio (pt-BR), logout via
+ * POST na topbar e CSRF habilitado (padrão). Após o login, a recepção cai
+ * direto no painel operacional.
  */
 @Configuration
 @EnableWebSecurity
@@ -20,11 +21,13 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/sobre", "/funcionalidades").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/css/*", "/js/*", "/vendor/**").permitAll()
+                        .requestMatchers("/css/*", "/js/*", "/vendor/**", "/img/*").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .defaultSuccessUrl("/painel", true)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")

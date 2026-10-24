@@ -19,7 +19,7 @@ public class HomeController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/")
+    @GetMapping("/painel")
     public String index(Model model) {
         model.addAttribute("ind", dashboardService.indicadores());
         model.addAttribute("chegadas", dashboardService.chegadasDeHoje().stream()

@@ -47,7 +47,7 @@ class HomeControllerWebTest {
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of(reservaMock("RES-2026-000123")));
         when(dashboardService.saidasDeHoje()).thenReturn(List.of(reservaMock("RES-2026-000124")));
 
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/painel"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("dashboard/index"))
                 .andExpect(content().string(containsString("Hospedagens em andamento")))
@@ -67,7 +67,7 @@ class HomeControllerWebTest {
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of());
         when(dashboardService.saidasDeHoje()).thenReturn(List.of());
 
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/painel"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("R$ 0,00")))
                 .andExpect(content().string(containsString("Nenhuma chegada prevista para hoje")))
@@ -82,7 +82,7 @@ class HomeControllerWebTest {
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of());
         when(dashboardService.saidasDeHoje()).thenReturn(List.of());
 
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/painel"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("estoque no mínimo")))
                 .andExpect(content().string(containsString("Ver catálogo")));

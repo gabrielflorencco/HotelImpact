@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{site/fragments :: head('Início')}"></head>
+<body>
+<a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-sm btn-primary" href="#conteudoPrincipal">Pular para o conteúdo</a>
+
+<header th:replace="~{site/fragments :: navbar('inicio')}"></header>
+
+<main id="conteudoPrincipal">
+
+    <!-- Hero: a luz de hotel acesa na noite -->
+    <section class="site-hero">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <p class="site-hero-kicker">Sistema de gestão hoteleira</p>
+                    <h1 class="site-hero-title">Toda a operação do hotel<br>em um só painel.</h1>
+                    <p class="site-hero-lede">
+                        Reservas, hospedagens, consumos, pagamentos e manutenção — do primeiro
+                        check-in ao fechamento da conta — com as regras do seu negócio aplicadas
+                        pelo servidor, não por planilha.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 pt-2">
+                        <a class="btn btn-primary btn-lg" th:href="@{/login}">Entrar no sistema</a>
+                        <a class="btn btn-outline-light btn-lg" th:href="@{/funcionalidades}">Conhecer as funcionalidades</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div th:replace="~{site/fragments :: fachada}"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Três pilares (editorial, não cards) -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-4">
+                    <h2 class="site-serif h4 mb-3"><span class="site-numeral">01</span> A recepção abre o dia sabendo tudo</h2>
+                    <p class="text-secondary">
+                        O painel mostra quem chega hoje, quem sai e como está cada quarto —
+                        disponível, ocupado, em limpeza, em manutenção ou interditado —
+                        antes mesmo do primeiro café.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="site-serif h4 mb-3"><span class="site-numeral">02</span> A conta nunca fecha errada</h2>
+                    <p class="text-secondary">
+                        Diárias históricas, consumos lançados na conta e pagamentos com estorno
+                        único: o saldo devedor é calculado pelo servidor e o check-out exige a
+                        conta quitada — ou uma justificativa formal.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="site-serif h4 mb-3"><span class="site-numeral">03</span> As regras vivem no banco, não no caderno</h2>
+                    <p class="text-secondary">
+                        Períodos sobrepostos são impedidos por constraint de exclusão no
+                        PostgreSQL; uma única hospedagem por quarto é garantida por índice
+                        parcial; o estoque nunca fica negativo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Faixa de módulos reais -->
+    <section class="site-faixa py-5">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-5">
+                    <h2 class="site-serif h3 mb-3">Nove módulos, uma rotina só</h2>
+                    <p class="text-secondary mb-4">
+                        Do catálogo de itens ao relatório por período, cada módulo cobre uma
+                        parte real do trabalho diário de uma recepção — sem telas de enfeite.
+                    </p>
+                    <a class="btn btn-primary" th:href="@{/funcionalidades}">Ver todas as funcionalidades</a>
+                </div>
+                <div class="col-lg-7">
+                    <ul class="site-modulos">
+                        <li><i class="bi bi-calendar-check" aria-hidden="true"></i>Reservas com disponibilidade verificada</li>
+                        <li><i class="bi bi-key" aria-hidden="true"></i>Hospedagens com check-in e check-out reais</li>
+                        <li><i class="bi bi-cup-straw" aria-hidden="true"></i>Consumos na conta, com preço histórico</li>
+                        <li><i class="bi bi-cash-coin" aria-hidden="true"></i>Pagamentos com estorno único</li>
+                        <li><i class="bi bi-tools" aria-hidden="true"></i>Manutenção que interdita quarto crítico</li>
+                        <li><i class="bi bi-clipboard-data" aria-hidden="true"></i>Relatórios de qualquer período</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chamada final -->
+    <section class="py-5 text-center">
+        <div class="container">
+            <h2 class="site-serif h3 mb-3">Feito para quem administra hotel de verdade</h2>
+            <p class="text-secondary">Área administrativa protegida por login. Experimente com os dados de demonstração.</p>
+            <a class="btn btn-primary btn-lg mt-2" th:href="@{/login}">Entrar no sistema</a>
+        </div>
+    </section>
+
+</main>
+
+<footer th:replace="~{site/fragments :: footer}"></footer>
+<div th:replace="~{site/fragments :: scripts}"></div>
+</body>
+</html>

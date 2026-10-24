@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{site/fragments :: head('Funcionalidades')}"></head>
+<body>
+<a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-sm btn-primary" href="#conteudoPrincipal">Pular para o conteúdo</a>
+
+<header th:replace="~{site/fragments :: navbar('funcionalidades')}"></header>
+
+<main id="conteudoPrincipal" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <p class="site-hero-kicker">O que o sistema faz hoje</p>
+                <h1 class="site-serif h2 mb-3">Funcionalidades implementadas</h1>
+                <p class="text-secondary">
+                    Cada item abaixo corresponde a código funcionando, com regras aplicadas
+                    pelo servidor e testes automatizados. Nada aqui é roadmap prometido.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-calendar-check me-2" aria-hidden="true"></i>Reservas</h2>
+                    <p>Criação com verificação de disponibilidade por período semiaberto, capacidade efetiva do quarto (a da categoria ou a sobreposição operacional), diária histórica e total calculado no servidor. Confirmação, cancelamento e registro de no-show — cada transição só ocorre por caminho válido.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-key me-2" aria-hidden="true"></i>Hospedagens</h2>
+                    <p>Check-in a partir de reservas elegíveis (data chegada, quarto pronto, sem hospedagem anterior). Check-out que conclui a reserva e envia o quarto para limpeza. Com saldo pendente, exige justificativa e marca a hospedagem como encerramento excepcional.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-cup-straw me-2" aria-hidden="true"></i>Consumos e catálogo</h2>
+                    <p>Catálogo de produtos e serviços com nome único, preço, controle de estoque apenas para produtos e alerta de estoque baixo. Lançamentos na conta da hospedagem capturam o preço histórico; o cancelamento é estorno lógico que restitui o estoque uma única vez.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-cash-coin me-2" aria-hidden="true"></i>Pagamentos</h2>
+                    <p>Registro e estorno na conta da hospedagem. O saldo devedor (reserva + consumos ativos − pagamentos confirmados) é calculado pelo servidor; estornados não contam como recebidos.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-door-open me-2" aria-hidden="true"></i>Quartos e categorias</h2>
+                    <p>Cadastro de categorias (capacidade, preço-base) e quartos (número único, andar, capacidade operacional). Estados operacionais explícitos: disponível, ocupado, em limpeza, em manutenção e interditado — mudados só por operações do sistema.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-tools me-2" aria-hidden="true"></i>Manutenção</h2>
+                    <p>Ordens com prioridade (baixa a crítica). A abertura é proibida com hospedagem em andamento ou outra ordem ativa; a crítica interdita o quarto imediatamente. A execução põe o quarto em manutenção; conclusão e cancelamento restauram apenas o estado causado pela própria ordem.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-people me-2" aria-hidden="true"></i>Hóspedes</h2>
+                    <p>Cadastro com CPF validado pelo algoritmo oficial e armazenado apenas em dígitos, busca por nome, CPF, telefone ou e-mail, e exclusão bloqueada quando há reservas que preservam o histórico.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="site-funcionalidade">
+                    <h2 class="h5"><i class="bi bi-clipboard-data me-2" aria-hidden="true"></i>Painel e relatórios</h2>
+                    <p>Painel de abertura da recepção: ocupação, chegadas e saídas do dia, receita confirmada e barra de estados dos quartos. Relatórios de qualquer período com check-ins, check-outs, receita, reservas criadas (e canceladas/não comparecidas) e a lista de hospedagens iniciadas.</p>
+                </section>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 pt-3">
+            <a class="btn btn-primary btn-lg" th:href="@{/login}">Entrar no sistema</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{site/fragments :: footer}"></footer>
+<div th:replace="~{site/fragments :: scripts}"></div>
+</body>
+</html>

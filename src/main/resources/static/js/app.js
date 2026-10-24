@@ -39,7 +39,7 @@
             return;
         }
         mostrarIndicador();
-        var opcoes = {target: ALVO_CONTEUDO, swap: 'innerHTML', select: ALVO_CONTEUDO};
+        var opcoes = {target: ALVO_CONTEUDO, swap: 'innerHTML'};
         if (dados) opcoes.values = dados;
         window.htmx.ajax(verbo, url, opcoes).then(function () {
             esconderIndicador();

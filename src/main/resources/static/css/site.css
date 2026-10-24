@@ -1,67 +1,153 @@
 /* ==========================================================================
-   HotelImpact — sistema de design
-   Bootstrap 5 baseia a fundação; este arquivo define os tokens, o shell da
-   aplicação e os componentes próprios, suportando os modos claro e escuro.
+   HotelImpact — design system "operação hoteleira"
+   ---------------------------------------------------------------------------
+   Direção: ERP profissional sóbrio. Neutros frios (slate) + âmbar queimado
+   como acento único (a "luz de hotel" — hospitalidade, não decoração).
+   Superfícies separadas por bordas, não por sombras. Dados com numerais
+   tabulares. Densidade compacta para uso diário na recepção.
+
+   Bootstrap 5 fornece a fundação (grid, utilitários, componentes); este
+   arquivo define tokens, o shell da aplicação e os componentes próprios,
+   nos dois temas (claro/escuro).
    ========================================================================== */
 
-/* ---- Tokens: cores ------------------------------------------------------ */
+/* ---- Tokens --------------------------------------------------------------- */
 :root,
 [data-bs-theme="light"] {
-    --hi-page-bg: #f1f5f9;
-    --hi-sidebar-bg: #1e293b;
-    --hi-sidebar-bg-hover: #334155;
-    --hi-sidebar-text: #cbd5e1;
-    --hi-sidebar-muted: #64748b;
-    --hi-accent: #f59e0b;
+    /* Superfícies e texto */
+    --hi-page-bg: #f6f7f9;
+    --hi-surface: #ffffff;
+    --hi-text: #1a2332;
+    --hi-text-secondary: #5b6879;
+
+    /* Sidebar (escura nos dois temas — superfície de navegação) */
+    --hi-sidebar-bg: #16202f;
+    --hi-sidebar-bg-hover: #1f2c40;
+    --hi-sidebar-text: #b6c2d2;
+    --hi-sidebar-muted: #6b7889;
+    --hi-sidebar-accent: #d97706;
+
+    /* Acento (identidade: âmbar de hotel) */
+    --hi-accent: #b45309;
+    --hi-accent-hover: #92400e;
+    --hi-accent-text: #92400e;          /* textos/eyebrows sobre claro */
+    --hi-accent-soft: #fdf3e7;          /* fundo suave para realces */
+
+    /* Estado semântico (dot + rótulo) */
+    --hi-ok: #16a34a;
+    --hi-warn: #d97706;
+    --hi-danger: #dc2626;
+    --hi-info: #2563eb;
+    --hi-busy: #7c3aed;
+
+    /* Bordas e forma */
+    --hi-border: #e3e8ef;
+    --hi-border-strong: #cdd5e0;
+    --hi-radius: .375rem;
+    --hi-radius-lg: .5rem;
+
+    /* Sombras mínimas: separação é por borda */
+    --hi-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+
+    /* Topbar */
     --hi-topbar-bg: #ffffff;
-    --hi-card-shadow: 0 0.125rem 0.25rem rgba(15, 23, 42, 0.06);
-    --hi-card-shadow-hover: 0 0.5rem 1rem rgba(15, 23, 42, 0.10);
 }
 
 [data-bs-theme="dark"] {
-    --hi-page-bg: #0b1220;
-    --hi-sidebar-bg: #111827;
-    --hi-sidebar-bg-hover: #1f2937;
-    --hi-sidebar-text: #9ca3af;
-    --hi-sidebar-muted: #6b7280;
-    --hi-accent: #fbbf24;
-    --hi-topbar-bg: #10192e;
-    --hi-card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.35);
-    --hi-card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.45);
+    --hi-page-bg: #0e1421;
+    --hi-surface: #151d2e;
+    --hi-text: #e8ecf3;
+    --hi-text-secondary: #8b98ab;
+
+    --hi-sidebar-bg: #101725;
+    --hi-sidebar-bg-hover: #1c2942;
+    --hi-sidebar-text: #b6c2d2;
+    --hi-sidebar-muted: #5f6b7d;
+    --hi-sidebar-accent: #f59e0b;
+
+    --hi-accent: #f59e0b;
+    --hi-accent-hover: #fbbf24;
+    --hi-accent-text: #fbbf24;
+    --hi-accent-soft: rgba(245, 158, 11, .12);
+
+    --hi-ok: #4ade80;
+    --hi-warn: #fbbf24;
+    --hi-danger: #f87171;
+    --hi-info: #60a5fa;
+    --hi-busy: #a78bfa;
+
+    --hi-border: #273349;
+    --hi-border-strong: #36455f;
+    --hi-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+
+    --hi-topbar-bg: #131b2c;
+
+    color-scheme: dark;                 /* barras de rolagem e inputs nativos */
 }
 
 :root {
-    --hi-sidebar-width: 250px;
-
-    /* ---- Tokens: tipografia e forma ------------------------------------- */
-    --hi-radius: 0.5rem;
-    --hi-radius-lg: 0.75rem;
-    --hi-border-subtle: 1px solid var(--bs-border-color);
-    --hi-space-1: 0.25rem;
-    --hi-space-2: 0.5rem;
+    /* Escala de espaçamento (ritmo 4/8) */
+    --hi-space-1: .25rem;
+    --hi-space-2: .5rem;
     --hi-space-3: 1rem;
     --hi-space-4: 1.5rem;
-    --hi-space-5: 2.5rem;
+    --hi-space-5: 2.25rem;
+
+    --hi-sidebar-width: 244px;
+    --hi-topbar-height: 52px;
 }
 
-/* ---- Base --------------------------------------------------------------- */
+/* ---- Base ------------------------------------------------------------------ */
 body {
     background-color: var(--hi-page-bg);
-    color: var(--bs-body-color);
+    color: var(--hi-text);
+    font-size: .9375rem;                /* base levemente compacta de ERP */
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Foco visível para navegação por teclado em todos os componentes. */
+/* Numerais tabulares em todo dado quantitativo do sistema. */
+.numerico,
+.table,
+th, dd, dt, .badge, .form-label, .page-link, .btn {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Foco visível para navegação por teclado. */
 :is(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 2px solid var(--hi-accent);
     outline-offset: 2px;
     border-radius: var(--hi-radius);
 }
 
-/* ---- Shell: sidebar + área principal ------------------------------------ */
-.app-wrapper {
-    display: flex;
-    min-height: 100vh;
+/* Movimento só quando o usuário aceita movimento. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }
+
+/* ---- Botão primário: identidade âmbar --------------------------------------- */
+.btn-primary {
+    --bs-btn-bg: var(--hi-accent);
+    --bs-btn-border-color: var(--hi-accent);
+    --bs-btn-hover-bg: var(--hi-accent-hover);
+    --bs-btn-hover-border-color: var(--hi-accent-hover);
+    --bs-btn-active-bg: var(--hi-accent-hover);
+    --bs-btn-active-border-color: var(--hi-accent-hover);
+    --bs-btn-disabled-bg: var(--hi-accent);
+    --bs-btn-disabled-border-color: var(--hi-accent);
+}
+
+[data-bs-theme="dark"] .btn-primary {
+    --bs-btn-color: #20130a;
+    --bs-btn-hover-color: #20130a;
+    --bs-btn-active-color: #20130a;
+}
+
+/* ---- Shell: sidebar + área principal ----------------------------------------- */
+.app-wrapper { display: flex; min-height: 100vh; }
 
 .app-main {
     display: flex;
@@ -76,160 +162,342 @@ body {
 }
 
 @media (min-width: 992px) {
-    .app-main {
-        margin-left: var(--hi-sidebar-width);
-    }
+    .app-main { margin-left: var(--hi-sidebar-width); }
 }
 
-/* ---- Sidebar (escura nos dois temas) ------------------------------------
-   O Bootstrap aplica background transparente !important no .offcanvas-lg em
-   telas grandes; o !important aqui devolve o fundo escuro da sidebar. */
+/* ---- Sidebar ----------------------------------------------------------------- */
 .sidebar.offcanvas-lg,
 .sidebar {
     width: var(--hi-sidebar-width);
-    background-color: var(--hi-sidebar-bg) !important;
+    background-color: var(--hi-sidebar-bg) !important; /* Bootstrap zera o bg do .offcanvas-lg em telas grandes */
     color: var(--hi-sidebar-text);
     display: flex;
     flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, .06);
 }
 
 @media (min-width: 992px) {
-    .sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-    }
+    .sidebar { position: fixed; top: 0; bottom: 0; left: 0; }
 }
 
 @media (max-width: 991.98px) {
-    .sidebar {
-        --bs-offcanvas-width: var(--hi-sidebar-width);
-    }
+    .sidebar { --bs-offcanvas-width: var(--hi-sidebar-width); }
 }
 
 .sidebar-brand {
     display: flex;
     align-items: center;
-    gap: var(--hi-space-3);
-    padding: var(--hi-space-4) var(--hi-space-4) var(--hi-space-3);
-    font-size: 1.15rem;
-    font-weight: 600;
+    gap: var(--hi-space-2);
+    padding: var(--hi-space-3) var(--hi-space-4);
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -.01em;
     color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
 }
 
-.sidebar-brand i {
-    color: var(--hi-accent);
-}
+.sidebar-brand i { color: var(--hi-sidebar-accent); font-size: 1.15rem; }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 0 var(--hi-space-3);
+    gap: 1px;
+    padding: var(--hi-space-2) var(--hi-space-2) 0;
+    overflow-y: auto;
 }
+
+.sidebar-grupo {
+    padding: var(--hi-space-3) var(--hi-space-3) var(--hi-space-1);
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: var(--hi-sidebar-muted);
+}
+
+.sidebar-grupo:first-child { padding-top: var(--hi-space-1); }
 
 .sidebar-nav a,
 .sidebar-item-indisponivel {
     display: flex;
     align-items: center;
-    gap: var(--hi-space-3);
-    padding: var(--hi-space-2) var(--hi-space-3);
+    gap: .625rem;
+    padding: .4375rem .75rem;
     border-radius: var(--hi-radius);
     color: var(--hi-sidebar-text);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: .875rem;
+    line-height: 1.25rem;
 }
 
 .sidebar-nav a i,
 .sidebar-item-indisponivel i {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
-.sidebar-nav a:hover,
+.sidebar-nav a:hover { background-color: var(--hi-sidebar-bg-hover); color: #fff; }
+
 .sidebar-nav a.active {
     background-color: var(--hi-sidebar-bg-hover);
     color: #fff;
+    box-shadow: inset 2px 0 0 var(--hi-sidebar-accent);
 }
 
-.sidebar-nav a.active {
-    box-shadow: inset 3px 0 0 var(--hi-accent);
-}
-
-.sidebar-item-indisponivel {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-.sidebar-item-indisponivel .badge {
-    font-size: 0.65rem;
-}
+.sidebar-item-indisponivel { opacity: .4; cursor: not-allowed; }
+.sidebar-item-indisponivel .badge { font-size: .625rem; }
 
 .sidebar-footer {
     margin-top: auto;
     padding: var(--hi-space-3) var(--hi-space-4);
-    font-size: 0.8rem;
+    font-size: .75rem;
     color: var(--hi-sidebar-muted);
+    border-top: 1px solid rgba(255, 255, 255, .07);
 }
 
-/* ---- Barra superior ------------------------------------------------------ */
+/* ---- Topbar ------------------------------------------------------------------- */
 .topbar {
-    min-height: 56px;
+    min-height: var(--hi-topbar-height);
     background-color: var(--hi-topbar-bg);
+    border-bottom: 1px solid var(--hi-border) !important;
 }
 
-/* ---- Cartões, tabelas e cabeçalhos de página ----------------------------- */
+.topbar-data {
+    font-size: .8125rem;
+    color: var(--hi-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Cabeçalho de página (padrão de todas as telas) ------------------------------ */
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hi-space-2) var(--hi-space-3);
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--hi-space-4);
+}
+
+.page-header .page-context {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: var(--hi-accent-text);
+    margin-bottom: .125rem;
+}
+
+.page-header h1 {
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -.01em;
+    margin: 0;
+    color: var(--hi-text);
+}
+
+.page-header .page-actions {
+    display: flex;
+    gap: var(--hi-space-2);
+    flex-wrap: wrap;
+}
+
+/* ---- Cartões e superfícies ------------------------------------------------------ */
 .card {
+    background-color: var(--hi-surface);
+    border-color: var(--hi-border);
     border-radius: var(--hi-radius-lg);
-    box-shadow: var(--hi-card-shadow);
+    box-shadow: var(--hi-shadow);
 }
 
-.module-card {
-    transition: box-shadow 0.15s ease-in-out;
-}
-
-.module-card:hover {
-    box-shadow: var(--hi-card-shadow-hover);
-}
-
-.table > :not(caption) > * > * {
-    vertical-align: middle;
-}
-
-.page-title {
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--hi-border);
+    color: var(--hi-text);
     font-weight: 600;
 }
 
-/* ---- Componentes próprios ------------------------------------------------ */
+.card-footer { background-color: transparent; border-top: 1px solid var(--hi-border); }
 
-/* Estado vazio (listagens sem registros) */
+.module-card {
+    border: 1px solid var(--hi-border);
+    transition: border-color .12s ease-in-out, box-shadow .12s ease-in-out;
+}
+
+.module-card:hover {
+    border-color: var(--hi-border-strong);
+    box-shadow: var(--hi-shadow);
+}
+
+/* ---- Tabela operacional (densidade ERP) ------------------------------------------ */
+.tabela-operacional {
+    --bs-table-bg: transparent;
+    margin-bottom: 0;
+    font-size: .875rem;
+}
+
+.tabela-operacional > :not(caption) > * > * {
+    vertical-align: middle;
+    padding: .5rem .75rem;
+}
+
+.tabela-operacional thead th {
+    background-color: var(--hi-page-bg);
+    color: var(--hi-text-secondary);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    border-bottom: 1px solid var(--hi-border-strong);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.tabela-operacional .col-num { text-align: right; white-space: nowrap; }
+.tabela-operacional .col-centro { text-align: center; white-space: nowrap; }
+.tabela-operacional td { color: var(--hi-text); }
+
+.table > :not(caption) > * > * { vertical-align: middle; }
+
+/* Linha de ações por registro: ícones discretos, alvo de toque confortável. */
+.acoes-linha {
+    display: inline-flex;
+    gap: .25rem;
+    justify-content: flex-end;
+}
+
+.acoes-linha .btn {
+    --bs-btn-padding-y: .1875rem;
+    --bs-btn-padding-x: .375rem;
+    font-size: .875rem;
+    line-height: 1.2;
+}
+
+/* ---- Badges de status: ponto + rótulo legível ------------------------------------- */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .1875rem .5rem;
+    font-size: .75rem;
+    font-weight: 500;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.badge-status::before {
+    content: "";
+    width: .375rem;
+    height: .375rem;
+    border-radius: 50%;
+    background-color: currentColor;
+    flex-shrink: 0;
+}
+
+/* Variações semânticas — o rótulo vem do fragment; a cor nunca é o único sinal. */
+.badge-estado-ok      { color: #166534; background-color: #ecfdf5; }
+.badge-estado-atencao { color: #92400e; background-color: #fffbeb; }
+.badge-estado-neutro  { color: #475569; background-color: #eef2f7; }
+.badge-estado-erro    { color: #b91c1c; background-color: #fef2f2; }
+.badge-estado-info    { color: #1d4ed8; background-color: #eff6ff; }
+.badge-estado-ocupado { color: #6d28d9; background-color: #f5f3ff; }
+
+[data-bs-theme="dark"] .badge-estado-ok      { color: #86efac; background-color: rgba(22, 163, 74, .16); }
+[data-bs-theme="dark"] .badge-estado-atencao { color: #fcd34d; background-color: rgba(217, 119, 6, .16); }
+[data-bs-theme="dark"] .badge-estado-neutro  { color: #cbd5e1; background-color: rgba(100, 116, 139, .22); }
+[data-bs-theme="dark"] .badge-estado-erro    { color: #fca5a5; background-color: rgba(220, 38, 38, .16); }
+[data-bs-theme="dark"] .badge-estado-info    { color: #93c5fd; background-color: rgba(37, 99, 235, .18); }
+[data-bs-theme="dark"] .badge-estado-ocupado  { color: #c4b5fd; background-color: rgba(124, 58, 237, .18); }
+
+/* ---- Formulários ------------------------------------------------------------------- */
+.form-label { font-size: .8125rem; font-weight: 500; color: var(--hi-text); margin-bottom: .25rem; }
+
+.form-text { font-size: .75rem; color: var(--hi-text-secondary); }
+
+.campo-obrigatorio::after { content: " *"; color: var(--bs-danger); }
+
+/* Resumo de erros focável no topo do formulário (acessibilidade). */
+.resumo-erros {
+    border: 1px solid var(--hi-danger);
+    border-radius: var(--hi-radius);
+    background-color: var(--bs-danger-bg-subtle);
+    padding: var(--hi-space-3);
+    margin-bottom: var(--hi-space-3);
+}
+
+.resumo-erros h2 { font-size: .9375rem; font-weight: 600; margin-bottom: .375rem; }
+.resumo-erros ul { margin: 0; padding-left: 1.25rem; }
+.resumo-erros a { color: var(--bs-danger); }
+
+/* ---- Mensagens de feedback ----------------------------------------------------------- */
+.hi-alerta {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    border-radius: var(--hi-radius);
+    padding: .625rem .875rem;
+    font-size: .875rem;
+    margin-bottom: var(--hi-space-3);
+}
+
+.hi-alerta i { margin-top: .125rem; }
+.hi-alerta .btn-close { margin-left: auto; }
+
+/* ---- Estados vazios -------------------------------------------------------------------- */
 .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--hi-space-2);
     padding: var(--hi-space-5) var(--hi-space-3);
-    color: var(--bs-secondary-color);
+    color: var(--hi-text-secondary);
     text-align: center;
 }
 
-/* Campo obrigatório */
-.campo-obrigatorio::after {
-    content: " *";
-    color: var(--bs-danger);
+/* ---- Indicadores do painel (KPIs densos, sem cartões coloridos) --------------------------- */
+.kpi {
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+    padding: var(--hi-space-3);
+    border: 1px solid var(--hi-border);
+    border-radius: var(--hi-radius-lg);
+    background-color: var(--hi-surface);
+    height: 100%;
 }
 
-/* ---- Badges de estado (paleta consistente nos dois temas) ---------------- */
-.badge-estado-ok      { color: #047857; background-color: #d1fae5; }
-.badge-estado-atencao { color: #b45309; background-color: #fef3c7; }
-.badge-estado-neutro  { color: #475569; background-color: #e2e8f0; }
-.badge-estado-erro    { color: #b91c1c; background-color: #fee2e2; }
-.badge-estado-info    { color: #1d4ed8; background-color: #dbeafe; }
-.badge-estado-ocupado { color: #6d28d9; background-color: #ede9fe; }
+.kpi .kpi-rotulo { font-size: .75rem; font-weight: 500; color: var(--hi-text-secondary); }
+.kpi .kpi-valor { font-size: 1.5rem; font-weight: 650; line-height: 1.2; color: var(--hi-text); }
+.kpi .kpi-detalhe { font-size: .75rem; color: var(--hi-text-secondary); }
+.kpi .kpi-valor .unidade { font-size: .8125rem; font-weight: 500; color: var(--hi-text-secondary); }
 
-[data-bs-theme="dark"] .badge-estado-ok      { color: #6ee7b7; background-color: rgba(6, 95, 70, 0.35); }
-[data-bs-theme="dark"] .badge-estado-atencao { color: #fcd34d; background-color: rgba(146, 64, 14, 0.35); }
-[data-bs-theme="dark"] .badge-estado-neutro  { color: #cbd5e1; background-color: rgba(71, 85, 105, 0.45); }
-[data-bs-theme="dark"] .badge-estado-erro    { color: #fca5a5; background-color: rgba(153, 27, 27, 0.4); }
-[data-bs-theme="dark"] .badge-estado-info    { color: #93c5fd; background-color: rgba(30, 58, 138, 0.45); }
-[data-bs-theme="dark"] .badge-estado-ocupado { color: #c4b5fd; background-color: rgba(76, 29, 149, 0.45); }
+/* Barra segmentada de estados dos quartos (proporção de um relance). */
+.barra-estados { display: flex; height: .5rem; border-radius: 999px; overflow: hidden; }
+.barra-estados > span { display: block; height: 100%; min-width: 2px; }
+.barra-estados .be-ok      { background-color: var(--hi-ok); }
+.barra-estados .be-busy    { background-color: var(--hi-busy); }
+.barra-estados .be-info    { background-color: var(--hi-info); }
+.barra-estados .be-warn    { background-color: var(--hi-warn); }
+.barra-estados .be-erro    { background-color: var(--hi-danger); }
+
+/* Legenda da barra: ponto quadrado na cor + rótulo + número. */
+.legenda-estados { display: flex; flex-wrap: wrap; gap: .375rem 1rem; margin: 0; padding: 0; list-style: none; }
+.legenda-estados li { display: flex; align-items: center; gap: .375rem; font-size: .75rem; color: var(--hi-text-secondary); }
+.legenda-estados li::before { content: ""; width: .5rem; height: .5rem; border-radius: 2px; background-color: var(--legenda, currentColor); }
+
+/* ---- Paginação compacta --------------------------------------------------------------------- */
+.pagination { --bs-pagination-font-size: .8125rem; }
+.pagination .page-link { color: var(--hi-text); border-color: var(--hi-border); }
+.pagination .page-item.active .page-link { background-color: var(--hi-accent); border-color: var(--hi-accent); }
+[data-bs-theme="dark"] .pagination .page-item.active .page-link { color: #20130a; }
+
+/* ---- Login -------------------------------------------------------------------------------------- */
+.login-pagina {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: var(--hi-page-bg);
+}
+
+/* ---- Utilidades ------------------------------------------------------------------------------- */
+.text-secondary { color: var(--hi-text-secondary) !important; }
+.text-nowrap { white-space: nowrap; }

@@ -13,12 +13,17 @@
         <main class="app-content" id="conteudoPrincipal">
             <div th:replace="~{layout/fragments :: mensagens}"></div>
 
-            <div class="d-flex align-items-center gap-2 mb-4">
-                <a class="btn btn-outline-secondary btn-sm" th:href="@{/reservas}" title="Voltar">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
-                <h1 class="h3 page-title mb-0" th:text="${titulo}">Nova reserva</h1>
-            </div>
+            <div class="page-header">
+    <div>
+        <div class="page-context">Operação</div>
+        <h1 th:text="${titulo}">Nova reserva</h1>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/reservas}">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>Voltar
+        </a>
+    </div>
+</div>
 
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-xl-7">

@@ -23,23 +23,23 @@
    href="#conteudoPrincipal">Pular para o conteúdo</a>
 
 <!-- Barra superior -->
-<header th:fragment="topbar" class="topbar d-flex align-items-center justify-content-between px-3 px-md-4 border-bottom">
+<header th:fragment="topbar" class="topbar d-flex align-items-center justify-content-between px-3 px-md-4">
     <div class="d-flex align-items-center gap-2">
         <button class="btn btn-outline-secondary btn-sm d-lg-none" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
             <i class="bi bi-list" aria-hidden="true"></i>
         </button>
-        <span class="text-secondary small" th:text="${hoje} ?: ''">hoje</span>
+        <span class="topbar-data" th:text="${hoje} ?: ''">hoje</span>
     </div>
     <div class="d-flex align-items-center gap-3">
         <button type="button" id="botaoTema" class="btn btn-outline-secondary btn-sm" aria-label="Alternar entre modo claro e escuro">
             <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
         </button>
         <div class="d-flex align-items-center gap-2 text-secondary">
-            <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>
+            <i class="bi bi-person-circle fs-5" aria-hidden="true"></i>
             <span class="d-none d-sm-inline small">Recepção</span>
             <form th:action="@{/logout}" method="post" class="ms-1">
-                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Encerrar sessão">
+                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Encerrar sessão" aria-label="Encerrar sessão">
                     <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
                 </button>
             </form>
@@ -47,7 +47,7 @@
     </div>
 </header>
 
-<!-- Menu lateral: itens ativos navegam; itens de fases futuras aparecem como indisponíveis -->
+<!-- Menu lateral: agrupado pela rotina do hotel -->
 <aside th:fragment="sidebar(ativo)" id="menuLateral" class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" aria-label="Menu principal">
     <div class="offcanvas-header d-lg-none">
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
@@ -57,21 +57,10 @@
         <span>HotelImpact</span>
     </div>
     <nav class="sidebar-nav" aria-label="Módulos do sistema">
+        <span class="sidebar-grupo" aria-hidden="true">Operação</span>
         <a th:href="@{/}" th:classappend="${ativo} == 'dashboard' ? 'active' : ''"
            th:attr="aria-current=${ativo} == 'dashboard' ? 'page' : null">
             <i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span>
-        </a>
-        <a th:href="@{/quartos}" th:classappend="${ativo} == 'quartos' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'quartos' ? 'page' : null">
-            <i class="bi bi-door-open" aria-hidden="true"></i><span>Quartos</span>
-        </a>
-        <a th:href="@{/categorias}" th:classappend="${ativo} == 'categorias' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'categorias' ? 'page' : null">
-            <i class="bi bi-tags" aria-hidden="true"></i><span>Categorias</span>
-        </a>
-        <a th:href="@{/hospedes}" th:classappend="${ativo} == 'hospedes' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'hospedes' ? 'page' : null">
-            <i class="bi bi-people" aria-hidden="true"></i><span>Hóspedes</span>
         </a>
         <a th:href="@{/reservas}" th:classappend="${ativo} == 'reservas' ? 'active' : ''"
            th:attr="aria-current=${ativo} == 'reservas' ? 'page' : null">
@@ -81,18 +70,32 @@
            th:attr="aria-current=${ativo} == 'hospedagens' ? 'page' : null">
             <i class="bi bi-key" aria-hidden="true"></i><span>Hospedagens</span>
         </a>
-        <a th:href="@{/itens}" th:classappend="${ativo} == 'consumos' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'consumos' ? 'page' : null">
-            <i class="bi bi-cup-straw" aria-hidden="true"></i><span>Consumos</span>
+
+        <span class="sidebar-grupo" aria-hidden="true">Quartos & insumos</span>
+        <a th:href="@{/quartos}" th:classappend="${ativo} == 'quartos' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'quartos' ? 'page' : null">
+            <i class="bi bi-door-open" aria-hidden="true"></i><span>Quartos</span>
         </a>
-        <span class="sidebar-item-indisponivel" aria-disabled="true" title="Disponível na Fase 5">
-            <i class="bi bi-cash-coin" aria-hidden="true"></i><span>Pagamentos</span>
-            <span class="badge badge-estado-neutro ms-auto">Fase 5</span>
-        </span>
         <a th:href="@{/manutencoes}" th:classappend="${ativo} == 'manutencao' ? 'active' : ''"
            th:attr="aria-current=${ativo} == 'manutencao' ? 'page' : null">
             <i class="bi bi-tools" aria-hidden="true"></i><span>Manutenção</span>
         </a>
+        <a th:href="@{/itens}" th:classappend="${ativo} == 'consumos' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'consumos' ? 'page' : null">
+            <i class="bi bi-cup-straw" aria-hidden="true"></i><span>Consumos</span>
+        </a>
+
+        <span class="sidebar-grupo" aria-hidden="true">Cadastros</span>
+        <a th:href="@{/hospedes}" th:classappend="${ativo} == 'hospedes' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'hospedes' ? 'page' : null">
+            <i class="bi bi-people" aria-hidden="true"></i><span>Hóspedes</span>
+        </a>
+        <a th:href="@{/categorias}" th:classappend="${ativo} == 'categorias' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'categorias' ? 'page' : null">
+            <i class="bi bi-tags" aria-hidden="true"></i><span>Categorias</span>
+        </a>
+
+        <span class="sidebar-grupo" aria-hidden="true">Gestão</span>
         <a th:href="@{/relatorios}" th:classappend="${ativo} == 'relatorios' ? 'active' : ''"
            th:attr="aria-current=${ativo} == 'relatorios' ? 'page' : null">
             <i class="bi bi-clipboard-data" aria-hidden="true"></i><span>Relatórios</span>
@@ -100,27 +103,38 @@
     </nav>
     <footer class="sidebar-footer">
         HotelImpact · Gestão hoteleira
-        <span class="d-block">v0.3 — desenvolvimento acadêmico</span>
     </footer>
 </aside>
 
+<!-- Cabeçalho de página padrão: contexto do módulo + título -->
+<div th:fragment="page-header(contexto, titulo)" class="page-header">
+    <div>
+        <div class="page-context" th:text="${contexto}">Módulo</div>
+        <h1 th:text="${titulo}">Título da página</h1>
+    </div>
+</div>
+
 <!-- Mensagens de feedback: sucesso via redirect (query), erro via modelo ou query -->
-<div th:fragment="mensagens">
-    <div class="alert alert-success alert-dismissible fade show" th:if="${param.sucesso}" role="alert">
-        <i class="bi bi-check-circle me-1" aria-hidden="true"></i><span th:text="${param.sucesso[0]}">Operação realizada.</span>
+<div th:fragment="mensagens" role="status" aria-live="polite">
+    <div class="hi-alerta alert alert-success" th:if="${param.sucesso}">
+        <i class="bi bi-check-circle" aria-hidden="true"></i><span th:text="${param.sucesso[0]}">Operação realizada.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar aviso"></button>
     </div>
-    <div class="alert alert-danger alert-dismissible fade show" th:if="${erro}" role="alert">
-        <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i><span th:text="${erro}">Ocorreu um erro.</span>
+    <div class="hi-alerta alert alert-danger" th:if="${erro}">
+        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span th:text="${erro}">Ocorreu um erro.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar aviso"></button>
     </div>
-    <div class="alert alert-danger alert-dismissible fade show" th:if="${param.erro}" role="alert">
-        <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i><span th:text="${param.erro[0]}">Ocorreu um erro.</span>
+    <div class="hi-alerta alert alert-danger" th:if="${param.erro}">
+        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span th:text="${param.erro[0]}">Ocorreu um erro.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar aviso"></button>
+    </div>
+    <div class="hi-alerta alert alert-danger" th:if="${erroPagamento}">
+        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span th:text="${erroPagamento}">Ocorreu um erro.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar aviso"></button>
     </div>
 </div>
 
-<!-- Estado vazio reutilizável: ícone + mensagem + chamada opcional para ação -->
+<!-- Estado vazio reutilizável: ícone + mensagem -->
 <div th:fragment="estado-vazio(icone, mensagem)">
     <div class="empty-state">
         <i class="bi fs-1" th:class="${icone}" aria-hidden="true"></i>
@@ -128,70 +142,63 @@
     </div>
 </div>
 
-<!-- Valor monetário em BRL (pt-BR): Thymeleaf usa POINT/COMMA como separadores -->
-<span th:fragment="dinheiro(valor)" class="text-nowrap"
+<!-- Valor monetário em BRL (pt-BR) -->
+<span th:fragment="dinheiro(valor)" class="numerico text-nowrap"
       th:text="'R$ ' + ${#numbers.formatDecimal(valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
 
-<!-- Badge do estado operacional do quarto -->
+<!-- Badges de status: ponto + rótulo legível. A cor nunca é o único sinal. -->
 <span th:fragment="badge-estado-quarto(estado)"
-      th:with="classe=${estado.name() == 'DISPONIVEL' ? 'badge-estado-ok' :
-                        (estado.name() == 'OCUPADO' ? 'badge-estado-ocupado' :
-                        (estado.name() == 'LIMPEZA' ? 'badge-estado-info' :
-                        (estado.name() == 'MANUTENCAO' ? 'badge-estado-atencao' : 'badge-estado-erro')))}"
-      class="badge" th:classappend="${classe}"
-      th:text="${estado.name() == 'MANUTENCAO' ? 'MANUTENÇÃO' : estado}">DISPONIVEL</span>
+      th:with="par=${estado.name() == 'DISPONIVEL' ? 'badge-estado-ok|Disponível' :
+                    (estado.name() == 'OCUPADO' ? 'badge-estado-ocupado|Ocupado' :
+                    (estado.name() == 'LIMPEZA' ? 'badge-estado-info|Em limpeza' :
+                    (estado.name() == 'MANUTENCAO' ? 'badge-estado-atencao|Em manutenção' : 'badge-estado-erro|Interditado')))}"
+      class="badge-status" th:classappend="${#strings.arraySplit(par, '|')[0]}"
+      th:text="${#strings.arraySplit(par, '|')[1]}">Disponível</span>
 
-<!-- Badge do estado da reserva -->
 <span th:fragment="badge-estado-reserva(estado)"
-      th:with="classe=${estado.name() == 'PENDENTE' ? 'badge-estado-atencao' :
-                        (estado.name() == 'CONFIRMADA' ? 'badge-estado-ok' :
-                        (estado.name() == 'CANCELADA' ? 'badge-estado-neutro' :
-                        (estado.name() == 'CONCLUIDA' ? 'badge-estado-info' : 'badge-estado-erro')))}"
-      class="badge" th:classappend="${classe}"
-      th:text="${estado}">PENDENTE</span>
+      th:with="par=${estado.name() == 'PENDENTE' ? 'badge-estado-atencao|Pendente' :
+                    (estado.name() == 'CONFIRMADA' ? 'badge-estado-ok|Confirmada' :
+                    (estado.name() == 'CANCELADA' ? 'badge-estado-neutro|Cancelada' :
+                    (estado.name() == 'CONCLUIDA' ? 'badge-estado-info|Concluída' : 'badge-estado-erro|Não compareceu')))}"
+      class="badge-status" th:classappend="${#strings.arraySplit(par, '|')[0]}"
+      th:text="${#strings.arraySplit(par, '|')[1]}">Pendente</span>
 
-<!-- Badge do estado da hospedagem -->
 <span th:fragment="badge-estado-hospedagem(estado)"
-      th:with="classe=${estado.name() == 'EM_ANDAMENTO' ? 'badge-estado-ocupado' :
-                        (estado.name() == 'ENCERRADA' ? 'badge-estado-info' : 'badge-estado-neutro')}"
-      class="badge" th:classappend="${classe}"
-      th:text="${estado}">EM_ANDAMENTO</span>
+      th:with="par=${estado.name() == 'EM_ANDAMENTO' ? 'badge-estado-ocupado|Em andamento' :
+                    (estado.name() == 'ENCERRADA' ? 'badge-estado-info|Encerrada' : 'badge-estado-neutro|Cancelada')}"
+      class="badge-status" th:classappend="${#strings.arraySplit(par, '|')[0]}"
+      th:text="${#strings.arraySplit(par, '|')[1]}">Em andamento</span>
 
-<!-- Badge do estado da ordem de manutenção -->
 <span th:fragment="badge-estado-manutencao(estado)"
-      th:with="classe=${estado.name() == 'ABERTA' ? 'badge-estado-atencao' :
-                        (estado.name() == 'EM_ANDAMENTO' ? 'badge-estado-ocupado' :
-                        (estado.name() == 'CONCLUIDA' ? 'badge-estado-ok' : 'badge-estado-neutro'))}"
-      class="badge" th:classappend="${classe}"
-      th:text="${estado}">ABERTA</span>
+      th:with="par=${estado.name() == 'ABERTA' ? 'badge-estado-atencao|Aberta' :
+                    (estado.name() == 'EM_ANDAMENTO' ? 'badge-estado-ocupado|Em andamento' :
+                    (estado.name() == 'CONCLUIDA' ? 'badge-estado-ok|Concluída' : 'badge-estado-neutro|Cancelada'))}"
+      class="badge-status" th:classappend="${#strings.arraySplit(par, '|')[0]}"
+      th:text="${#strings.arraySplit(par, '|')[1]}">Aberta</span>
 
-<!-- Badge da prioridade da manutenção -->
 <span th:fragment="badge-prioridade-manutencao(prioridade)"
-      th:with="classe=${prioridade.name() == 'CRITICA' ? 'badge-estado-erro' :
-                        (prioridade.name() == 'ALTA' ? 'badge-estado-atencao' :
-                        (prioridade.name() == 'MEDIA' ? 'badge-estado-info' : 'badge-estado-neutro'))}"
-      class="badge" th:classappend="${classe}"
-      th:text="${prioridade}">MEDIA</span>
+      th:with="par=${prioridade.name() == 'CRITICA' ? 'badge-estado-erro|Crítica' :
+                    (prioridade.name() == 'ALTA' ? 'badge-estado-atencao|Alta' :
+                    (prioridade.name() == 'MEDIA' ? 'badge-estado-info|Média' : 'badge-estado-neutro|Baixa'))}"
+      class="badge-status" th:classappend="${#strings.arraySplit(par, '|')[0]}"
+      th:text="${#strings.arraySplit(par, '|')[1]}">Média</span>
 
-<!-- Badge do estado do pagamento -->
 <span th:fragment="badge-estado-pagamento(estado)"
-      class="badge" th:classappend="${estado.name() == 'CONFIRMADO'} ? 'badge-estado-ok' : 'badge-estado-neutro'"
-      th:text="${estado}">CONFIRMADO</span>
+      class="badge-status" th:classappend="${estado.name() == 'CONFIRMADO'} ? 'badge-estado-ok' : 'badge-estado-neutro'"
+      th:text="${estado.name() == 'CONFIRMADO'} ? 'Confirmado' : 'Estornado'">Confirmado</span>
 
-<!-- Badge do estado do consumo -->
 <span th:fragment="badge-estado-consumo(estado)"
-      class="badge" th:classappend="${estado.name() == 'ATIVO'} ? 'badge-estado-ok' : 'badge-estado-neutro'"
-      th:text="${estado}">ATIVO</span>
+      class="badge-status" th:classappend="${estado.name() == 'ATIVO'} ? 'badge-estado-ok' : 'badge-estado-neutro'"
+      th:text="${estado.name() == 'ATIVO'} ? 'Ativo' : 'Cancelado'">Ativo</span>
 
-<!-- Badge genérico ativo/inativo -->
 <span th:fragment="badge-ativo(ativo)"
-      class="badge" th:classappend="${ativo} ? 'badge-estado-ok' : 'badge-estado-neutro'"
+      class="badge-status" th:classappend="${ativo} ? 'badge-estado-ok' : 'badge-estado-neutro'"
       th:text="${ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
 
 <!-- Paginação (pagina: Page do Spring; urlBase: ex. @{/hospedes}; queryString: filtros iniciando com '&' ou vazio) -->
 <nav th:fragment="paginacao(pagina, urlBase, queryString)" th:if="${pagina != null and pagina.totalPages > 1}"
      aria-label="Paginação de resultados">
-    <ul class="pagination justify-content-center mb-0">
+    <ul class="pagination pagination-sm justify-content-center mb-0">
         <li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
             <a class="page-link" th:href="${urlBase} + '?page=' + (${pagina.number} - 1) + ${queryString}"
                th:if="${!pagina.first}" aria-label="Página anterior">Anterior</a>

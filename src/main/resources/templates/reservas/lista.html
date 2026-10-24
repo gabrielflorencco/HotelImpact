@@ -13,12 +13,17 @@
         <main class="app-content" id="conteudoPrincipal">
             <div th:replace="~{layout/fragments :: mensagens}"></div>
 
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-                <h1 class="h3 page-title mb-0" th:text="${titulo}">Reservas</h1>
-                <a class="btn btn-primary" th:href="@{/reservas/novo}">
+            <div class="page-header">
+    <div>
+        <div class="page-context">Operação</div>
+        <h1 th:text="${titulo}">Reservas</h1>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-primary" th:href="@{/reservas/novo}">
                     <i class="bi bi-plus-lg me-1"></i>Nova reserva
                 </a>
-            </div>
+    </div>
+</div>
 
             <div class="card shadow-sm mb-3">
                 <div class="card-body py-3">
@@ -51,7 +56,7 @@
                     </div>
 
                     <div class="table-responsive" th:unless="${#lists.isEmpty(pagina.content)}">
-                        <table class="table table-hover mb-0">
+                        <table class="tabela-operacional table table-hover mb-0">
                             <thead>
                             <tr>
                                 <th>Código</th>
@@ -59,8 +64,8 @@
                                 <th>Quarto</th>
                                 <th>Check-in</th>
                                 <th>Check-out</th>
-                                <th class="text-center">Noites</th>
-                                <th>Total</th>
+                                <th class="col-centro">Noites</th>
+                                <th class="col-num">Total</th>
                                 <th>Estado</th>
                                 <th style="width: 1%">Ações</th>
                             </tr>
@@ -76,8 +81,8 @@
                                 <td th:text="${reserva.quartoNumero}">101</td>
                                 <td th:text="${#temporals.format(reserva.dataCheckIn, 'dd/MM/yyyy')}">01/11/2026</td>
                                 <td th:text="${#temporals.format(reserva.dataCheckOut, 'dd/MM/yyyy')}">03/11/2026</td>
-                                <td class="text-center" th:text="${reserva.noites}">2</td>
-                                <td><span th:replace="~{layout/fragments :: dinheiro(${reserva.valorTotal})}">R$ 360,00</span></td>
+                                <td class="col-centro numerico" th:text="${reserva.noites}">2</td>
+                                <td class="col-num"><span th:replace="~{layout/fragments :: dinheiro(${reserva.valorTotal})}">R$ 360,00</span></td>
                                 <td>
                                     <span th:replace="~{layout/fragments :: badge-estado-reserva(${reserva.estado})}">PENDENTE</span>
                                 </td>

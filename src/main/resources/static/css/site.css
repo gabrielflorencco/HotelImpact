@@ -20,18 +20,19 @@
     --hi-text: #1a2332;
     --hi-text-secondary: #5b6879;
 
-    /* Sidebar (escura nos dois temas — superfície de navegação) */
-    --hi-sidebar-bg: #16202f;
-    --hi-sidebar-bg-hover: #1f2c40;
-    --hi-sidebar-text: #b6c2d2;
-    --hi-sidebar-muted: #94a3b8;
-    --hi-sidebar-accent: #d97706;
+    /* Sidebar clara com bordas (referência Fixoria) */
+    --hi-sidebar-bg: #ffffff;
+    --hi-sidebar-bg-hover: #f1f5f4;
+    --hi-sidebar-text: #5b6879;
+    --hi-sidebar-muted: #64748b;
+    --hi-sidebar-accent: #1b7a4e;
 
-    /* Acento (identidade: âmbar de hotel) */
-    --hi-accent: #b45309;
-    --hi-accent-hover: #92400e;
-    --hi-accent-text: #92400e;          /* textos/eyebrows sobre claro */
-    --hi-accent-soft: #fdf3e7;          /* fundo suave para realces */
+    /* Cor primária: verde sofisticado de hospitalidade */
+    --hi-accent: #1b7a4e;
+    --hi-accent-hover: #14603d;
+    --hi-accent-text: #14603d;          /* textos/eyebrows sobre claro */
+    --hi-accent-soft: #edfaf2;          /* fundo suave para realces */
+    --hi-destaque: #b45309;             /* âmbar: destaques pontuais */
 
     /* Estado semântico (dot + rótulo) */
     --hi-ok: #16a34a;
@@ -68,7 +69,7 @@
     --hi-accent: #34c383;
     --hi-accent-hover: #4ade80;
     --hi-accent-text: #6ee7b7;
-    --hi-accent-soft: rgba(52, 195, 131, .14);
+    --hi-accent-soft: #16352a;
     --hi-destaque: #fbbf24;
 
     --hi-ok: #4ade80;
@@ -191,9 +192,9 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     gap: var(--hi-space-2);
     padding: var(--hi-space-3) var(--hi-space-4);
     font-size: 1.05rem;
-    font-weight: 650;
+    font-weight: 700;
     letter-spacing: -.01em;
-    color: #fff;
+    color: var(--hi-text);
     border-bottom: 1px solid var(--hi-border);
 }
 
@@ -262,7 +263,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     gap: .625rem;
 }
 
-.sidebar-perfil i { font-size: 1.375rem; color: var(--hi-sidebar-muted); }
+.sidebar-perfil i { font-size: 1.375rem; color: var(--hi-sidebar-accent); }
 .sidebar-perfil .perfil-nome { color: var(--hi-text); font-weight: 600; font-size: .8125rem; }
 .sidebar-perfil .perfil-papel { display: block; font-size: .6875rem; }
 .sidebar-perfil form { margin-left: auto; }
@@ -432,12 +433,12 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 .badge-estado-info    { color: #1d4ed8; background-color: #eff6ff; }
 .badge-estado-ocupado { color: #6d28d9; background-color: #f5f3ff; }
 
-[data-bs-theme="dark"] .badge-estado-ok      { color: #86efac; background-color: rgba(22, 163, 74, .16); }
-[data-bs-theme="dark"] .badge-estado-atencao { color: #fcd34d; background-color: rgba(217, 119, 6, .16); }
-[data-bs-theme="dark"] .badge-estado-neutro  { color: #cbd5e1; background-color: rgba(100, 116, 139, .22); }
-[data-bs-theme="dark"] .badge-estado-erro    { color: #fca5a5; background-color: rgba(220, 38, 38, .16); }
-[data-bs-theme="dark"] .badge-estado-info    { color: #93c5fd; background-color: rgba(37, 99, 235, .18); }
-[data-bs-theme="dark"] .badge-estado-ocupado  { color: #c4b5fd; background-color: rgba(124, 58, 237, .18); }
+[data-bs-theme="dark"] .badge-estado-ok      { color: #86efac; background-color: #143826; }
+[data-bs-theme="dark"] .badge-estado-atencao { color: #fcd34d; background-color: #3d2c10; }
+[data-bs-theme="dark"] .badge-estado-neutro  { color: #cbd5e1; background-color: #2a3444; }
+[data-bs-theme="dark"] .badge-estado-erro    { color: #fca5a5; background-color: #3a1a1a; }
+[data-bs-theme="dark"] .badge-estado-info    { color: #93c5fd; background-color: #16283f; }
+[data-bs-theme="dark"] .badge-estado-ocupado  { color: #c4b5fd; background-color: #2b2145; }
 
 /* ---- Formulários ------------------------------------------------------------------- */
 .form-label { font-size: .8125rem; font-weight: 500; color: var(--hi-text); margin-bottom: .25rem; }
@@ -569,6 +570,24 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 .login-lado-form { background-color: var(--hi-surface); }
+
+/* Botão outline-primary: verde do design system em ambos os temas. */
+.btn-outline-primary {
+    --bs-btn-color: var(--hi-accent-text);
+    --bs-btn-border-color: var(--hi-accent);
+    --bs-btn-hover-bg: var(--hi-accent);
+    --bs-btn-hover-border-color: var(--hi-accent);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-active-bg: var(--hi-accent-hover);
+    --bs-btn-active-border-color: var(--hi-accent-hover);
+    --bs-btn-active-color: #ffffff;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: var(--hi-accent);
+    --bs-btn-hover-color: #06231a;
+    --bs-btn-active-color: #06231a;
+}
 
 /* Botões outline: texto com contraste ≥4.5 sobre o fundo da página. */
 .btn-outline-secondary {

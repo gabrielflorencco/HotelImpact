@@ -20,7 +20,7 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-primary" th:href="@{/manutencoes/novo}">
-                    <i class="bi bi-plus-lg me-1"></i>Nova ordem
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nova ordem
                 </a>
     </div>
 </div>
@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-4 col-md-2 d-grid gap-1">
                             <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-search me-1"></i>Filtrar
+                                <i class="bi bi-search me-1" aria-hidden="true"></i>Filtrar
                             </button>
                             <a class="btn btn-sm btn-link py-0" th:href="@{/manutencoes}">Limpar</a>
                         </div>
@@ -91,7 +91,7 @@
                                     <div class="d-flex gap-1 justify-content-end">
                                         <a class="btn btn-sm btn-outline-secondary" title="Detalhes"
                                            th:href="@{'/manutencoes/' + ${ordem.id}}">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
                                     </div>
                                 </td>

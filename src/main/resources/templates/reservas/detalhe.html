@@ -30,7 +30,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                                <i class="bi bi-calendar-check display-5 text-secondary"></i>
+                                <i class="bi bi-calendar-check display-5 text-secondary" aria-hidden="true"></i>
                                 <div>
                                     <h2 class="h4 mb-1" th:text="${reserva.codigo}">RES-2026-000123</h2>
                                     <span th:replace="~{layout/fragments :: badge-estado-reserva(${reserva.estado})}">PENDENTE</span>
@@ -85,35 +85,35 @@
                             <form th:if="${reserva.estado.name() == 'PENDENTE'}" method="post"
                                   th:action="@{'/reservas/' + ${reserva.id} + '/confirmar'}">
                                 <button type="submit" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-check-lg me-1"></i>Confirmar reserva
+                                    <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Confirmar reserva
                                 </button>
                             </form>
                             <form th:if="${podeCheckIn}" method="post"
                                   th:action="@{'/reservas/' + ${reserva.id} + '/check-in'}">
                                 <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-key me-1"></i>Fazer check-in
+                                    <i class="bi bi-key me-1" aria-hidden="true"></i>Fazer check-in
                                 </button>
                             </form>
                             <a th:if="${hospedagemId != null}" class="btn btn-outline-primary btn-sm"
                                th:href="@{'/hospedagens/' + ${hospedagemId}}">
-                                <i class="bi bi-door-open me-1"></i>Ver hospedagem
+                                <i class="bi bi-door-open me-1" aria-hidden="true"></i>Ver hospedagem
                             </a>
                             <form th:if="${podeNoShow}" method="post"
                                   th:action="@{'/reservas/' + ${reserva.id} + '/no-show'}"
                                   th:attr="data-confirmar='Registrar no-show na reserva ' + ${reserva.codigo} + '? O período voltará a ficar disponível.'">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-person-x me-1"></i>Registrar no-show
+                                    <i class="bi bi-person-x me-1" aria-hidden="true"></i>Registrar no-show
                                 </button>
                             </form>
                             <form th:if="${reserva.ativa}" method="post"
                                   th:action="@{'/reservas/' + ${reserva.id} + '/cancelar'}"
                                   th:attr="data-confirmar='Cancelar a reserva ' + ${reserva.codigo} + '? O período voltará a ficar disponível.'">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-x-lg me-1"></i>Cancelar reserva
+                                    <i class="bi bi-x-lg me-1" aria-hidden="true"></i>Cancelar reserva
                                 </button>
                             </form>
                             <a class="btn btn-outline-secondary btn-sm" th:href="@{/reservas}">
-                                <i class="bi bi-list me-1"></i>Voltar à listagem
+                                <i class="bi bi-list me-1" aria-hidden="true"></i>Voltar à listagem
                             </a>
                         </div>
                     </div>

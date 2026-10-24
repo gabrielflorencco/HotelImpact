@@ -5,13 +5,13 @@
 <main class="container text-center py-5">
     <div class="card shadow-sm mx-auto" style="max-width: 520px;">
         <div class="card-body p-4 p-md-5">
-            <i class="bi bi-exclamation-triangle display-4 text-secondary"></i>
+            <i class="bi bi-exclamation-triangle display-4 text-secondary" aria-hidden="true"></i>
             <h1 class="h3 mt-3" th:text="${titulo} ?: 'Erro'">Erro</h1>
             <p class="text-secondary" th:text="${mensagem} ?: 'Ocorreu um erro inesperado.'">
                 Ocorreu um erro inesperado.
             </p>
             <a class="btn btn-primary" th:href="@{/}">
-                <i class="bi bi-house me-1"></i>Voltar ao início
+                <i class="bi bi-house me-1" aria-hidden="true"></i>Voltar ao início
             </a>
         </div>
     </div>

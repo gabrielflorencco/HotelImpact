@@ -30,7 +30,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3 mb-4">
-                                <i class="bi bi-person-circle display-5 text-secondary"></i>
+                                <i class="bi bi-person-circle display-5 text-secondary" aria-hidden="true"></i>
                                 <div>
                                     <h2 class="h4 mb-0" th:text="${hospede.nome}">Ana Souza</h2>
                                     <span class="text-secondary small">
@@ -59,10 +59,10 @@
                         <div class="card-footer bg-transparent d-flex gap-2">
                             <a class="btn btn-outline-primary btn-sm"
                                th:href="@{'/hospedes/' + ${hospede.id} + '/editar'}">
-                                <i class="bi bi-pencil me-1"></i>Editar
+                                <i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar
                             </a>
                             <a class="btn btn-outline-secondary btn-sm" th:href="@{/hospedes}">
-                                <i class="bi bi-list me-1"></i>Voltar à listagem
+                                <i class="bi bi-list me-1" aria-hidden="true"></i>Voltar à listagem
                             </a>
                         </div>
                     </div>

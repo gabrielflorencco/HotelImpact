@@ -20,7 +20,7 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-primary" th:href="@{/hospedes/novo}">
-                    <i class="bi bi-plus-lg me-1"></i>Novo hóspede
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Novo hóspede
                 </a>
     </div>
 </div>
@@ -33,7 +33,7 @@
                                 Buscar por nome, CPF, telefone ou e-mail
                             </label>
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
                                 <input type="text" class="form-control" id="termo" name="termo"
                                        th:value="${termo}" placeholder="Ex.: Ana, 529.982, 98888-0001, ana@exemplo.com">
                             </div>
@@ -85,16 +85,16 @@
                                     <div class="d-flex gap-1 justify-content-end">
                                         <a class="btn btn-sm btn-outline-secondary" title="Detalhes"
                                            th:href="@{'/hospedes/' + ${hospede.id}}">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
                                         <a class="btn btn-sm btn-outline-secondary" title="Editar"
                                            th:href="@{'/hospedes/' + ${hospede.id} + '/editar'}">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
                                         </a>
                                         <form th:action="@{'/hospedes/' + ${hospede.id} + '/excluir'}" method="post"
                                               th:attr="data-confirmar='Excluir o hóspede ' + ${hospede.nome} + '? Esta ação não pode ser desfeita.'">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                     </div>

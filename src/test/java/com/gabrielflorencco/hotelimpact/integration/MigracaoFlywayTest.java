@@ -33,8 +33,10 @@ class MigracaoFlywayTest {
     private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>(DockerImageName.parse("postgres:18-alpine"))
                     .withDatabaseName("hotelimpact")
-                    .withUsername("teste")
-                    .withPassword("teste");
+                    // Usuário distinto do dump original: valida que a V1 não
+                    // referencia a role do banco de testes (OWNER TO).
+                    .withUsername("migracao")
+                    .withPassword("migracao");
 
     static {
         POSTGRES.start();

@@ -20,7 +20,7 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-primary" th:href="@{/categorias/novo}">
-                    <i class="bi bi-plus-lg me-1"></i>Nova categoria
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nova categoria
                 </a>
     </div>
 </div>
@@ -69,12 +69,12 @@
                                         <a class="btn btn-sm btn-outline-secondary"
                                            th:href="@{'/categorias/' + ${categoria.id} + '/editar'}"
                                            title="Editar">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
                                         </a>
                                         <form th:action="@{'/categorias/' + ${categoria.id} + '/excluir'}" method="post"
                                               th:attr="data-confirmar='Excluir a categoria ' + ${categoria.nome} + '? Esta ação não pode ser desfeita.'">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                     </div>

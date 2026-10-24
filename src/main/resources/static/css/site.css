@@ -24,7 +24,7 @@
     --hi-sidebar-bg: #16202f;
     --hi-sidebar-bg-hover: #1f2c40;
     --hi-sidebar-text: #b6c2d2;
-    --hi-sidebar-muted: #6b7889;
+    --hi-sidebar-muted: #94a3b8;
     --hi-sidebar-accent: #d97706;
 
     /* Acento (identidade: âmbar de hotel) */
@@ -496,6 +496,13 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     display: flex;
     align-items: center;
     background-color: var(--hi-page-bg);
+}
+
+/* Botões outline: texto com contraste ≥4.5 sobre o fundo da página. */
+.btn-outline-secondary {
+    --bs-btn-color: var(--hi-text-secondary);
+    --bs-btn-hover-color: var(--hi-text);
+    --bs-btn-active-color: var(--hi-text);
 }
 
 /* ---- Utilidades ------------------------------------------------------------------------------- */

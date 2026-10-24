@@ -30,7 +30,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                                <i class="bi bi-tools display-5 text-secondary"></i>
+                                <i class="bi bi-tools display-5 text-secondary" aria-hidden="true"></i>
                                 <div>
                                     <h2 class="h4 mb-1" th:text="${ordem.titulo}">Ar condicionado vazando</h2>
                                     <span th:replace="~{layout/fragments :: badge-estado-manutencao(${ordem.estado})}">ABERTA</span>
@@ -61,24 +61,24 @@
                             <form th:if="${ordem.podeIniciar}" method="post"
                                   th:action="@{'/manutencoes/' + ${ordem.id} + '/iniciar'}">
                                 <button type="submit" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-play-circle me-1"></i>Iniciar execução
+                                    <i class="bi bi-play-circle me-1" aria-hidden="true"></i>Iniciar execução
                                 </button>
                             </form>
                             <form th:if="${ordem.podeConcluirOuCancelar}" method="post"
                                   th:action="@{'/manutencoes/' + ${ordem.id} + '/concluir'}">
                                 <button type="submit" class="btn btn-outline-success btn-sm">
-                                    <i class="bi bi-check-lg me-1"></i>Concluir
+                                    <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Concluir
                                 </button>
                             </form>
                             <form th:if="${ordem.podeConcluirOuCancelar}" method="post"
                                   th:action="@{'/manutencoes/' + ${ordem.id} + '/cancelar'}"
                                   th:attr="data-confirmar='Cancelar a ordem de manutenção do quarto ' + ${ordem.quartoNumero} + '? O quarto será liberado quando aplicável.'">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-x-lg me-1"></i>Cancelar ordem
+                                    <i class="bi bi-x-lg me-1" aria-hidden="true"></i>Cancelar ordem
                                 </button>
                             </form>
                             <a class="btn btn-outline-secondary btn-sm" th:href="@{/manutencoes}">
-                                <i class="bi bi-list me-1"></i>Voltar à listagem
+                                <i class="bi bi-list me-1" aria-hidden="true"></i>Voltar à listagem
                             </a>
                         </div>
                     </div>

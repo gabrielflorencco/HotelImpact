@@ -30,7 +30,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                                <i class="bi bi-key display-5 text-secondary"></i>
+                                <i class="bi bi-key display-5 text-secondary" aria-hidden="true"></i>
                                 <div>
                                     <h2 class="h4 mb-1" th:text="${hospedagem.reservaCodigo}">RES-2026-000123</h2>
                                     <span th:replace="~{layout/fragments :: badge-estado-hospedagem(${hospedagem.estado})}">EM_ANDAMENTO</span>
@@ -69,7 +69,7 @@
                                   class="mb-2">
                                 <div class="mb-2" th:if="${saldo.signum() > 0}">
                                     <div class="alert alert-warning py-2 small mb-2" role="alert">
-                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>
                                         Há saldo pendente de
                                         <strong th:replace="~{layout/fragments :: dinheiro(${saldo})}">R$ 0,00</strong>.
                                         O check-out sem quitação exige uma justificativa de encerramento excepcional.
@@ -81,16 +81,16 @@
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary btn-sm"
                                         th:attr="data-confirmar='Realizar o check-out da hospedagem ' + ${hospedagem.reservaCodigo} + '? O quarto será enviado para limpeza.'">
-                                    <i class="bi bi-box-arrow-right me-1"></i>Realizar check-out
+                                    <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Realizar check-out
                                 </button>
                             </form>
                             <div class="d-flex gap-2 flex-wrap"
                                  th:classappend="${hospedagem.estado.name() == 'EM_ANDAMENTO'} ? 'border-top pt-2'">
                                 <a class="btn btn-outline-secondary btn-sm" th:href="@{'/reservas/' + ${hospedagem.reservaId}}">
-                                    <i class="bi bi-calendar-check me-1"></i>Ver reserva
+                                    <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>Ver reserva
                                 </a>
                                 <a class="btn btn-outline-secondary btn-sm" th:href="@{/hospedagens}">
-                                    <i class="bi bi-list me-1"></i>Voltar à listagem
+                                    <i class="bi bi-list me-1" aria-hidden="true"></i>Voltar à listagem
                                 </a>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                     <div class="card shadow-sm mt-3">
                         <div class="card-body">
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                                <h2 class="h5 mb-0"><i class="bi bi-cup-straw me-2"></i>Consumos da hospedagem</h2>
+                                <h2 class="h5 mb-0"><i class="bi bi-cup-straw me-2" aria-hidden="true"></i>Consumos da hospedagem</h2>
                                 <span class="text-secondary small">
                                     Total consumido:
                                     <span class="fw-semibold" th:replace="~{layout/fragments :: dinheiro(${totalConsumos})}">R$ 0,00</span>
@@ -164,7 +164,7 @@
                                                   th:action="@{'/hospedagens/' + ${hospedagem.id} + '/consumos/' + ${consumo.id} + '/cancelar'}"
                                                   th:attr="data-confirmar='Cancelar o lançamento de ' + ${consumo.quantidade} + 'x ' + ${consumo.itemNome} + '? O estoque será restituído quando aplicável.'">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar lançamento">
-                                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                                    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
                                                 </button>
                                             </form>
                                         </td>
@@ -177,7 +177,7 @@
                     <div class="card shadow-sm mt-3">
                         <div class="card-body">
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                                <h2 class="h5 mb-0"><i class="bi bi-cash-coin me-2"></i>Pagamentos</h2>
+                                <h2 class="h5 mb-0"><i class="bi bi-cash-coin me-2" aria-hidden="true"></i>Pagamentos</h2>
                                 <span class="small">
                                     <span class="text-secondary">Conta:</span>
                                     <span class="fw-semibold" th:replace="~{layout/fragments :: dinheiro(${totalConta})}">R$ 400,00</span>
@@ -191,7 +191,7 @@
                             </div>
 
                             <div class="alert alert-danger py-2 small" th:if="${erroPagamento}" role="alert">
-                                <i class="bi bi-exclamation-triangle me-1"></i><span th:text="${erroPagamento}">Erro.</span>
+                                <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i><span th:text="${erroPagamento}">Erro.</span>
                             </div>
 
                             <form th:if="${podePagar}" th:object="${pagamentoForm}" method="post" novalidate
@@ -254,7 +254,7 @@
                                                   th:action="@{'/hospedagens/' + ${hospedagem.id} + '/pagamentos/' + ${pagamento.id} + '/estornar'}"
                                                   th:attr="data-confirmar='Estornar o pagamento de ' + ${pagamento.valor} + ' (' + ${pagamento.forma} + ')? O valor deixará de contar como recebido.'">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Estornar pagamento">
-                                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                                    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
                                                 </button>
                                             </form>
                                         </td>

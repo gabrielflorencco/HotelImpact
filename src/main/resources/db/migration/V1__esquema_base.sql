@@ -61,7 +61,6 @@ CREATE TABLE public.categoria_quarto (
 );
 
 
-ALTER TABLE public.categoria_quarto OWNER TO teste;
 
 --
 -- Name: categoria_quarto_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -96,7 +95,6 @@ CREATE TABLE public.consumo (
 );
 
 
-ALTER TABLE public.consumo OWNER TO teste;
 
 --
 -- Name: consumo_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -130,7 +128,6 @@ CREATE TABLE public.hospedagem (
 );
 
 
-ALTER TABLE public.hospedagem OWNER TO teste;
 
 --
 -- Name: hospedagem_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -162,7 +159,6 @@ CREATE TABLE public.hospede (
 );
 
 
-ALTER TABLE public.hospede OWNER TO teste;
 
 --
 -- Name: hospede_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -198,7 +194,6 @@ CREATE TABLE public.item_catalogo (
 );
 
 
-ALTER TABLE public.item_catalogo OWNER TO teste;
 
 --
 -- Name: item_catalogo_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -234,7 +229,6 @@ CREATE TABLE public.ordem_manutencao (
 );
 
 
-ALTER TABLE public.ordem_manutencao OWNER TO teste;
 
 --
 -- Name: ordem_manutencao_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -267,7 +261,6 @@ CREATE TABLE public.pagamento (
 );
 
 
-ALTER TABLE public.pagamento OWNER TO teste;
 
 --
 -- Name: pagamento_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -302,7 +295,6 @@ CREATE TABLE public.quarto (
 );
 
 
-ALTER TABLE public.quarto OWNER TO teste;
 
 --
 -- Name: quarto_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -343,7 +335,6 @@ CREATE TABLE public.reserva (
 );
 
 
-ALTER TABLE public.reserva OWNER TO teste;
 
 --
 -- Name: reserva_id_seq; Type: SEQUENCE; Schema: public; Owner: teste
@@ -374,7 +365,6 @@ CREATE TABLE public.tarefa_limpeza (
 );
 
 
-ALTER TABLE public.tarefa_limpeza OWNER TO teste;
 
 --
 -- Name: tarefa_limpeza_id_seq; Type: SEQUENCE; Schema: public; Owner: teste

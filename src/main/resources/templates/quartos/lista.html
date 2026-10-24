@@ -20,7 +20,7 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-primary" th:href="@{/quartos/novo}">
-                    <i class="bi bi-plus-lg me-1"></i>Novo quarto
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Novo quarto
                 </a>
     </div>
 </div>
@@ -51,7 +51,7 @@
                         </div>
                         <div class="col-4 col-md-2 d-grid gap-1">
                             <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-search me-1"></i>Filtrar
+                                <i class="bi bi-search me-1" aria-hidden="true"></i>Filtrar
                             </button>
                             <a class="btn btn-sm btn-link py-0" th:href="@{/quartos}">Limpar</a>
                         </div>
@@ -99,43 +99,43 @@
                                     <div class="d-flex gap-1 justify-content-end">
                                         <a class="btn btn-sm btn-outline-secondary" title="Editar"
                                            th:href="@{'/quartos/' + ${quarto.id} + '/editar'}">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
                                         </a>
                                         <form th:if="${quarto.estado.name() == 'DISPONIVEL'}"
                                               th:action="@{'/quartos/' + ${quarto.id} + '/interditar'}" method="post"
                                               th:attr="data-confirmar='Interditar o quarto ' + ${quarto.numero} + '? Ele não receberá hospedagens até ser liberado.'">
                                             <button type="submit" class="btn btn-sm btn-outline-warning" title="Interditar">
-                                                <i class="bi bi-cone-striped"></i>
+                                                <i class="bi bi-cone-striped" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                         <form th:if="${quarto.estado.name() == 'INTERDITADO'}"
                                               th:action="@{'/quartos/' + ${quarto.id} + '/liberar'}" method="post">
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Liberar">
-                                                <i class="bi bi-unlock"></i>
+                                                <i class="bi bi-unlock" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                         <form th:if="${quarto.estado.name() == 'LIMPEZA'}"
                                               th:action="@{'/quartos/' + ${quarto.id} + '/concluir-limpeza'}" method="post">
                                             <button type="submit" class="btn btn-sm btn-outline-success"
                                                     title="Concluir limpeza (quarto volta a ficar disponível)">
-                                                <i class="bi bi-stars"></i>
+                                                <i class="bi bi-stars" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                         <form th:action="@{'/quartos/' + ${quarto.id} + '/alternar-ativo'}" method="post"
                                               th:attr="data-confirmar=${quarto.ativo} ? 'Desativar o quarto ' + ${quarto.numero} + '?' : null">
                                             <button th:if="${quarto.ativo}" type="submit"
                                                     class="btn btn-sm btn-outline-secondary" title="Desativar">
-                                                <i class="bi bi-pause-circle"></i>
+                                                <i class="bi bi-pause-circle" aria-hidden="true"></i>
                                             </button>
                                             <button th:unless="${quarto.ativo}" type="submit"
                                                     class="btn btn-sm btn-outline-secondary" title="Ativar">
-                                                <i class="bi bi-play-circle"></i>
+                                                <i class="bi bi-play-circle" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                         <form th:action="@{'/quartos/' + ${quarto.id} + '/excluir'}" method="post"
                                               th:attr="data-confirmar='Excluir o quarto ' + ${quarto.numero} + '? Esta ação não pode ser desfeita.'">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                     </div>

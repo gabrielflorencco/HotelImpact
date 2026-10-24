@@ -34,7 +34,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="alert alert-info py-2 small" th:if="${form.id != null}">
-                                <i class="bi bi-info-circle me-1"></i>
+                                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                                 O estado operacional do quarto muda apenas pelas operações do sistema
                                 (check-in, limpeza, manutenção e interdição).
                             </div>
@@ -96,7 +96,7 @@
 
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-check-lg me-1"></i>Salvar
+                                        <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Salvar
                                     </button>
                                     <a class="btn btn-outline-secondary" th:href="@{/quartos}">Cancelar</a>
                                 </div>

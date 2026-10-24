@@ -20,7 +20,7 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-primary" th:href="@{/itens/novo}">
-                    <i class="bi bi-plus-lg me-1"></i>Novo item
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Novo item
                 </a>
     </div>
 </div>
@@ -68,12 +68,12 @@
                                     <div class="d-flex gap-1 justify-content-end">
                                         <a class="btn btn-sm btn-outline-secondary" title="Editar"
                                            th:href="@{'/itens/' + ${item.id} + '/editar'}">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
                                         </a>
                                         <form th:action="@{'/itens/' + ${item.id} + '/excluir'}" method="post"
                                               th:attr="data-confirmar='Excluir o item ' + ${item.nome} + '? Esta ação não pode ser desfeita.'">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         </form>
                                     </div>

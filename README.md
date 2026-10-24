@@ -107,8 +107,9 @@ Páginas de relatórios históricos serão avaliadas como evolução futura.
 
 ## Autenticação e execução em produção
 
-Todo o sistema exige usuário autenticado (login por formulário, logout e
-proteção CSRF — padrões do Spring Security). Em desenvolvimento, o usuário
+Todo o sistema exige usuário autenticado (login por formulário próprio em
+pt-BR, logout na barra superior e proteção CSRF — padrões do Spring
+Security). Em desenvolvimento, o usuário
 `recepcao` com a senha `recepcao-dev` é criado automaticamente; em produção
 defina as credenciais por variável de ambiente:
 

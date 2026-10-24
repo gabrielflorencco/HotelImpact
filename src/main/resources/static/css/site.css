@@ -360,7 +360,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 /* Linha de ações por registro: ícones discretos, alvo de toque confortável. */
 .acoes-linha {
     display: inline-flex;
-    gap: .25rem;
+    gap: .375rem;
     justify-content: flex-end;
 }
 
@@ -524,6 +524,45 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     --bs-btn-color: var(--hi-text-secondary);
     --bs-btn-hover-color: var(--hi-text);
     --bs-btn-active-color: var(--hi-text);
+}
+
+/* Links de entidade em tabelas: cor do texto, sublinha só no hover (não o azul padrão). */
+.link-entidade {
+    color: var(--hi-text);
+    text-decoration: none;
+}
+
+.link-entidade:hover {
+    color: var(--hi-accent-text);
+    text-decoration: underline;
+}
+
+/* Links de ação curta ("ver mais") nos cabeçalhos de card do painel. */
+.link-acao {
+    color: var(--hi-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link-acao:hover {
+    color: var(--hi-accent-text);
+    text-decoration: underline;
+}
+
+/* Limpar filtros: link discreto, hierarquia abaixo do botão de filtrar. */
+.btn-filtro-limpar {
+    background: none;
+    border: 0;
+    padding: .25rem 0;
+    font-size: .8125rem;
+    color: var(--hi-text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-filtro-limpar:hover {
+    color: var(--hi-text);
+    text-decoration: underline;
 }
 
 /* ---- Site institucional público --------------------------------------------------------- */

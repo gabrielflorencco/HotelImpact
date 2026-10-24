@@ -40,7 +40,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-search me-1" aria-hidden="true"></i>Filtrar
                             </button>
-                            <a class="btn btn-sm btn-link py-0" th:href="@{/manutencoes}">Limpar</a>
+                            <a class="btn-filtro-limpar" th:href="@{/manutencoes}">Limpar</a>
                         </div>
                     </form>
                 </div>
@@ -75,7 +75,7 @@
                                           th:if="${ordem.interditouQuarto}">interditou</span>
                                 </td>
                                 <td>
-                                    <a class="text-decoration-none"
+                                    <a class="link-entidade"
                                        th:href="@{'/manutencoes/' + ${ordem.id}}"
                                        th:text="${ordem.titulo}">Ar condicionado vazando</a>
                                 </td>

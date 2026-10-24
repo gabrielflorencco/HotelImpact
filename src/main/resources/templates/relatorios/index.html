@@ -37,7 +37,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-search me-1" aria-hidden="true"></i>Atualizar
                             </button>
-                            <a class="btn btn-sm btn-link py-0" th:href="@{/relatorios}">Mês atual</a>
+                            <a class="btn-filtro-limpar" th:href="@{/relatorios}">Mês atual</a>
                         </div>
                     </form>
                 </div>
@@ -116,7 +116,7 @@
                             <tbody>
                             <tr th:each="hospedagem : ${hospedagens}">
                                 <td>
-                                    <a class="fw-semibold text-decoration-none"
+                                    <a class="fw-semibold link-entidade"
                                        th:href="@{'/hospedagens/' + ${hospedagem.id}}"
                                        th:text="${hospedagem.reservaCodigo}">RES-2026-000123</a>
                                 </td>

@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-auto d-grid gap-1">
                             <button type="submit" class="btn btn-sm btn-outline-primary">Buscar</button>
-                            <a class="btn btn-sm btn-link py-0" th:href="@{/hospedes}">Limpar</a>
+                            <a class="btn-filtro-limpar" th:href="@{/hospedes}">Limpar</a>
                         </div>
                     </form>
                 </div>
@@ -70,7 +70,7 @@
                             <tbody>
                             <tr th:each="hospede : ${pagina.content}">
                                 <td>
-                                    <a class="fw-semibold text-decoration-none"
+                                    <a class="fw-semibold link-entidade"
                                        th:href="@{'/hospedes/' + ${hospede.id}}"
                                        th:text="${hospede.nome}">Ana Souza</a>
                                 </td>

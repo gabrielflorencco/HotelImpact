@@ -195,22 +195,42 @@
       class="badge-status" th:classappend="${ativo} ? 'badge-estado-ok' : 'badge-estado-neutro'"
       th:text="${ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
 
-<!-- Paginação (pagina: Page do Spring; urlBase: ex. @{/hospedes}; queryString: filtros iniciando com '&' ou vazio) -->
+<!-- Paginação em janela (±2 da página atual, com elipses); suporta qualquer
+     volume de páginas sem virar uma lista interminável de links. -->
 <nav th:fragment="paginacao(pagina, urlBase, queryString)" th:if="${pagina != null and pagina.totalPages > 1}"
-     aria-label="Paginação de resultados">
+     aria-label="Paginação de resultados"
+     th:with="atual=${pagina.number}, ultimo=${pagina.totalPages - 1},
+              inicio=${atual - 2 < 1 ? 1 : atual - 2},
+              fim=${atual + 2 > ultimo - 1 ? ultimo - 1 : atual + 2}">
     <ul class="pagination pagination-sm justify-content-center mb-0">
         <li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
-            <a class="page-link" th:href="${urlBase} + '?page=' + (${pagina.number} - 1) + ${queryString}"
+            <a class="page-link" th:href="${urlBase} + '?page=' + (${atual} - 1) + ${queryString}"
                th:if="${!pagina.first}" aria-label="Página anterior">Anterior</a>
             <span class="page-link" th:if="${pagina.first}">Anterior</span>
         </li>
-        <li class="page-item" th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
-            th:classappend="${i == pagina.number} ? 'active'"
-            th:attr="aria-current=${i == pagina.number} ? 'page' : null">
-            <a class="page-link" th:href="${urlBase} + '?page=' + ${i} + ${queryString}" th:text="${i + 1}">1</a>
+        <!-- Primeira página sempre visível (a janela começa a partir do índice 1) -->
+        <li class="page-item" th:classappend="${atual == 0} ? 'active'"
+            th:attr="aria-current=${atual == 0} ? 'page' : null">
+            <a class="page-link" th:href="${urlBase} + '?page=0' + ${queryString}">1</a>
+        </li>
+        <li class="page-item disabled" th:if="${inicio > 1}">
+            <span class="page-link">…</span>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(inicio, fim)}"
+            th:classappend="${i == atual} ? 'active'"
+            th:attr="aria-current=${i == atual} ? 'page' : null">
+            <a class="page-link" th:href="${urlBase} + '?page=' + ${i} + ${queryString}" th:text="${i + 1}">2</a>
+        </li>
+        <li class="page-item disabled" th:if="${fim < ultimo - 2}">
+            <span class="page-link">…</span>
+        </li>
+        <!-- Última página sempre visível quando a janela não a alcança -->
+        <li class="page-item" th:if="${fim < ultimo}" th:classappend="${atual == ultimo} ? 'active'"
+            th:attr="aria-current=${atual == ultimo} ? 'page' : null">
+            <a class="page-link" th:href="${urlBase} + '?page=' + ${ultimo} + ${queryString}" th:text="${ultimo + 1}">Ú</a>
         </li>
         <li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
-            <a class="page-link" th:href="${urlBase} + '?page=' + (${pagina.number} + 1) + ${queryString}"
+            <a class="page-link" th:href="${urlBase} + '?page=' + (${atual} + 1) + ${queryString}"
                th:if="${!pagina.last}" aria-label="Próxima página">Próxima</a>
             <span class="page-link" th:if="${pagina.last}">Próxima</span>
         </li>

@@ -40,7 +40,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-search me-1" aria-hidden="true"></i>Filtrar
                             </button>
-                            <a class="btn btn-sm btn-link py-0" th:href="@{/reservas}">Limpar</a>
+                            <a class="btn-filtro-limpar" th:href="@{/reservas}">Limpar</a>
                         </div>
                     </form>
                 </div>
@@ -73,7 +73,7 @@
                             <tbody>
                             <tr th:each="reserva : ${pagina.content}">
                                 <td>
-                                    <a class="fw-semibold text-decoration-none"
+                                    <a class="fw-semibold link-entidade"
                                        th:href="@{'/reservas/' + ${reserva.id}}"
                                        th:text="${reserva.codigo}">RES-2026-000123</a>
                                 </td>

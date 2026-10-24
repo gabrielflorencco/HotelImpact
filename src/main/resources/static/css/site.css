@@ -496,7 +496,28 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     display: flex;
     align-items: center;
     background-color: var(--hi-page-bg);
+    padding: var(--hi-space-3) 0;
 }
+
+.login-cartao {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    background-color: var(--hi-surface);
+    border: 1px solid var(--hi-border);
+    border-radius: var(--hi-radius-lg);
+    box-shadow: var(--hi-shadow);
+    overflow: hidden;
+}
+
+.login-lado-marca {
+    background-color: #0b1220;
+    min-height: 480px;
+}
+
+.login-lado-marca h1 { color: #e8ecf3; }
+
+.login-lado-form { background-color: var(--hi-surface); }
 
 /* Botões outline: texto com contraste ≥4.5 sobre o fundo da página. */
 .btn-outline-secondary {

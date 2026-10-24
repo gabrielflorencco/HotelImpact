@@ -1,42 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
-<head th:replace="~{layout/fragments :: head(${titulo})}"></head>
+<head th:replace="~{site/fragments :: head(${titulo})}"></head>
 <body>
 <main class="login-pagina">
-    <div class="container py-5">
-        <div class="card shadow-sm mx-auto" style="max-width: 380px;">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <i class="bi bi-building-fill fs-2" style="color: var(--hi-accent)" aria-hidden="true"></i>
-                    <h1 class="h5 mt-2 mb-0">HotelImpact</h1>
-                    <span class="text-secondary small">Gestão hoteleira · Recepção</span>
-                </div>
-
-                <div class="hi-alerta alert alert-danger" th:if="${param.error}" role="alert">
-                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span>Usuário ou senha inválidos.</span>
-                </div>
-                <div class="hi-alerta alert alert-success" th:if="${param.logout}" role="status">
-                    <i class="bi bi-check-circle" aria-hidden="true"></i><span>Sessão encerrada. Até logo!</span>
-                </div>
-
-                <form th:action="@{/login}" method="post">
-                    <div class="mb-3">
-                        <label for="username" class="form-label campo-obrigatorio">Usuário</label>
-                        <input type="text" class="form-control" id="username" name="username"
-                               autocomplete="username" required autofocus>
+    <div class="container">
+        <div class="row justify-content-center align-items-center g-0 login-cartao">
+            <!-- Lado da marca: a fachada acesa, como no site institucional -->
+            <div class="col-md-6 login-lado-marca d-none d-md-flex">
+                <div class="p-5 w-100">
+                    <p class="site-hero-kicker mb-2">HotelImpact</p>
+                    <h1 class="site-hero-title" style="font-size: 1.6rem">A recepção<br>começa aqui.</h1>
+                    <p class="mb-4" style="color: #8b98ab; font-size: .875rem">
+                        Painel operacional, reservas, hospedagens e a conta de cada hóspede.
+                    </p>
+                    <div class="w-100" style="max-width: 320px;">
+                        <svg viewBox="0 0 420 300" role="img" aria-hidden="true" class="site-fachada" preserveAspectRatio="xMidYMax meet">
+                            <rect width="420" height="300" fill="#0b1220"/>
+                            <circle cx="40" cy="34" r="1.4" fill="#3d4c66"/>
+                            <circle cx="120" cy="18" r="1" fill="#3d4c66"/>
+                            <circle cx="300" cy="26" r="1.2" fill="#3d4c66"/>
+                            <circle cx="380" cy="48" r="1" fill="#3d4c66"/>
+                            <rect x="150" y="60" width="120" height="240" fill="#16202f" stroke="#273349" stroke-width="2"/>
+                            <rect x="172" y="84" width="76" height="16" rx="3" fill="#1f2c40" stroke="#b45309" stroke-width="1.5"/>
+                            <text x="210" y="96" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#f5c78a" letter-spacing="3">HOTEL</text>
+                            <g>
+                                <rect x="168" y="118" width="18" height="22" rx="1.5" fill="#d97706"/>
+                                <rect x="198" y="118" width="18" height="22" rx="1.5" fill="#243350"/>
+                                <rect x="228" y="118" width="18" height="22" rx="1.5" fill="#f59e0b"/>
+                                <rect x="168" y="152" width="18" height="22" rx="1.5" fill="#243350"/>
+                                <rect x="198" y="152" width="18" height="22" rx="1.5" fill="#d97706"/>
+                                <rect x="228" y="152" width="18" height="22" rx="1.5" fill="#243350"/>
+                                <rect x="168" y="186" width="18" height="22" rx="1.5" fill="#f59e0b"/>
+                                <rect x="198" y="186" width="18" height="22" rx="1.5" fill="#f59e0b"/>
+                                <rect x="228" y="186" width="18" height="22" rx="1.5" fill="#d97706"/>
+                            </g>
+                            <rect x="176" y="224" width="68" height="8" rx="2" fill="#b45309"/>
+                            <rect x="198" y="232" width="24" height="68" fill="#0b1220" stroke="#273349" stroke-width="2"/>
+                            <rect x="60" y="110" width="80" height="190" fill="#131c2b" stroke="#273349" stroke-width="2"/>
+                            <g>
+                                <rect x="76" y="132" width="14" height="18" rx="1.5" fill="#243350"/>
+                                <rect x="100" y="132" width="14" height="18" rx="1.5" fill="#f59e0b"/>
+                                <rect x="76" y="164" width="14" height="18" rx="1.5" fill="#d97706"/>
+                                <rect x="100" y="164" width="14" height="18" rx="1.5" fill="#243350"/>
+                                <rect x="76" y="196" width="14" height="18" rx="1.5" fill="#f59e0b"/>
+                                <rect x="100" y="196" width="14" height="18" rx="1.5" fill="#d97706"/>
+                            </g>
+                            <rect x="280" y="132" width="80" height="168" fill="#131c2b" stroke="#273349" stroke-width="2"/>
+                            <g>
+                                <rect x="298" y="154" width="14" height="18" rx="1.5" fill="#d97706"/>
+                                <rect x="322" y="154" width="14" height="18" rx="1.5" fill="#243350"/>
+                                <rect x="298" y="186" width="14" height="18" rx="1.5" fill="#243350"/>
+                                <rect x="322" y="186" width="14" height="18" rx="1.5" fill="#f59e0b"/>
+                                <rect x="298" y="218" width="14" height="18" rx="1.5" fill="#d97706"/>
+                                <rect x="322" y="218" width="14" height="18" rx="1.5" fill="#d97706"/>
+                            </g>
+                            <rect x="0" y="294" width="420" height="6" fill="#0e1524"/>
+                        </svg>
                     </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label campo-obrigatorio">Senha</label>
-                        <input type="password" class="form-control" id="password" name="password"
-                               autocomplete="current-password" required>
+                </div>
+            </div>
+
+            <!-- Lado do formulário: operação e segurança -->
+            <div class="col-12 col-md-6 login-lado-form">
+                <div class="p-4 p-md-5">
+                    <div class="d-md-none text-center mb-4">
+                        <i class="bi bi-building-fill fs-2" style="color: var(--hi-accent)" aria-hidden="true"></i>
+                        <h1 class="site-serif h4 mt-2 mb-0">HotelImpact</h1>
+                        <span class="text-secondary small">Gestão hoteleira · Recepção</span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        Entrar
-                    </button>
-                </form>
+
+                    <h2 class="h5 mb-1 d-none d-md-block">Entrar no sistema</h2>
+                    <p class="text-secondary small mb-4">Use as credenciais da recepção para acessar o painel.</p>
+
+                    <div class="hi-alerta alert alert-danger" th:if="${param.error}" role="alert">
+                        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span>Usuário ou senha inválidos. Verifique e tente novamente.</span>
+                    </div>
+                    <div class="hi-alerta alert alert-success" th:if="${param.logout}" role="status">
+                        <i class="bi bi-check-circle" aria-hidden="true"></i><span>Sessão encerrada. Até logo!</span>
+                    </div>
+
+                    <form th:action="@{/login}" method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label campo-obrigatorio">Usuário</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   autocomplete="username" required autofocus
+                                   spellcheck="false">
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label campo-obrigatorio">Senha</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   autocomplete="current-password" required
+                                   spellcheck="false">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </form>
+
+                    <p class="text-secondary small mt-4 mb-0">
+                        <a class="site-nav-link" th:href="@{/}">← Voltar ao site</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </main>
+<div th:replace="~{site/fragments :: scripts}"></div>
 </body>
 </html>

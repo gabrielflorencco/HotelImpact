@@ -37,8 +37,14 @@ docker compose up -d
 APP_SEED_DEMO=true ./mvnw spring-boot:run
 
 # 3. Acessar
-# http://localhost:8080
+# http://localhost:8080          → site institucional público
+# http://localhost:8080/login    → autenticação da recepção
+# http://localhost:8080/painel   → área administrativa (após login)
 ```
+
+O site público (`/`, `/funcionalidades`, `/sobre`) é aberto a qualquer
+visitante; todo o restante do sistema exige usuário autenticado. Após o
+login, a recepção cai direto no painel operacional.
 
 Credenciais e endereço do banco são lidos de variáveis de ambiente, com padrões
 adequados ao `docker-compose.yml` local:

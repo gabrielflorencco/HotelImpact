@@ -86,4 +86,11 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     /** Saídas previstas para a data: reservas ativas com check-out naquele dia. */
     // Sufixo Equals pelo mesmo motivo do método acima.
     long countByEstadoInAndDataCheckOutEquals(List<EstadoReserva> estados, LocalDate dataCheckOut);
+
+    /** Reservas criadas no intervalo semiaberto [inicio, fim). */
+    long countByDataCriacaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+
+    /** Reservas por estado criadas no intervalo semiaberto [inicio, fim). */
+    long countByEstadoAndDataCriacaoBetween(EstadoReserva estado,
+                                           java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
 }

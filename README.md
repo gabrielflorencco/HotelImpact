@@ -102,8 +102,10 @@ quando foi causado pela própria ordem.
 
 O painel inicial (Fase 6) exibe indicadores reais calculados no banco:
 ocupação atual, quartos por estado, chegadas e saídas previstas para o
-dia, receita confirmada do dia e alerta de itens com estoque baixo.
-Páginas de relatórios históricos serão avaliadas como evolução futura.
+dia, receita confirmada do dia e alerta de itens com estoque baixo. O
+módulo de relatórios complementa com o resumo de qualquer período:
+receita confirmada, check-ins/check-outs reais, reservas criadas (com
+cancelamentos e no-shows) e a lista de hospedagens iniciadas no período.
 
 ## Autenticação e execução em produção
 

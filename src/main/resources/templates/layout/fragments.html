@@ -93,10 +93,10 @@
            th:attr="aria-current=${ativo} == 'manutencao' ? 'page' : null">
             <i class="bi bi-tools" aria-hidden="true"></i><span>Manutenção</span>
         </a>
-        <span class="sidebar-item-indisponivel" aria-disabled="true" title="Disponível na Fase 6">
+        <a th:href="@{/relatorios}" th:classappend="${ativo} == 'relatorios' ? 'active' : ''"
+           th:attr="aria-current=${ativo} == 'relatorios' ? 'page' : null">
             <i class="bi bi-clipboard-data" aria-hidden="true"></i><span>Relatórios</span>
-            <span class="badge badge-estado-neutro ms-auto">Fase 6</span>
-        </span>
+        </a>
     </nav>
     <footer class="sidebar-footer">
         HotelImpact · Gestão hoteleira

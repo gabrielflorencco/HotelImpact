@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,4 +58,22 @@ public interface HospedagemRepository extends JpaRepository<Hospedagem, Long> {
             ORDER BY h.checkInReal DESC, h.id DESC
             """)
     Page<Hospedagem> buscarPorEstado(@Param("estado") EstadoHospedagem estado, Pageable pageable);
+
+    /** Check-ins reais no intervalo semiaberto [inicio, fim). */
+    long countByCheckInRealBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    /** Check-outs reais no intervalo semiaberto [inicio, fim). */
+    long countByCheckOutRealBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    /** Hospedagens iniciadas no intervalo semiaberto [inicio, fim), com todos os dados (relatório). */
+    @Query("""
+            SELECT h FROM Hospedagem h
+            JOIN FETCH h.reserva r
+            JOIN FETCH r.hospede
+            JOIN FETCH h.quarto
+            WHERE h.checkInReal >= :inicio
+              AND h.checkInReal < :fim
+            ORDER BY h.checkInReal DESC
+            """)
+    List<Hospedagem> buscarIniciadasEntre(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 }

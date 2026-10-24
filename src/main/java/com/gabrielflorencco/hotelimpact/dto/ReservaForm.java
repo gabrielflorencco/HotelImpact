@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,10 +33,13 @@ public class ReservaForm {
     @NotNull
     private Long quartoId;
 
+    /** ISO no input date (yyyy-MM-dd): qualquer outro formato é esvaziado pelo navegador no re-render. */
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataCheckIn;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataCheckOut;
 
     @NotNull

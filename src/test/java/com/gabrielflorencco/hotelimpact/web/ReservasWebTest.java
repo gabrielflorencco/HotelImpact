@@ -139,6 +139,24 @@ class ReservasWebTest {
         verify(reservaService, never()).criar(any());
     }
 
+    /**
+     * Regressão do re-render de erro: o input type="date" só aceita ISO
+     * (yyyy-MM-dd); qualquer outro formato é esvaziado pelo navegador e o
+     * usuário perde o que digitou. Sem quartoId o binding falha, mas as
+     * datas devem voltar no input em ISO.
+     */
+    @Test
+    void reRenderDeErroPreservaAsDatasEmFormatoISO() throws Exception {
+        mockMvc.perform(post("/reservas").with(csrf())
+                        .param("hospedeId", "1")
+                        .param("dataCheckIn", "2026-11-01")
+                        .param("dataCheckOut", "2026-11-03"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reservas/formulario"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"2026-11-01\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"2026-11-03\"")));
+    }
+
     @Test
     void criarValidoRedirecionaParaDetalheDaReserva() throws Exception {
         when(reservaService.criar(any())).thenReturn(reservaMock(1L, "RES-2026-000123"));

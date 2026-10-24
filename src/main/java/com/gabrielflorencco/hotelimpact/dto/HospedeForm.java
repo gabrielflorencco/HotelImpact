@@ -8,6 +8,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -44,6 +45,7 @@ public class HospedeForm {
     private String telefone;
 
     @PastOrPresent
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataNascimento;
 
     @Size(max = 500)

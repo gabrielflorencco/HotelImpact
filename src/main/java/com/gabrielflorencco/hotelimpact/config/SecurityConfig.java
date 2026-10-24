@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .defaultSuccessUrl("/painel", true)
                         .permitAll())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HxRedirectEntryPoint("/login")))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")

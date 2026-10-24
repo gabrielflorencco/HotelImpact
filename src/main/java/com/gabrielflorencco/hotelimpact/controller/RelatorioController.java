@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.HospedagemRelatorioView;
 import com.gabrielflorencco.hotelimpact.service.RelatorioService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class RelatorioController {
 
     @GetMapping
     public String periodo(
+            HttpServletRequest request,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
             Model model) {
@@ -44,6 +46,6 @@ public class RelatorioController {
         model.addAttribute("inicio", inicioPeriodo.toString());
         model.addAttribute("fim", fimPeriodo.toString());
         model.addAttribute("titulo", "Relatórios");
-        return "relatorios/index";
+        return Pagina.renderizar(request, "relatorios/index");
     }
 }

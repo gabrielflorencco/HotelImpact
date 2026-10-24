@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.ReservaResumoView;
 import com.gabrielflorencco.hotelimpact.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class HomeController {
     private final DashboardService dashboardService;
 
     @GetMapping("/painel")
-    public String index(Model model) {
+    public String index(HttpServletRequest request, Model model) {
         model.addAttribute("ind", dashboardService.indicadores());
         model.addAttribute("chegadas", dashboardService.chegadasDeHoje().stream()
                 .map(ReservaResumoView::de)
@@ -29,6 +30,6 @@ public class HomeController {
                 .map(ReservaResumoView::de)
                 .toList());
         model.addAttribute("titulo", "Dashboard");
-        return "dashboard/index";
+        return Pagina.renderizar(request, "dashboard/index");
     }
 }

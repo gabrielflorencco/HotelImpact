@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.ConsumoForm;
 import com.gabrielflorencco.hotelimpact.dto.ConsumoResumoView;
 import com.gabrielflorencco.hotelimpact.dto.HospedagemDetalheView;
@@ -50,7 +51,7 @@ public class HospedagemController {
     private final ItemCatalogoRepository itens;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) EstadoHospedagem estado,
+    public String listar(HttpServletRequest request, @RequestParam(required = false) EstadoHospedagem estado,
                          @RequestParam(defaultValue = "0") int page,
                          Model model) {
         int numeroPagina = Math.max(0, page);
@@ -62,17 +63,17 @@ public class HospedagemController {
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("queryString", estado == null ? "" : "&estado=" + estado);
         model.addAttribute("titulo", "Hospedagens");
-        return "hospedagens/lista";
+        return Pagina.renderizar(request, "hospedagens/lista");
     }
 
     @GetMapping("/{id}")
-    public String detalhe(@PathVariable Long id, Model model) {
+    public String detalhe(HttpServletRequest request, @PathVariable Long id, Model model) {
         prepararDetalhe(service.buscarPorId(id), model);
-        return "hospedagens/detalhe";
+        return Pagina.renderizar(request, "hospedagens/detalhe");
     }
 
     @PostMapping("/{id}/check-out")
-    public String checkOut(@PathVariable Long id,
+    public String checkOut(HttpServletRequest request, @PathVariable Long id,
                            @RequestParam(required = false) String motivoExcecao,
                            RedirectAttributes redirect) {
         try {
@@ -85,11 +86,11 @@ public class HospedagemController {
     }
 
     @PostMapping("/{id}/consumos")
-    public String lancarConsumo(@PathVariable Long id, @Valid @ModelAttribute("consumoForm") ConsumoForm form,
+    public String lancarConsumo(HttpServletRequest request, @PathVariable Long id, @Valid @ModelAttribute("consumoForm") ConsumoForm form,
                                 BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararDetalhe(service.buscarPorId(id), model);
-            return "hospedagens/detalhe";
+            return Pagina.renderizar(request, "hospedagens/detalhe");
         }
         try {
             consumoService.lancar(id, form);
@@ -97,13 +98,13 @@ public class HospedagemController {
         } catch (NegocioException ex) {
             prepararDetalhe(service.buscarPorId(id), model);
             model.addAttribute("erro", ex.getMessage());
-            return "hospedagens/detalhe";
+            return Pagina.renderizar(request, "hospedagens/detalhe");
         }
         return "redirect:/hospedagens/" + id;
     }
 
     @PostMapping("/{id}/consumos/{consumoId}/cancelar")
-    public String cancelarConsumo(@PathVariable Long id, @PathVariable Long consumoId,
+    public String cancelarConsumo(HttpServletRequest request, @PathVariable Long id, @PathVariable Long consumoId,
                                   RedirectAttributes redirect) {
         try {
             consumoService.cancelar(id, consumoId);
@@ -115,11 +116,11 @@ public class HospedagemController {
     }
 
     @PostMapping("/{id}/pagamentos")
-    public String registrarPagamento(@PathVariable Long id, @Valid @ModelAttribute("pagamentoForm") PagamentoForm form,
+    public String registrarPagamento(HttpServletRequest request, @PathVariable Long id, @Valid @ModelAttribute("pagamentoForm") PagamentoForm form,
                                      BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararDetalhe(service.buscarPorId(id), model);
-            return "hospedagens/detalhe";
+            return Pagina.renderizar(request, "hospedagens/detalhe");
         }
         try {
             pagamentoService.registrar(id, form);
@@ -127,13 +128,13 @@ public class HospedagemController {
         } catch (NegocioException ex) {
             prepararDetalhe(service.buscarPorId(id), model);
             model.addAttribute("erroPagamento", ex.getMessage());
-            return "hospedagens/detalhe";
+            return Pagina.renderizar(request, "hospedagens/detalhe");
         }
         return "redirect:/hospedagens/" + id;
     }
 
     @PostMapping("/{id}/pagamentos/{pagamentoId}/estornar")
-    public String estornarPagamento(@PathVariable Long id, @PathVariable Long pagamentoId,
+    public String estornarPagamento(HttpServletRequest request, @PathVariable Long id, @PathVariable Long pagamentoId,
                                     RedirectAttributes redirect) {
         try {
             pagamentoService.estornar(id, pagamentoId);

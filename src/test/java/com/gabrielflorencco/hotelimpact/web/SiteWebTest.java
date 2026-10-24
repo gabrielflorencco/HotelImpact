@@ -35,7 +35,7 @@ class SiteWebTest {
                 .andExpect(view().name("site/inicio"))
                 .andExpect(content().string(containsString("Toda a operação do hotel")))
                 .andExpect(content().string(containsString("Entrar no sistema")))
-                .andExpect(content().string(containsString("Ilustração da fachada")))
+                .andExpect(content().string(containsString("hotel-noite.jpg")))
                 .andExpect(content().string(containsString("Nove módulos")));
     }
 

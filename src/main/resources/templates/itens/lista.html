@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
 <head th:replace="~{layout/fragments :: head(${titulo})}"></head>
-<body>
+<body data-area="admin">
 <a th:replace="~{layout/fragments :: pular-para-conteudo}"></a>
 <div class="app-wrapper">
 
@@ -10,7 +10,8 @@
     <div class="app-main">
         <header th:replace="~{layout/fragments :: topbar}"></header>
 
-        <main class="app-content" id="conteudoPrincipal">
+        <main class="app-content" id="app-conteudo" tabindex="-1">
+            <th:block th:fragment="conteudo">
             <div th:replace="~{layout/fragments :: mensagens}"></div>
 
             <div class="page-header">
@@ -84,6 +85,7 @@
                     </div>
                 </div>
             </div>
+        </th:block>
         </main>
     </div>
 

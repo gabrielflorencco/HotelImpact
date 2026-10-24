@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.CategoriaForm;
 import jakarta.validation.Valid;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
@@ -27,50 +28,50 @@ public class CategoriaController {
     private final CategoriaQuartoService service;
 
     @GetMapping
-    public String listar(Model model) {
+    public String listar(HttpServletRequest request, Model model) {
         model.addAttribute("categorias", service.listar());
         model.addAttribute("titulo", "Categorias de quarto");
-        return "categorias/lista";
+        return Pagina.renderizar(request, "categorias/lista");
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
+    public String novo(HttpServletRequest request, Model model) {
         model.addAttribute("form", new CategoriaForm());
         model.addAttribute("titulo", "Nova categoria");
-        return "categorias/formulario";
+        return Pagina.renderizar(request, "categorias/formulario");
     }
 
     @PostMapping
-    public String criar(@Valid @ModelAttribute("form") CategoriaForm form, BindingResult result, Model model,
+    public String criar(HttpServletRequest request, @Valid @ModelAttribute("form") CategoriaForm form, BindingResult result, Model model,
                         RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("titulo", "Nova categoria");
-            return "categorias/formulario";
+            return Pagina.renderizar(request, "categorias/formulario");
         }
         try {
             service.salvar(form);
         } catch (NegocioException ex) {
             model.addAttribute("titulo", "Nova categoria");
             model.addAttribute("erro", ex.getMessage());
-            return "categorias/formulario";
+            return Pagina.renderizar(request, "categorias/formulario");
         }
         redirect.addAttribute("sucesso", "Categoria cadastrada com sucesso.");
         return "redirect:/categorias";
     }
 
     @GetMapping("/{id}/editar")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(HttpServletRequest request, @PathVariable Long id, Model model) {
         model.addAttribute("form", CategoriaForm.da(service.buscarPorId(id)));
         model.addAttribute("titulo", "Editar categoria");
-        return "categorias/formulario";
+        return Pagina.renderizar(request, "categorias/formulario");
     }
 
     @PostMapping("/{id}")
-    public String atualizar(@PathVariable Long id, @Valid @ModelAttribute("form") CategoriaForm form,
+    public String atualizar(HttpServletRequest request, @PathVariable Long id, @Valid @ModelAttribute("form") CategoriaForm form,
                             BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("titulo", "Editar categoria");
-            return "categorias/formulario";
+            return Pagina.renderizar(request, "categorias/formulario");
         }
         form.setId(id);
         try {
@@ -78,14 +79,14 @@ public class CategoriaController {
         } catch (NegocioException ex) {
             model.addAttribute("titulo", "Editar categoria");
             model.addAttribute("erro", ex.getMessage());
-            return "categorias/formulario";
+            return Pagina.renderizar(request, "categorias/formulario");
         }
         redirect.addAttribute("sucesso", "Categoria atualizada com sucesso.");
         return "redirect:/categorias";
     }
 
     @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id, RedirectAttributes redirect) {
+    public String excluir(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.excluir(id);
             redirect.addAttribute("sucesso", "Categoria excluída.");

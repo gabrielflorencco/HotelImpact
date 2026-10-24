@@ -1,0 +1,17 @@
+/* Inter (SIL OFL 1.1, rsms.me/inter) — variable font vendorizada localmente
+   para toda a aplicação. Pesos 400–700 na escala do design system. */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../vendor/inter/inter-latin-var.woff2') format('woff2');
+}
+
+:root {
+    --hi-font: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    font-family: var(--hi-font);
+}

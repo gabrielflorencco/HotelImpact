@@ -14,13 +14,14 @@
     </script>
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/vendor/bootstrap-icons/bootstrap-icons.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/inter/inter.css}">
     <link rel="stylesheet" th:href="@{/css/site.css}">
 </head>
 <body>
 
 <!-- Atalho de teclado para o conteúdo principal (acessibilidade) -->
 <a th:fragment="pular-para-conteudo" class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-sm btn-primary"
-   href="#conteudoPrincipal">Pular para o conteúdo</a>
+   href="#app-conteudo">Pular para o conteúdo</a>
 
 <!-- Barra superior -->
 <header th:fragment="topbar" class="topbar d-flex align-items-center justify-content-between px-3 px-md-4">
@@ -29,7 +30,14 @@
                 data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
             <i class="bi bi-list" aria-hidden="true"></i>
         </button>
+        <button type="button" id="botaoRecolherSidebar" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex"
+                aria-label="Recolher menu lateral" title="Recolher menu lateral">
+            <i class="bi bi-layout-sidebar" aria-hidden="true"></i>
+        </button>
         <span class="topbar-data" th:text="${hoje} ?: ''">hoje</span>
+        <span id="indicador-nav" class="indicador-nav" role="status" aria-label="Carregando">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        </span>
     </div>
     <div class="d-flex align-items-center gap-3">
         <button type="button" id="botaoTema" class="btn btn-outline-secondary btn-sm" aria-label="Alternar entre modo claro e escuro">
@@ -47,62 +55,86 @@
     </div>
 </header>
 
-<!-- Menu lateral: agrupado pela rotina do hotel -->
+<!-- Menu lateral: grupos expansíveis pela rotina do hotel; recolhível no desktop -->
 <aside th:fragment="sidebar(ativo)" id="menuLateral" class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" aria-label="Menu principal">
     <div class="offcanvas-header d-lg-none">
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
     </div>
     <div class="sidebar-brand">
         <i class="bi bi-building-fill" aria-hidden="true"></i>
-        <span>HotelImpact</span>
+        <span class="sidebar-brand-nome">HotelImpact</span>
     </div>
     <nav class="sidebar-nav" aria-label="Módulos do sistema">
-        <span class="sidebar-grupo" aria-hidden="true">Operação</span>
-        <a th:href="@{/painel}" th:classappend="${ativo} == 'dashboard' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'dashboard' ? 'page' : null">
-            <i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span>
-        </a>
-        <a th:href="@{/reservas}" th:classappend="${ativo} == 'reservas' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'reservas' ? 'page' : null">
-            <i class="bi bi-calendar-check" aria-hidden="true"></i><span>Reservas</span>
-        </a>
-        <a th:href="@{/hospedagens}" th:classappend="${ativo} == 'hospedagens' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'hospedagens' ? 'page' : null">
-            <i class="bi bi-key" aria-hidden="true"></i><span>Hospedagens</span>
-        </a>
+        <button type="button" class="sidebar-grupo sidebar-grupo-btn" data-grupo="operacao"
+                aria-expanded="true" aria-controls="grupo-operacao">
+            <span class="sidebar-grupo-nome">Operação</span>
+            <i class="bi bi-chevron-down sidebar-grupo-seta" aria-hidden="true"></i>
+        </button>
+        <div id="grupo-operacao" class="sidebar-grupo-itens">
+            <a th:href="@{/painel}" title="Dashboard" th:classappend="${ativo} == 'dashboard' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'dashboard' ? 'page' : null">
+                <i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span>
+            </a>
+            <a th:href="@{/reservas}" title="Reservas" th:classappend="${ativo} == 'reservas' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'reservas' ? 'page' : null">
+                <i class="bi bi-calendar-check" aria-hidden="true"></i><span>Reservas</span>
+            </a>
+            <a th:href="@{/hospedagens}" title="Hospedagens" th:classappend="${ativo} == 'hospedagens' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'hospedagens' ? 'page' : null">
+                <i class="bi bi-key" aria-hidden="true"></i><span>Hospedagens</span>
+            </a>
+        </div>
 
-        <span class="sidebar-grupo" aria-hidden="true">Quartos & insumos</span>
-        <a th:href="@{/quartos}" th:classappend="${ativo} == 'quartos' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'quartos' ? 'page' : null">
-            <i class="bi bi-door-open" aria-hidden="true"></i><span>Quartos</span>
-        </a>
-        <a th:href="@{/manutencoes}" th:classappend="${ativo} == 'manutencao' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'manutencao' ? 'page' : null">
-            <i class="bi bi-tools" aria-hidden="true"></i><span>Manutenção</span>
-        </a>
-        <a th:href="@{/itens}" th:classappend="${ativo} == 'consumos' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'consumos' ? 'page' : null">
-            <i class="bi bi-cup-straw" aria-hidden="true"></i><span>Consumos</span>
-        </a>
+        <button type="button" class="sidebar-grupo sidebar-grupo-btn" data-grupo="quartos"
+                aria-expanded="true" aria-controls="grupo-quartos">
+            <span class="sidebar-grupo-nome">Quartos & insumos</span>
+            <i class="bi bi-chevron-down sidebar-grupo-seta" aria-hidden="true"></i>
+        </button>
+        <div id="grupo-quartos" class="sidebar-grupo-itens">
+            <a th:href="@{/quartos}" title="Quartos" th:classappend="${ativo} == 'quartos' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'quartos' ? 'page' : null">
+                <i class="bi bi-door-open" aria-hidden="true"></i><span>Quartos</span>
+            </a>
+            <a th:href="@{/manutencoes}" title="Manutenção" th:classappend="${ativo} == 'manutencao' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'manutencao' ? 'page' : null">
+                <i class="bi bi-tools" aria-hidden="true"></i><span>Manutenção</span>
+            </a>
+            <a th:href="@{/itens}" title="Consumos" th:classappend="${ativo} == 'consumos' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'consumos' ? 'page' : null">
+                <i class="bi bi-cup-straw" aria-hidden="true"></i><span>Consumos</span>
+            </a>
+        </div>
 
-        <span class="sidebar-grupo" aria-hidden="true">Cadastros</span>
-        <a th:href="@{/hospedes}" th:classappend="${ativo} == 'hospedes' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'hospedes' ? 'page' : null">
-            <i class="bi bi-people" aria-hidden="true"></i><span>Hóspedes</span>
-        </a>
-        <a th:href="@{/categorias}" th:classappend="${ativo} == 'categorias' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'categorias' ? 'page' : null">
-            <i class="bi bi-tags" aria-hidden="true"></i><span>Categorias</span>
-        </a>
+        <button type="button" class="sidebar-grupo sidebar-grupo-btn" data-grupo="cadastros"
+                aria-expanded="true" aria-controls="grupo-cadastros">
+            <span class="sidebar-grupo-nome">Cadastros</span>
+            <i class="bi bi-chevron-down sidebar-grupo-seta" aria-hidden="true"></i>
+        </button>
+        <div id="grupo-cadastros" class="sidebar-grupo-itens">
+            <a th:href="@{/hospedes}" title="Hóspedes" th:classappend="${ativo} == 'hospedes' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'hospedes' ? 'page' : null">
+                <i class="bi bi-people" aria-hidden="true"></i><span>Hóspedes</span>
+            </a>
+            <a th:href="@{/categorias}" title="Categorias" th:classappend="${ativo} == 'categorias' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'categorias' ? 'page' : null">
+                <i class="bi bi-tags" aria-hidden="true"></i><span>Categorias</span>
+            </a>
+        </div>
 
-        <span class="sidebar-grupo" aria-hidden="true">Gestão</span>
-        <a th:href="@{/relatorios}" th:classappend="${ativo} == 'relatorios' ? 'active' : ''"
-           th:attr="aria-current=${ativo} == 'relatorios' ? 'page' : null">
-            <i class="bi bi-clipboard-data" aria-hidden="true"></i><span>Relatórios</span>
-        </a>
+        <button type="button" class="sidebar-grupo sidebar-grupo-btn" data-grupo="gestao"
+                aria-expanded="true" aria-controls="grupo-gestao">
+            <span class="sidebar-grupo-nome">Gestão</span>
+            <i class="bi bi-chevron-down sidebar-grupo-seta" aria-hidden="true"></i>
+        </button>
+        <div id="grupo-gestao" class="sidebar-grupo-itens">
+            <a th:href="@{/relatorios}" title="Relatórios" th:classappend="${ativo} == 'relatorios' ? 'active' : ''"
+               th:attr="aria-current=${ativo} == 'relatorios' ? 'page' : null">
+                <i class="bi bi-clipboard-data" aria-hidden="true"></i><span>Relatórios</span>
+            </a>
+        </div>
     </nav>
     <footer class="sidebar-footer">
-        HotelImpact · Gestão hoteleira
+        <span class="sidebar-brand-nome">HotelImpact · Gestão hoteleira</span>
     </footer>
 </aside>
 
@@ -240,6 +272,7 @@
 <!-- Scripts -->
 <div th:fragment="scripts">
     <script th:src="@{/vendor/bootstrap/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/htmx/htmx.min.js}"></script>
     <script th:src="@{/js/app.js}"></script>
 </div>
 

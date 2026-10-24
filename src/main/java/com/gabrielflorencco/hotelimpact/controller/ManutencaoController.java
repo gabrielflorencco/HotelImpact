@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.OrdemManutencaoDetalheView;
 import com.gabrielflorencco.hotelimpact.dto.OrdemManutencaoForm;
 import com.gabrielflorencco.hotelimpact.dto.OrdemManutencaoResumoView;
@@ -41,7 +42,7 @@ public class ManutencaoController {
     private final QuartoRepository quartos;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) EstadoManutencao estado,
+    public String listar(HttpServletRequest request, @RequestParam(required = false) EstadoManutencao estado,
                          @RequestParam(defaultValue = "0") int page,
                          Model model) {
         int numeroPagina = Math.max(0, page);
@@ -53,21 +54,21 @@ public class ManutencaoController {
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("queryString", estado == null ? "" : "&estado=" + estado);
         model.addAttribute("titulo", "Manutenção");
-        return "manutencoes/lista";
+        return Pagina.renderizar(request, "manutencoes/lista");
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
+    public String novo(HttpServletRequest request, Model model) {
         prepararFormulario(model, new OrdemManutencaoForm());
-        return "manutencoes/formulario";
+        return Pagina.renderizar(request, "manutencoes/formulario");
     }
 
     @PostMapping
-    public String criar(@Valid @ModelAttribute("form") OrdemManutencaoForm form, BindingResult result, Model model,
+    public String criar(HttpServletRequest request, @Valid @ModelAttribute("form") OrdemManutencaoForm form, BindingResult result, Model model,
                         RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararFormulario(model, form);
-            return "manutencoes/formulario";
+            return Pagina.renderizar(request, "manutencoes/formulario");
         }
         OrdemManutencao ordem;
         try {
@@ -75,7 +76,7 @@ public class ManutencaoController {
         } catch (NegocioException ex) {
             prepararFormulario(model, form);
             model.addAttribute("erro", ex.getMessage());
-            return "manutencoes/formulario";
+            return Pagina.renderizar(request, "manutencoes/formulario");
         }
         redirect.addAttribute("sucesso", "Ordem de manutenção aberta para o quarto "
                 + ordem.getQuarto().getNumero() + ".");
@@ -83,14 +84,14 @@ public class ManutencaoController {
     }
 
     @GetMapping("/{id}")
-    public String detalhe(@PathVariable Long id, Model model) {
+    public String detalhe(HttpServletRequest request, @PathVariable Long id, Model model) {
         model.addAttribute("ordem", OrdemManutencaoDetalheView.de(service.buscarPorId(id)));
         model.addAttribute("titulo", "Detalhes da ordem");
-        return "manutencoes/detalhe";
+        return Pagina.renderizar(request, "manutencoes/detalhe");
     }
 
     @PostMapping("/{id}/iniciar")
-    public String iniciar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String iniciar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.iniciar(id);
             redirect.addAttribute("sucesso", "Execução da manutenção iniciada.");
@@ -101,7 +102,7 @@ public class ManutencaoController {
     }
 
     @PostMapping("/{id}/concluir")
-    public String concluir(@PathVariable Long id, RedirectAttributes redirect) {
+    public String concluir(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.concluir(id);
             redirect.addAttribute("sucesso", "Manutenção concluída. Quarto liberado quando aplicável.");
@@ -112,7 +113,7 @@ public class ManutencaoController {
     }
 
     @PostMapping("/{id}/cancelar")
-    public String cancelar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String cancelar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.cancelar(id);
             redirect.addAttribute("sucesso", "Ordem cancelada. Quarto liberado quando aplicável.");

@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.HospedeDetalheView;
 import com.gabrielflorencco.hotelimpact.dto.HospedeForm;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class HospedeController {
     private final HospedeService service;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) String termo,
+    public String listar(HttpServletRequest request, @RequestParam(required = false) String termo,
                          @RequestParam(defaultValue = "0") int page,
                          Model model) {
         int numeroPagina = Math.max(0, page);
@@ -47,54 +48,54 @@ public class HospedeController {
         model.addAttribute("termo", termo);
         model.addAttribute("queryString", termo == null || termo.isBlank() ? "" : "&termo=" + termo);
         model.addAttribute("titulo", "Hóspedes");
-        return "hospedes/lista";
+        return Pagina.renderizar(request, "hospedes/lista");
     }
 
     @GetMapping("/{id}")
-    public String detalhe(@PathVariable Long id, Model model) {
+    public String detalhe(HttpServletRequest request, @PathVariable Long id, Model model) {
         model.addAttribute("hospede", HospedeDetalheView.de(service.buscarPorId(id)));
         model.addAttribute("titulo", "Detalhes do hóspede");
-        return "hospedes/detalhe";
+        return Pagina.renderizar(request, "hospedes/detalhe");
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
+    public String novo(HttpServletRequest request, Model model) {
         model.addAttribute("form", new HospedeForm());
         model.addAttribute("titulo", "Novo hóspede");
-        return "hospedes/formulario";
+        return Pagina.renderizar(request, "hospedes/formulario");
     }
 
     @PostMapping
-    public String criar(@Valid @ModelAttribute("form") HospedeForm form, BindingResult result, Model model,
+    public String criar(HttpServletRequest request, @Valid @ModelAttribute("form") HospedeForm form, BindingResult result, Model model,
                         RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("titulo", "Novo hóspede");
-            return "hospedes/formulario";
+            return Pagina.renderizar(request, "hospedes/formulario");
         }
         try {
             service.salvar(form);
         } catch (NegocioException ex) {
             model.addAttribute("titulo", "Novo hóspede");
             model.addAttribute("erro", ex.getMessage());
-            return "hospedes/formulario";
+            return Pagina.renderizar(request, "hospedes/formulario");
         }
         redirect.addAttribute("sucesso", "Hóspede cadastrado com sucesso.");
         return "redirect:/hospedes";
     }
 
     @GetMapping("/{id}/editar")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(HttpServletRequest request, @PathVariable Long id, Model model) {
         model.addAttribute("form", HospedeForm.de(service.buscarPorId(id)));
         model.addAttribute("titulo", "Editar hóspede");
-        return "hospedes/formulario";
+        return Pagina.renderizar(request, "hospedes/formulario");
     }
 
     @PostMapping("/{id}")
-    public String atualizar(@PathVariable Long id, @Valid @ModelAttribute("form") HospedeForm form,
+    public String atualizar(HttpServletRequest request, @PathVariable Long id, @Valid @ModelAttribute("form") HospedeForm form,
                             BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("titulo", "Editar hóspede");
-            return "hospedes/formulario";
+            return Pagina.renderizar(request, "hospedes/formulario");
         }
         form.setId(id);
         try {
@@ -102,14 +103,14 @@ public class HospedeController {
         } catch (NegocioException ex) {
             model.addAttribute("titulo", "Editar hóspede");
             model.addAttribute("erro", ex.getMessage());
-            return "hospedes/formulario";
+            return Pagina.renderizar(request, "hospedes/formulario");
         }
         redirect.addAttribute("sucesso", "Hóspede atualizado com sucesso.");
         return "redirect:/hospedes";
     }
 
     @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id, RedirectAttributes redirect) {
+    public String excluir(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.excluir(id);
             redirect.addAttribute("sucesso", "Hóspede excluído.");

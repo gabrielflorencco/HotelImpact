@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.ReservaDetalheView;
 import com.gabrielflorencco.hotelimpact.dto.ReservaForm;
 import com.gabrielflorencco.hotelimpact.dto.ReservaResumoView;
@@ -48,7 +49,7 @@ public class ReservaController {
     private final QuartoRepository quartos;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) EstadoReserva estado,
+    public String listar(HttpServletRequest request, @RequestParam(required = false) EstadoReserva estado,
                          @RequestParam(defaultValue = "0") int page,
                          Model model) {
         int numeroPagina = Math.max(0, page);
@@ -60,21 +61,21 @@ public class ReservaController {
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("queryString", estado == null ? "" : "&estado=" + estado);
         model.addAttribute("titulo", "Reservas");
-        return "reservas/lista";
+        return Pagina.renderizar(request, "reservas/lista");
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
+    public String novo(HttpServletRequest request, Model model) {
         prepararFormulario(model, new ReservaForm());
-        return "reservas/formulario";
+        return Pagina.renderizar(request, "reservas/formulario");
     }
 
     @PostMapping
-    public String criar(@Valid @ModelAttribute("form") ReservaForm form, BindingResult result, Model model,
+    public String criar(HttpServletRequest request, @Valid @ModelAttribute("form") ReservaForm form, BindingResult result, Model model,
                         RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararFormulario(model, form);
-            return "reservas/formulario";
+            return Pagina.renderizar(request, "reservas/formulario");
         }
         Reserva reserva;
         try {
@@ -82,14 +83,14 @@ public class ReservaController {
         } catch (NegocioException ex) {
             prepararFormulario(model, form);
             model.addAttribute("erro", ex.getMessage());
-            return "reservas/formulario";
+            return Pagina.renderizar(request, "reservas/formulario");
         }
         redirect.addAttribute("sucesso", "Reserva " + reserva.getCodigo() + " criada com sucesso.");
         return "redirect:/reservas/" + reserva.getId();
     }
 
     @GetMapping("/{id}")
-    public String detalhe(@PathVariable Long id, Model model) {
+    public String detalhe(HttpServletRequest request, @PathVariable Long id, Model model) {
         Reserva reserva = service.buscarPorId(id);
         model.addAttribute("reserva", ReservaDetalheView.de(reserva));
         model.addAttribute("hospedagemId",
@@ -97,12 +98,12 @@ public class ReservaController {
         model.addAttribute("podeCheckIn", hospedagemService.podeFazerCheckIn(reserva));
         model.addAttribute("podeNoShow", service.podeRegistrarNoShow(reserva));
         model.addAttribute("titulo", "Detalhes da reserva");
-        return "reservas/detalhe";
+        return Pagina.renderizar(request, "reservas/detalhe");
     }
 
     /** Check-in: cria a hospedagem e leva o usuário aos seus detalhes. */
     @PostMapping("/{id}/check-in")
-    public String checkIn(@PathVariable Long id, RedirectAttributes redirect) {
+    public String checkIn(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             Hospedagem hospedagem = hospedagemService.checkIn(id);
             redirect.addAttribute("sucesso", "Check-in realizado. Quarto "
@@ -115,7 +116,7 @@ public class ReservaController {
     }
 
     @PostMapping("/{id}/no-show")
-    public String registrarNoShow(@PathVariable Long id, RedirectAttributes redirect) {
+    public String registrarNoShow(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.registrarNoShow(id);
             redirect.addAttribute("sucesso", "No-show registrado. O período voltou a ficar disponível.");
@@ -126,7 +127,7 @@ public class ReservaController {
     }
 
     @PostMapping("/{id}/confirmar")
-    public String confirmar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String confirmar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.confirmar(id);
             redirect.addAttribute("sucesso", "Reserva confirmada.");
@@ -137,7 +138,7 @@ public class ReservaController {
     }
 
     @PostMapping("/{id}/cancelar")
-    public String cancelar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String cancelar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.cancelar(id);
             redirect.addAttribute("sucesso", "Reserva cancelada. O período voltou a ficar disponível.");

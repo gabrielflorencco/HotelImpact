@@ -511,11 +511,31 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 .login-lado-marca {
+    position: relative;
     background-color: #0b1220;
     min-height: 480px;
+    overflow: hidden;
 }
 
 .login-lado-marca h1 { color: #e8ecf3; }
+
+.login-foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .9;
+}
+
+.login-lado-marca > div { position: relative; z-index: 1; }
+
+.login-lado-marca::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(11, 18, 32, .72);
+}
 
 .login-lado-form { background-color: var(--hi-surface); }
 
@@ -576,12 +596,6 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 /* ---- Site institucional público --------------------------------------------------------- */
-/* Tipografia editorial: serifada de sistema só no site (o ERP é sans operacional). */
-.site-serif {
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-    letter-spacing: -.01em;
-}
-
 .site-nav {
     background-color: var(--hi-surface);
     border-bottom: 1px solid var(--hi-border);
@@ -608,6 +622,28 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 .site-nav-link:hover { color: var(--hi-text); }
 .site-nav-link.active { color: var(--hi-accent-text); font-weight: 600; }
 
+/* Hero fotográfico: imagem real com overlay noturno funcional (legibilidade do texto). */
+.site-hero-foto { position: relative; overflow: hidden; }
+
+.site-hero-foto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(11, 18, 32, .82);
+    z-index: 0;
+}
+
+.site-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.site-hero-foto .container { z-index: 1; }
+
 /* Hero: a luz de hotel acesa na noite — superfície azul-noite, não gradiente. */
 .site-hero {
     background-color: #0b1220;
@@ -627,7 +663,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 .site-hero-title {
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    font-family: var(--hi-font);
     font-size: clamp(1.9rem, 4.2vw, 3rem);
     font-weight: 650;
     line-height: 1.15;
@@ -689,6 +725,71 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     border-top: 1px solid var(--hi-border);
     font-size: .875rem;
 }
+
+/* Grupos expansíveis da sidebar */
+.sidebar-grupo-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar-grupo-seta {
+    font-size: .625rem;
+    transition: transform .15s ease-in-out;
+}
+
+.sidebar-grupo-btn[aria-expanded="false"] .sidebar-grupo-seta {
+    transform: rotate(-90deg);
+}
+
+.sidebar-grupo-btn[aria-expanded="false"] + .sidebar-grupo-itens {
+    display: none;
+}
+
+/* Sidebar recolhida (desktop): só ícones, tooltips via title nativo. */
+@media (min-width: 992px) {
+    body.sidebar-colapsada { --hi-sidebar-width: 64px; }
+
+    body.sidebar-colapsada .sidebar-brand-nome,
+    body.sidebar-colapsada .sidebar-nav a span,
+    body.sidebar-colapsada .sidebar-grupo-nome,
+    body.sidebar-colapsada .sidebar-grupo-seta,
+    body.sidebar-colapsada .sidebar-footer .sidebar-brand-nome {
+        display: none;
+    }
+
+    body.sidebar-colapsada .sidebar-brand,
+    body.sidebar-colapsada .sidebar-nav a {
+        justify-content: center;
+        padding-inline: 0;
+    }
+
+    body.sidebar-colapsada .sidebar-grupo-btn { justify-content: center; }
+
+    body.sidebar-colapsada .sidebar-grupo-btn::before {
+        content: "···";
+        color: var(--hi-sidebar-muted);
+        letter-spacing: .1em;
+    }
+}
+
+/* Indicador de navegação SPA: sutil, no topo, apenas durante a troca. */
+.indicador-nav {
+    display: inline-flex;
+    align-items: center;
+    margin-left: .5rem;
+    opacity: 0;
+    transition: opacity .15s ease-in-out;
+    color: var(--hi-accent-text);
+    font-size: .75rem;
+}
+
+.indicador-nav.ativo { opacity: 1; }
 
 /* ---- Utilidades ------------------------------------------------------------------------------- */
 .text-secondary { color: var(--hi-text-secondary) !important; }

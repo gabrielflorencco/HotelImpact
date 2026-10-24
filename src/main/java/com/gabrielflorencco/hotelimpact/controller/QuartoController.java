@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.gabrielflorencco.hotelimpact.dto.QuartoForm;
 import jakarta.validation.Valid;
 import com.gabrielflorencco.hotelimpact.entity.Quarto;
@@ -34,7 +35,7 @@ public class QuartoController {
     private final CategoriaQuartoRepository categorias;
 
     @GetMapping
-    public String listar(@RequestParam(required = false) String numero,
+    public String listar(HttpServletRequest request, @RequestParam(required = false) String numero,
                          @RequestParam(required = false) EstadoQuarto estado,
                          @RequestParam(required = false) Long categoriaId,
                          Model model) {
@@ -45,45 +46,45 @@ public class QuartoController {
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("filtroCategoriaId", categoriaId);
         model.addAttribute("titulo", "Quartos");
-        return "quartos/lista";
+        return Pagina.renderizar(request, "quartos/lista");
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
+    public String novo(HttpServletRequest request, Model model) {
         prepararFormulario(model, new QuartoForm(), "Novo quarto");
-        return "quartos/formulario";
+        return Pagina.renderizar(request, "quartos/formulario");
     }
 
     @PostMapping
-    public String criar(@Valid @ModelAttribute("form") QuartoForm form, BindingResult result, Model model,
+    public String criar(HttpServletRequest request, @Valid @ModelAttribute("form") QuartoForm form, BindingResult result, Model model,
                         RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararFormulario(model, form, "Novo quarto");
-            return "quartos/formulario";
+            return Pagina.renderizar(request, "quartos/formulario");
         }
         try {
             service.salvar(form);
         } catch (NegocioException ex) {
             prepararFormulario(model, form, "Novo quarto");
             model.addAttribute("erro", ex.getMessage());
-            return "quartos/formulario";
+            return Pagina.renderizar(request, "quartos/formulario");
         }
         redirect.addAttribute("sucesso", "Quarto cadastrado com sucesso.");
         return "redirect:/quartos";
     }
 
     @GetMapping("/{id}/editar")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(HttpServletRequest request, @PathVariable Long id, Model model) {
         prepararFormulario(model, QuartoForm.de(service.buscarPorId(id)), "Editar quarto");
-        return "quartos/formulario";
+        return Pagina.renderizar(request, "quartos/formulario");
     }
 
     @PostMapping("/{id}")
-    public String atualizar(@PathVariable Long id, @Valid @ModelAttribute("form") QuartoForm form,
+    public String atualizar(HttpServletRequest request, @PathVariable Long id, @Valid @ModelAttribute("form") QuartoForm form,
                             BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             prepararFormulario(model, form, "Editar quarto");
-            return "quartos/formulario";
+            return Pagina.renderizar(request, "quartos/formulario");
         }
         form.setId(id);
         try {
@@ -91,14 +92,14 @@ public class QuartoController {
         } catch (NegocioException ex) {
             prepararFormulario(model, form, "Editar quarto");
             model.addAttribute("erro", ex.getMessage());
-            return "quartos/formulario";
+            return Pagina.renderizar(request, "quartos/formulario");
         }
         redirect.addAttribute("sucesso", "Quarto atualizado com sucesso.");
         return "redirect:/quartos";
     }
 
     @PostMapping("/{id}/interditar")
-    public String interditar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String interditar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.interditar(id);
             redirect.addAttribute("sucesso", "Quarto interditado.");
@@ -109,7 +110,7 @@ public class QuartoController {
     }
 
     @PostMapping("/{id}/liberar")
-    public String liberar(@PathVariable Long id, RedirectAttributes redirect) {
+    public String liberar(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.liberar(id);
             redirect.addAttribute("sucesso", "Quarto liberado para hospedagens.");
@@ -120,7 +121,7 @@ public class QuartoController {
     }
 
     @PostMapping("/{id}/concluir-limpeza")
-    public String concluirLimpeza(@PathVariable Long id, RedirectAttributes redirect) {
+    public String concluirLimpeza(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.concluirLimpeza(id);
             redirect.addAttribute("sucesso", "Limpeza concluída. Quarto disponível novamente.");
@@ -131,7 +132,7 @@ public class QuartoController {
     }
 
     @PostMapping("/{id}/alternar-ativo")
-    public String alternarAtivo(@PathVariable Long id, RedirectAttributes redirect) {
+    public String alternarAtivo(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             boolean ficouAtivo = service.alternarAtivo(id);
             redirect.addAttribute("sucesso", ficouAtivo ? "Quarto ativado." : "Quarto desativado.");
@@ -142,7 +143,7 @@ public class QuartoController {
     }
 
     @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id, RedirectAttributes redirect) {
+    public String excluir(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {
             service.excluir(id);
             redirect.addAttribute("sucesso", "Quarto excluído.");

@@ -1,5 +1,6 @@
 package com.gabrielflorencco.hotelimpact.service;
 
+import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoHospedagem;
 import com.gabrielflorencco.hotelimpact.enums.EstadoPagamento;
 import com.gabrielflorencco.hotelimpact.enums.EstadoQuarto;
@@ -70,5 +71,17 @@ public class DashboardService {
                 reservas.countByEstadoInAndDataCheckOutEquals(RESERVAS_ATIVAS, hoje),
                 pagamentos.somarPorEstadoEntre(EstadoPagamento.CONFIRMADO, inicioDoDia, inicioDoDiaSeguinte),
                 itens.countComEstoqueBaixo());
+    }
+
+    /** Reservas ativas que chegam hoje, com hóspede e quarto já buscados (anti-N+1). */
+    @Transactional(readOnly = true)
+    public List<Reserva> chegadasDeHoje() {
+        return reservas.buscarAtivasPorDataCheckInComDetalhes(RESERVAS_ATIVAS, LocalDate.now());
+    }
+
+    /** Reservas ativas com saída prevista para hoje, com hóspede e quarto já buscados. */
+    @Transactional(readOnly = true)
+    public List<Reserva> saidasDeHoje() {
+        return reservas.buscarAtivasPorDataCheckOutComDetalhes(RESERVAS_ATIVAS, LocalDate.now());
     }
 }

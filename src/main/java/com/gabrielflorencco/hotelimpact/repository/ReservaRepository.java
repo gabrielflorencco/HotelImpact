@@ -93,4 +93,28 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     /** Reservas por estado criadas no intervalo semiaberto [inicio, fim). */
     long countByEstadoAndDataCriacaoBetween(EstadoReserva estado,
                                            java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+
+    /** Chegadas do dia: reservas ativas com check-in na data, com hóspede e quarto (anti-N+1). */
+    @Query("""
+            SELECT r FROM Reserva r
+            JOIN FETCH r.hospede
+            JOIN FETCH r.quarto
+            WHERE r.estado IN :estados
+              AND r.dataCheckIn = :dia
+            ORDER BY r.id DESC
+            """)
+    List<Reserva> buscarAtivasPorDataCheckInComDetalhes(@Param("estados") List<EstadoReserva> estados,
+                                                        @Param("dia") LocalDate dia);
+
+    /** Saídas do dia: reservas ativas com check-out na data, com hóspede e quarto (anti-N+1). */
+    @Query("""
+            SELECT r FROM Reserva r
+            JOIN FETCH r.hospede
+            JOIN FETCH r.quarto
+            WHERE r.estado IN :estados
+              AND r.dataCheckOut = :dia
+            ORDER BY r.id DESC
+            """)
+    List<Reserva> buscarAtivasPorDataCheckOutComDetalhes(@Param("estados") List<EstadoReserva> estados,
+                                                        @Param("dia") LocalDate dia);
 }

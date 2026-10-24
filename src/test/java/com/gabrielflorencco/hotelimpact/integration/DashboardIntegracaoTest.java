@@ -90,6 +90,13 @@ class DashboardIntegracaoTest extends AbstractIntegrationTest {
         assertThat(depois.chegadasPrevistasHoje())
                 .isGreaterThanOrEqualTo(antes.chegadasPrevistasHoje() + 1);
 
+        // Lista de chegadas de hoje traz a reserva criada acima (com hóspede/quarto).
+        assertThat(dashboardService.chegadasDeHoje())
+                .anySatisfy(r -> {
+                    assertThat(r.getHospede().getNome()).isEqualTo("Hóspede Painel 1050");
+                    assertThat(r.getQuarto().getNumero()).isEqualTo("1051");
+                });
+
         // Receita do dia: pagamento confirmado agora entra na soma do dia.
         HospedagemContexto conta = hospedagemComConta("Painel Receita", "1052");
         pagamentoService.registrar(conta.hospedagemId(),
@@ -97,6 +104,28 @@ class DashboardIntegracaoTest extends AbstractIntegrationTest {
 
         assertThat(dashboardService.indicadores().receitaConfirmadaHoje())
                 .isGreaterThanOrEqualTo(new BigDecimal("987.65"));
+    }
+
+    @Test
+    void saidasDeHojeTrazemReservasAtivasComCheckOutPrevistoParaHoje() {
+        Hospede hospede = novoHospede("Hóspede Saída Painel", 3952);
+        Quarto quarto = novoQuarto("Painel Saída", "1053");
+
+        ReservaForm saidaHoje = new ReservaForm();
+        saidaHoje.setHospedeId(hospede.getId());
+        saidaHoje.setQuartoId(quarto.getId());
+        saidaHoje.setDataCheckIn(LocalDate.now().minusDays(2));
+        saidaHoje.setDataCheckOut(LocalDate.now());
+        saidaHoje.setQuantidadeHospedes(1);
+        saidaHoje.setValorDiaria(new BigDecimal("200.00"));
+        saidaHoje.setMotivoExcecao("Período iniciado ontem para teste de saídas do painel.");
+        reservaService.criar(saidaHoje);
+
+        assertThat(dashboardService.saidasDeHoje())
+                .anySatisfy(r -> {
+                    assertThat(r.getHospede().getNome()).isEqualTo("Hóspede Saída Painel");
+                    assertThat(r.getQuarto().getNumero()).isEqualTo("1053");
+                });
     }
 
     @Test

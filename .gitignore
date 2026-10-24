@@ -39,3 +39,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Python (skills locais) ###
+__pycache__/
+*.pyc

@@ -526,6 +526,16 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     --bs-btn-active-color: var(--hi-text);
 }
 
+/* Kicker de páginas claras do site (sobre/sobre/funcionalidades) */
+.site-kicker {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--hi-accent-text);
+    margin-bottom: .75rem;
+}
+
 /* Links de entidade em tabelas: cor do texto, sublinha só no hover (não o azul padrão). */
 .link-entidade {
     color: var(--hi-text);
@@ -612,7 +622,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     font-weight: 600;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--hi-accent, #f59e0b);
+    color: #f59e0b;
     margin-bottom: .75rem;
 }
 
@@ -633,7 +643,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     margin-bottom: 1.5rem;
 }
 
-.site-fachada { width: 100%; height: auto; }
+.site-fachada { display: block; width: 100%; max-width: 100%; height: auto; }
 
 /* Números editoriais dos pilares */
 .site-numeral {

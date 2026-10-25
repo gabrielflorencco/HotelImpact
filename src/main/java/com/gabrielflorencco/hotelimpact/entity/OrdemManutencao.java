@@ -19,7 +19,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -64,7 +63,6 @@ public class OrdemManutencao {
     @Column(nullable = false, length = 15)
     private EstadoManutencao estado = EstadoManutencao.ABERTA;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime abertaEm;
 

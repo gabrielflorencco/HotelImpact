@@ -15,6 +15,8 @@ public interface ItemCatalogoRepository extends JpaRepository<ItemCatalogo, Long
 
     List<ItemCatalogo> findAllByOrderByNomeAsc();
 
+    java.util.Optional<ItemCatalogo> findByNome(String nome);
+
     List<ItemCatalogo> findByTipoOrderByNomeAsc(TipoItem tipo);
 
     /** Produtos com controle de estoque no limite ou abaixo do mínimo. */

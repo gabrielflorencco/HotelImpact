@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -59,7 +58,6 @@ public class Pagamento {
     @Column(nullable = false, length = 20)
     private FormaPagamento forma;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataHora;
 

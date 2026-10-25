@@ -64,6 +64,7 @@ public class ConsumoService {
 
         Consumo consumo = new Consumo();
         consumo.setHospedagem(hospedagem);
+        consumo.setDataHora(java.time.LocalDateTime.now());
         consumo.setItem(item);
         consumo.setQuantidade(form.getQuantidade());
         consumo.setPrecoUnitario(item.getPrecoUnitario());

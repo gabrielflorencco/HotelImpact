@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -70,7 +69,6 @@ public class Consumo {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal valorTotal;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataHora;
 

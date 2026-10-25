@@ -75,6 +75,7 @@ public class PagamentoService {
 
         Pagamento pagamento = new Pagamento();
         pagamento.setHospedagem(hospedagem);
+        pagamento.setDataHora(java.time.LocalDateTime.now());
         pagamento.setValor(form.getValor());
         pagamento.setForma(form.getForma());
         pagamento.setEstado(EstadoPagamento.CONFIRMADO);

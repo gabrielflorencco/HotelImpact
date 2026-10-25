@@ -73,6 +73,7 @@ public class ManutencaoService {
         }
 
         OrdemManutencao ordem = new OrdemManutencao();
+        ordem.setAbertaEm(java.time.LocalDateTime.now());
         ordem.setQuarto(quarto);
         ordem.setTitulo(form.getTitulo().trim());
         ordem.setDescricao(nuloSeVazio(form.getDescricao()));

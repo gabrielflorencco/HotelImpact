@@ -33,7 +33,7 @@ class SiteWebTest {
         mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(view().name("site/inicio"))
-                .andExpect(content().string(containsString("Toda a operação do hotel")))
+                .andExpect(content().string(containsString("A operação do seu hotel em um só painel")))
                 .andExpect(content().string(containsString("Entrar no sistema")))
                 .andExpect(content().string(containsString("hotel-noite.jpg")))
                 .andExpect(content().string(containsString("Nove módulos")))

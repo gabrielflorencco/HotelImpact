@@ -676,9 +676,14 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 .site-logo {
-    height: 2.375rem;
+    height: 3.25rem;               /* marca com destaque na top bar */
     width: auto;
     display: block;
+}
+
+/* Em telas estreitas a marca reduz para convivere com a navegação. */
+@media (max-width: 767.98px) {
+    .site-logo { height: 2.5rem; }
 }
 
 /* No tema escuro, a logo completa (com "Hotel" grafite) não tem contraste:

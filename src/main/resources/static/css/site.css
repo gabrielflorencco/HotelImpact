@@ -25,14 +25,13 @@
     --hi-sidebar-bg-hover: #f1f5f4;
     --hi-sidebar-text: #5b6879;
     --hi-sidebar-muted: #64748b;
-    --hi-sidebar-accent: #1b7a4e;
+    --hi-sidebar-accent: #b45309;
 
-    /* Cor primária: verde sofisticado de hospitalidade */
-    --hi-accent: #1b7a4e;
-    --hi-accent-hover: #14603d;
-    --hi-accent-text: #14603d;          /* textos/eyebrows sobre claro */
-    --hi-accent-soft: #edfaf2;          /* fundo suave para realces */
-    --hi-destaque: #b45309;             /* âmbar: destaques pontuais */
+    /* Cor de ação: âmbar da marca (identidade da logo) */
+    --hi-accent: #b45309;
+    --hi-accent-hover: #92400e;
+    --hi-accent-text: #92400e;          /* textos/eyebrows sobre claro */
+    --hi-accent-soft: #fdf3e7;          /* fundo suave para realces */
 
     /* Estado semântico (dot + rótulo) */
     --hi-ok: #16a34a;
@@ -64,13 +63,12 @@
     --hi-sidebar-bg-hover: #1e2a40;
     --hi-sidebar-text: #b6c2d2;
     --hi-sidebar-muted: #7d8aa0;
-    --hi-sidebar-accent: #4ade80;
+    --hi-sidebar-accent: #f59e0b;
 
-    --hi-accent: #34c383;
-    --hi-accent-hover: #4ade80;
-    --hi-accent-text: #6ee7b7;
-    --hi-accent-soft: #16352a;
-    --hi-destaque: #fbbf24;
+    --hi-accent: #f59e0b;
+    --hi-accent-hover: #fbbf24;
+    --hi-accent-text: #fcd34d;
+    --hi-accent-soft: #3d2c10;
 
     --hi-ok: #4ade80;
     --hi-warn: #fbbf24;
@@ -143,7 +141,7 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 }
 
 [data-bs-theme="dark"] .btn-primary {
-    --bs-btn-color: #06231a;
+    --bs-btn-color: #20130a;
     --bs-btn-hover-color: #20130a;
     --bs-btn-active-color: #20130a;
 }
@@ -600,7 +598,7 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 [data-bs-theme="dark"] .btn-outline-primary {
-    --bs-btn-color: var(--hi-accent);
+    --bs-btn-color: var(--hi-accent-text);
     --bs-btn-hover-color: #06231a;
     --bs-btn-active-color: #06231a;
 }
@@ -678,16 +676,19 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 .site-logo {
-    height: 1.75rem;
+    height: 2.375rem;
     width: auto;
     display: block;
 }
 
-[data-bs-theme="dark"] .site-brand {
-    background-color: #ffffff;
-    border-radius: .5rem;
-    padding: .3rem .6rem;
-}
+/* No tema escuro, a logo completa (com "Hotel" grafite) não tem contraste:
+   usa-se o símbolo âmbar da marca + o nome em texto, sem fundo artificial. */
+.site-brand .site-brand-nome { display: none; font-weight: 700; font-size: 1.15rem; color: var(--hi-text); }
+.site-brand .site-logo-simbolo { display: none; width: 1.875rem; height: auto; }
+
+[data-bs-theme="dark"] .site-logo-completa { display: none; }
+[data-bs-theme="dark"] .site-logo-simbolo { display: block; }
+[data-bs-theme="dark"] .site-brand .site-brand-nome { display: inline; }
 
 .footer-simbolo {
     width: 1.375rem;
@@ -704,43 +705,27 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 .site-nav-link:hover { color: var(--hi-text); }
 .site-nav-link.active { color: var(--hi-accent-text); font-weight: 600; }
 
-/* Hero fotográfico: imagem real com overlay noturno funcional (legibilidade do texto). */
-.site-hero-foto { position: relative; overflow: hidden; }
-
-.site-hero-foto::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: rgba(11, 18, 32, .82);
-    z-index: 0;
-}
-
-.site-hero-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-}
-
-.site-hero-foto .container { z-index: 1; }
-
-/* Hero: a luz de hotel acesa na noite — superfície azul-noite, não gradiente. */
+/* Hero claro: fotografia à direita, texto sobre fundo branco. */
 .site-hero {
-    background-color: #0b1220;
-    color: #e8ecf3;
     padding: var(--hi-space-5) 0;
+    background-color: var(--hi-surface);
+    border-bottom: 1px solid var(--hi-border);
 }
 
-.site-hero .text-secondary { color: #8b98ab !important; }
+.site-hero-foto-img {
+    width: 100%;
+    height: auto;
+    border-radius: .75rem;
+    border: 1px solid var(--hi-border);
+    display: block;
+}
 
 .site-hero-kicker {
     font-size: .75rem;
     font-weight: 600;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: #f59e0b;
+    color: var(--hi-accent-text);
     margin-bottom: .75rem;
 }
 
@@ -756,7 +741,7 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 .site-hero-lede {
     font-size: 1.0625rem;
     line-height: 1.6;
-    color: #b6c2d2;
+    color: var(--hi-text-secondary);
     max-width: 34rem;
     margin-bottom: 1.5rem;
 }
@@ -771,7 +756,7 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     margin-right: .5rem;
 }
 
-/* Cards escuros sob o hero (referência FinaX): ícone, título, descrição. */
+/* Cards sob o hero: superfície clara, ícone âmbar, descrição secundária. */
 .site-cards-escuros {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -780,11 +765,11 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 .site-card-escuro {
-    background-color: rgba(21, 29, 46, .85);
-    border: 1px solid rgba(255, 255, 255, .08);
+    background-color: var(--hi-page-bg);
+    border: 1px solid var(--hi-border);
     border-radius: .625rem;
     padding: 1.25rem 1.375rem;
-    color: #b6c2d2;
+    color: var(--hi-text-secondary);
 }
 
 .site-card-escuro .card-icone {
@@ -794,12 +779,12 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     width: 2.25rem;
     height: 2.25rem;
     border-radius: .5rem;
-    background-color: rgba(255, 255, 255, .08);
-    color: #e8ecf3;
+    background-color: var(--hi-accent-soft);
+    color: var(--hi-accent-text);
     margin-bottom: .75rem;
 }
 
-.site-card-escuro h3 { color: #f1f4f9; font-size: .9375rem; font-weight: 650; margin-bottom: .375rem; }
+.site-card-escuro h3 { color: var(--hi-text); font-size: .9375rem; font-weight: 650; margin-bottom: .375rem; }
 .site-card-escuro p { font-size: .8125rem; line-height: 1.55; margin: 0; }
 
 /* Faixa de módulos: superfície quente sutil, não card colorido */

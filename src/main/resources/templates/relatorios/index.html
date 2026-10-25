@@ -23,20 +23,20 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body py-3">
-                    <form method="get" th:action="@{/relatorios}" class="row g-2 align-items-end">
-                        <div class="col-6 col-md-3">
+                    <form method="get" th:action="@{/relatorios}" class="filtro-barra d-flex flex-wrap align-items-end gap-2">
+                        <div style="min-width: 180px">
                             <label for="f-inicio" class="form-label small text-secondary mb-1">Início</label>
                             <input type="date" class="form-control form-control-sm" id="f-inicio" name="inicio"
                                    th:value="${inicio}">
                         </div>
-                        <div class="col-6 col-md-3">
+                        <div style="min-width: 180px">
                             <label for="f-fim" class="form-label small text-secondary mb-1">Fim</label>
                             <input type="date" class="form-control form-control-sm" id="f-fim" name="fim"
                                    th:value="${fim}">
                         </div>
-                        <div class="col-4 col-md-2 d-grid gap-1">
+                        <div class="filtro-acao">
                             <button type="submit" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-search me-1" aria-hidden="true"></i>Atualizar
+                                <i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i>Atualizar
                             </button>
                             <a class="btn-filtro-limpar" th:href="@{/relatorios}">Mês atual</a>
                         </div>

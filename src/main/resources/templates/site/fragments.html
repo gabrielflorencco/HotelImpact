@@ -23,7 +23,9 @@
 <header th:fragment="navbar(ativo)" class="site-nav">
     <nav class="container d-flex align-items-center justify-content-between py-3" aria-label="Navegação do site">
         <a class="site-brand" th:href="@{/}">
-            <img th:src="@{/images/hotelimpact-logo.png}" alt="HotelImpact" class="site-logo" width="500" height="200">
+            <img th:src="@{/images/hotelimpact-logo.png}" alt="HotelImpact" class="site-logo site-logo-completa" width="500" height="200">
+            <img th:src="@{/images/hotelimpact-logo-simbolo.png}" alt="" class="site-logo-simbolo" width="153" height="160">
+            <span class="site-brand-nome">HotelImpact</span>
         </a>
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <a class="site-nav-link d-none d-sm-inline" th:href="@{/}" th:classappend="${ativo} == 'inicio' ? 'active' : ''">Início</a>

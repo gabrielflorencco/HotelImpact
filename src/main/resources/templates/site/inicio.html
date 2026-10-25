@@ -8,22 +8,22 @@
 
 <main id="conteudoPrincipal">
 
-    <!-- Hero: fotografia real de hotelaria à noite — a luz de hotel como identidade -->
-    <section class="site-hero site-hero-foto">
-        <img class="site-hero-img" th:src="@{/img/hotel-noite.jpg}"
-             alt="Fachada de hotel iluminada à noite com piscina refletindo as luzes" width="1400" height="933">
-        <div class="container position-relative">
-            <p class="site-hero-kicker">Sistema de gestão hoteleira</p>
-            <h1 class="site-hero-title">Toda a operação do hotel<br>em um só painel.</h1>
-            <p class="site-hero-lede">
-                Reservas, hospedagens, consumos, pagamentos e manutenção — do primeiro
-                check-in ao fechamento da conta — com as regras do seu negócio aplicadas
-                pelo servidor, não por planilha.
-            </p>
-            <div class="d-flex flex-wrap gap-3 pt-2">
-                <a class="btn btn-primary btn-lg" th:href="@{/login}">Entrar no sistema</a>
-                <a class="btn btn-outline-light btn-lg" th:href="@{/funcionalidades}">Conhecer as funcionalidades</a>
-            </div>
+    <!-- Hero claro: proposta do produto + fotografia de hotelaria -->
+    <section class="site-hero">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6">
+                    <p class="site-hero-kicker">Sistema de gestão hoteleira</p>
+                    <h1 class="site-hero-title">Toda a operação do hotel<br>em um só painel.</h1>
+                    <p class="site-hero-lede">
+                        Reservas, hospedagens, consumos, pagamentos e manutenção — do primeiro
+                        check-in ao fechamento da conta — com as regras do seu negócio aplicadas
+                        pelo servidor, não por planilha.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 pt-2">
+                        <a class="btn btn-primary btn-lg" th:href="@{/login}">Entrar no sistema</a>
+                        <a class="btn btn-outline-secondary btn-lg" th:href="@{/funcionalidades}">Conhecer as funcionalidades</a>
+                    </div>
             <div class="site-cards-escuros">
                 <div class="site-card-escuro">
                     <span class="card-icone" aria-hidden="true"><i class="bi bi-calendar-check"></i></span>
@@ -39,6 +39,12 @@
                     <span class="card-icone" aria-hidden="true"><i class="bi bi-tools"></i></span>
                     <h3>Operação sob controle</h3>
                     <p>Limpeza, manutenção e interdição de quartos com histórico preservado e estoque íntegro.</p>
+                </div>
+                </div>
+                <div class="col-lg-6">
+                    <img class="site-hero-foto-img" th:src="@{/img/hotel-noite.jpg}"
+                         alt="Fachada de hotel iluminada à noite com piscina refletindo as luzes"
+                         width="1400" height="933">
                 </div>
             </div>
         </div>

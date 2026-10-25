@@ -149,6 +149,12 @@
         if (!ehSessaoAdministrativa()) {
             return; // login, logout e site público seguem o fluxo completo
         }
+        // Logout é fluxo de segurança: encerra a sessão e recarrega o
+        // documento inteiro (a SPA não deve injetar a resposta no shell).
+        var acao = (form.getAttribute('action') || '');
+        if (form.method.toLowerCase() === 'post' && acao.indexOf('/logout') !== -1) {
+            return;
+        }
         evento.preventDefault();
         if (form.method.toLowerCase() === 'get') {
             var params = new URLSearchParams(new FormData(form));

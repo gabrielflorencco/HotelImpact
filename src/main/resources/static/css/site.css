@@ -200,6 +200,16 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 
 .sidebar-brand i { color: var(--hi-sidebar-accent); font-size: 1.15rem; }
 
+/* Símbolo da logo na sidebar: proporcional, sem invadir a topbar nem o
+   botão de recolher; no modo colapsado, centralizado como ícone. */
+.sidebar-simbolo {
+    width: 1.75rem;
+    height: auto;
+    flex-shrink: 0;
+}
+
+body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
+
 .sidebar-nav {
     display: flex;
     flex-direction: column;

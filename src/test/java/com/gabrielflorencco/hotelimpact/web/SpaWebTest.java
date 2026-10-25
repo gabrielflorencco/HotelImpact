@@ -69,11 +69,34 @@ class SpaWebTest {
     void pedidoSemHtmxRenderizaAPaginaCompleta() throws Exception {
         when(reservaService.buscar(any(), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/reservas"))
+        var resposta = mockMvc.perform(get("/reservas"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reservas/lista"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("app-wrapper")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("sidebar")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("sidebar")))
+                // marca com a logo na sidebar
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "images/hotelimpact-logo-simbolo.png")))
+                .andReturn().getResponse().getContentAsString();
+
+        // item de Reservas ativo e Dashboard não ativo (renderização server-side),
+        // independente da ordem de atributos emitida pelo Thymeleaf
+        var tagReservas = tagDoLink(resposta, "title=\"Reservas\"");
+        org.junit.jupiter.api.Assertions.assertTrue(tagReservas.contains("class=\"active\""),
+                "link de Reservas deve estar ativo: " + tagReservas);
+        org.junit.jupiter.api.Assertions.assertTrue(tagReservas.contains("aria-current=\"page\""),
+                "link de Reservas deve marcar aria-current: " + tagReservas);
+        var tagDashboard = tagDoLink(resposta, "title=\"Dashboard\"");
+        org.junit.jupiter.api.Assertions.assertFalse(tagDashboard.contains("class=\"active\""),
+                "link de Dashboard não deve estar ativo em /reservas: " + tagDashboard);
+    }
+
+    private static String tagDoLink(String html, String marcador) {
+        int i = html.indexOf(marcador);
+        org.junit.jupiter.api.Assertions.assertTrue(i >= 0, "link não encontrado: " + marcador);
+        int inicio = html.lastIndexOf("<a ", i);
+        int fim = html.indexOf(">", i);
+        return html.substring(inicio, fim);
     }
 
     @Test

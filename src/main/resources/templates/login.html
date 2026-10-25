@@ -8,7 +8,7 @@
             <!-- Lado da marca: a fachada acesa, como no site institucional -->
             <div class="col-md-6 login-lado-marca d-none d-md-flex">
                 <div class="p-5 w-100">
-                    <p class="site-hero-kicker mb-2">HotelImpact</p>
+                    <img th:src="@{/images/hotelimpact-logo-simbolo.png}" alt="" class="login-simbolo mb-3" width="153" height="160">
                     <h1 class="site-hero-title" style="font-size: 1.6rem">A recepção<br>começa aqui.</h1>
                     <p class="mb-4" style="color: #8b98ab; font-size: .875rem">
                         Painel operacional, reservas, hospedagens e a conta de cada hóspede.
@@ -24,11 +24,11 @@
             <div class="col-12 col-md-6 login-lado-form">
                 <div class="p-4 p-md-5">
                     <div class="d-md-none text-center mb-4">
-                        <i class="bi bi-building-fill fs-2" style="color: var(--hi-accent)" aria-hidden="true"></i>
-                        <span class="h4 d-block mt-2 mb-0">HotelImpact</span>
-                        <span class="text-secondary small">Gestão hoteleira · Recepção</span>
+                        <img th:src="@{/images/hotelimpact-logo.png}" alt="HotelImpact" class="login-logo-mobile" width="500" height="200">
+                        <span class="text-secondary small d-block mt-1">Gestão hoteleira · Recepção</span>
                     </div>
 
+                    <img th:src="@{/images/hotelimpact-logo.png}" alt="HotelImpact" class="login-logo-form d-none d-md-block mb-3" width="500" height="200">
                     <h2 class="h5 mb-1 d-none d-md-block">Entrar no sistema</h2>
                     <p class="text-secondary small mb-4">Use as credenciais da recepção para acessar o painel.</p>
 

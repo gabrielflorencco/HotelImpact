@@ -46,6 +46,7 @@
             // Título do documento a partir do h1 do conteúdo recém-trocado.
             var h1 = document.querySelector(ALVO_CONTEUDO + ' h1');
             document.title = (h1 ? h1.textContent.trim() + ' · ' : '') + 'HotelImpact';
+            atualizarSidebarAtiva();
             var foco = document.getElementById('conteudoPrincipal');
             if (foco && foco.focus) foco.focus({preventScroll: true});
         }).catch(function () {
@@ -57,6 +58,49 @@
 
     function ehSessaoAdministrativa() {
         return document.body && document.body.getAttribute('data-area') === 'admin';
+    }
+
+    /* Seleção ativa da sidebar: derivada da URL atual a cada troca de
+       conteúdo (a marca server-side vale só para o carregamento completo).
+       Correspondência por maior prefixo com fronteira de segmento — evita
+       ambiguidades entre caminhos semelhantes e ignora a query string. */
+    function atualizarSidebarAtiva() {
+        if (!ehSessaoAdministrativa()) return;
+        var nav = document.querySelector('.sidebar-nav');
+        if (!nav) return;
+        var caminho = window.location.pathname;
+
+        var melhor = null, melhorTam = -1;
+        nav.querySelectorAll('a[href]').forEach(function (a) {
+            var href;
+            try { href = new URL(a.href, window.location.origin).pathname; }
+            catch (e) { return; }
+            var corresponde = caminho === href || caminho.startsWith(href + '/');
+            if (corresponde && href.length > melhorTam) {
+                melhor = a;
+                melhorTam = href.length;
+            }
+        });
+
+        nav.querySelectorAll('a').forEach(function (a) {
+            var ativo = a === melhor;
+            a.classList.toggle('active', ativo);
+            if (ativo) a.setAttribute('aria-current', 'page');
+            else a.removeAttribute('aria-current');
+        });
+
+        // Expande o grupo que contém o item ativo, se estiver recolhido.
+        if (melhor) {
+            var itens = melhor.closest('.sidebar-grupo-itens');
+            if (itens && itens.id && itens.id.indexOf('grupo-') === 0) {
+                var nome = itens.id.substring(6);
+                var botao = nav.querySelector('.sidebar-grupo-btn[data-grupo="' + nome + '"]');
+                if (botao && botao.getAttribute('aria-expanded') !== 'true') {
+                    botao.setAttribute('aria-expanded', 'true');
+                    localStorage.setItem('hi-grupo-' + nome, 'aberto');
+                }
+            }
+        }
     }
 
     function atualizarIconeTema() {
@@ -174,5 +218,7 @@
         if (localStorage.getItem('hi-sidebar') === 'colapsada') {
             document.body.classList.add('sidebar-colapsada');
         }
+        // seleção ativa coerente com a URL no carregamento (completo ou direto)
+        atualizarSidebarAtiva();
     });
 })();

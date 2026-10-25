@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * importada): as páginas públicas são acessíveis sem autenticação, o conteúdo
  * corresponde ao produto real e nada da área administrativa vaza nelas.
  */
-@WebMvcTest(controllers = SiteController.class)
+@WebMvcTest(controllers = {SiteController.class, com.gabrielflorencco.hotelimpact.controller.LoginController.class})
 @Import(SecurityConfig.class)
 class SiteWebTest {
 
@@ -36,7 +36,17 @@ class SiteWebTest {
                 .andExpect(content().string(containsString("Toda a operação do hotel")))
                 .andExpect(content().string(containsString("Entrar no sistema")))
                 .andExpect(content().string(containsString("hotel-noite.jpg")))
-                .andExpect(content().string(containsString("Nove módulos")));
+                .andExpect(content().string(containsString("Nove módulos")))
+                // identidade da marca: logo no cabeçalho da landing
+                .andExpect(content().string(containsString("images/hotelimpact-logo.png")));
+    }
+
+    @Test
+    void loginPublicoApresentaAIdentidadeDaMarca() throws Exception {
+        mockMvc.perform(get("/login").accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("images/hotelimpact-logo.png")))
+                .andExpect(content().string(containsString("images/hotelimpact-logo-simbolo.png")));
     }
 
     @Test

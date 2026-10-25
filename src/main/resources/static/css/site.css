@@ -571,6 +571,12 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
 
 .login-lado-form { background-color: var(--hi-surface); }
 
+.login-simbolo { width: 3rem; height: auto; }
+
+.login-logo-form { height: 2.25rem; width: auto; }
+
+.login-logo-mobile { height: 2rem; width: auto; }
+
 /* Botão outline-primary: verde do design system em ambos os temas. */
 .btn-outline-primary {
     --bs-btn-color: var(--hi-accent-text);
@@ -661,7 +667,23 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     text-decoration: none;
 }
 
-.site-brand i { color: var(--hi-accent); font-size: 1.15rem; }
+.site-logo {
+    height: 1.75rem;
+    width: auto;
+    display: block;
+}
+
+[data-bs-theme="dark"] .site-brand {
+    background-color: #ffffff;
+    border-radius: .5rem;
+    padding: .3rem .6rem;
+}
+
+.footer-simbolo {
+    width: 1.375rem;
+    height: auto;
+    flex-shrink: 0;
+}
 
 .site-nav-link {
     font-size: .875rem;

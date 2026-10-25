@@ -11,7 +11,28 @@
    nos dois temas (claro/escuro).
    ========================================================================== */
 
-/* ---- Tokens --------------------------------------------------------------- */
+/* ---- Tokens ----------------------------------------------------------------- */
+
+/* Superfícies fixas escuras — independem do tema global:
+   a navbar pública do site e a sidebar do aplicativo são sempre escuras
+   (identidade "luz de hotel"); o restante segue data-bs-theme. */
+:root {
+    --hi-nav-bg: #101725;                 /* top bar pública */
+    --hi-nav-border: rgba(255, 255, 255, .08);
+    --hi-nav-link: #b6c2d2;
+    --hi-nav-link-hover: #ffffff;
+    --hi-nav-active: #fcd34d;             /* item ativo sobre fundo escuro */
+
+    --hi-sidebar-bg: #16202f;             /* sidebar administrativa */
+    --hi-sidebar-bg-hover: #22304a;
+    --hi-sidebar-text: #b6c2d2;
+    --hi-sidebar-muted: #8a96a5;
+    --hi-sidebar-brand: #e8ecf3;
+    --hi-sidebar-accent: #f59e0b;
+    --hi-sidebar-active-bg: #3d2c10;
+    --hi-sidebar-active-text: #fcd34d;
+}
+
 :root,
 [data-bs-theme="light"] {
     /* Superfícies e texto */
@@ -19,13 +40,6 @@
     --hi-surface: #ffffff;
     --hi-text: #1a2332;
     --hi-text-secondary: #5b6879;
-
-    /* Sidebar clara com bordas (referência Fixoria) */
-    --hi-sidebar-bg: #ffffff;
-    --hi-sidebar-bg-hover: #f1f5f4;
-    --hi-sidebar-text: #5b6879;
-    --hi-sidebar-muted: #64748b;
-    --hi-sidebar-accent: #b45309;
 
     /* Cor de ação: âmbar da marca (identidade da logo) */
     --hi-accent: #b45309;
@@ -58,12 +72,6 @@
     --hi-surface: #151d2e;
     --hi-text: #e8ecf3;
     --hi-text-secondary: #8b98ab;
-
-    --hi-sidebar-bg: #151d2e;
-    --hi-sidebar-bg-hover: #1e2a40;
-    --hi-sidebar-text: #b6c2d2;
-    --hi-sidebar-muted: #7d8aa0;
-    --hi-sidebar-accent: #f59e0b;
 
     --hi-accent: #f59e0b;
     --hi-accent-hover: #fbbf24;
@@ -192,8 +200,8 @@ th, dd, dt, .badge, .form-label, .page-link, .btn {
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: -.01em;
-    color: var(--hi-text);
-    border-bottom: 1px solid var(--hi-border);
+    color: var(--hi-sidebar-brand);
+    border-bottom: 1px solid var(--hi-nav-border);
 }
 
 .sidebar-brand i { color: var(--hi-sidebar-accent); font-size: 1.15rem; }
@@ -245,13 +253,19 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     flex-shrink: 0;
 }
 
-.sidebar-nav a:hover { background-color: var(--hi-sidebar-bg-hover); color: var(--hi-text); }
+.sidebar-nav a:hover { background-color: var(--hi-sidebar-bg-hover); color: var(--hi-nav-link-hover); }
 
 .sidebar-nav a.active {
-    background-color: var(--hi-accent-soft);
-    color: var(--hi-accent-text);
+    background-color: var(--hi-sidebar-active-bg);
+    color: var(--hi-sidebar-active-text);
     font-weight: 600;
-    box-shadow: inset 2px 0 0 var(--hi-accent);
+    box-shadow: inset 2px 0 0 var(--hi-sidebar-accent);
+}
+
+.sidebar-nav a:focus-visible {
+    outline: 2px solid var(--hi-sidebar-accent);
+    outline-offset: -2px;
+    border-radius: var(--hi-radius);
 }
 
 .sidebar-item-indisponivel { opacity: .4; cursor: not-allowed; }
@@ -262,7 +276,7 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     padding: var(--hi-space-3) var(--hi-space-4);
     font-size: .75rem;
     color: var(--hi-sidebar-muted);
-    border-top: 1px solid var(--hi-border);
+    border-top: 1px solid var(--hi-nav-border);
 }
 
 .sidebar-perfil {
@@ -272,7 +286,19 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 .sidebar-perfil i { font-size: 1.375rem; color: var(--hi-sidebar-accent); }
-.sidebar-perfil .perfil-nome { color: var(--hi-text); font-weight: 600; font-size: .8125rem; }
+.sidebar-perfil .perfil-nome { color: var(--hi-sidebar-brand); font-weight: 600; font-size: .8125rem; }
+
+/* Botão de logout da sidebar: variante clara legível sobre fundo escuro. */
+.sidebar-perfil .btn-outline-secondary {
+    --bs-btn-color: var(--hi-sidebar-muted);
+    --bs-btn-border-color: rgba(255, 255, 255, .22);
+    --bs-btn-hover-color: var(--hi-nav-link-hover);
+    --bs-btn-hover-bg: rgba(255, 255, 255, .08);
+    --bs-btn-hover-border-color: rgba(255, 255, 255, .32);
+    --bs-btn-active-color: var(--hi-nav-link-hover);
+    --bs-btn-active-bg: rgba(255, 255, 255, .12);
+    --bs-btn-active-border-color: rgba(255, 255, 255, .32);
+}
 .sidebar-perfil .perfil-papel { display: block; font-size: .6875rem; }
 .sidebar-perfil form { margin-left: auto; }
 
@@ -581,7 +607,7 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 
 .login-simbolo { width: 3rem; height: auto; }
 
-.login-logo-form { height: 2.25rem; width: auto; }
+.login-logo-form { height: 3rem; width: auto; margin: auto; }
 
 .login-logo-mobile { height: 2rem; width: auto; }
 
@@ -660,9 +686,12 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 }
 
 /* ---- Site institucional público --------------------------------------------------------- */
+
+/* Top bar sempre escura nos dois temas (identidade "luz de hotel"): usa os
+   tokens fixos --hi-nav-*, nunca os de tema. */
 .site-nav {
-    background-color: var(--hi-surface);
-    border-bottom: 1px solid var(--hi-border);
+    background-color: var(--hi-nav-bg);
+    border-bottom: 1px solid var(--hi-nav-border);
 }
 
 .site-brand {
@@ -671,29 +700,45 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     gap: .5rem;
     font-size: 1.05rem;
     font-weight: 650;
-    color: var(--hi-text);
+    color: var(--hi-nav-link-hover);
     text-decoration: none;
 }
 
-.site-logo {
-    height: 3.25rem;               /* marca com destaque na top bar */
-    width: auto;
-    display: block;
+/* Sobre o fundo escuro fixo, a marca é sempre o símbolo âmbar + nome em
+   texto claro (a logo completa, com "Hotel" em grafite, não tem contraste
+   sobre superfície escura e permanece no login e no rodapé). */
+.site-brand .site-logo-completa { display: none; }
+.site-brand .site-logo-simbolo { display: block; width: 2rem; height: auto; }
+.site-brand .site-brand-nome {
+    display: inline;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--hi-nav-link-hover);
 }
 
-/* Em telas estreitas a marca reduz para convivere com a navegação. */
+/* Botão de alternância de tema da top bar: discreto, claro sobre escuro. */
+.site-nav .btn-tema {
+    --bs-btn-border-width: 1px;
+    --bs-btn-color: var(--hi-nav-link);
+    --bs-btn-border-color: rgba(255, 255, 255, .22);
+    --bs-btn-hover-color: var(--hi-nav-link-hover);
+    --bs-btn-hover-bg: rgba(255, 255, 255, .08);
+    --bs-btn-hover-border-color: rgba(255, 255, 255, .32);
+    --bs-btn-active-color: var(--hi-nav-link-hover);
+    --bs-btn-active-bg: rgba(255, 255, 255, .12);
+    --bs-btn-active-border-color: rgba(255, 255, 255, .32);
+}
+
+.site-nav .btn-tema:focus-visible {
+    outline: 2px solid var(--hi-sidebar-accent);
+    outline-offset: 2px;
+}
+
+/* Em telas estreitas a marca reduz para conviver com a navegação. */
 @media (max-width: 767.98px) {
-    .site-logo { height: 2.5rem; }
+    .site-brand .site-logo-simbolo { width: 1.625rem; }
+    .site-brand .site-brand-nome { font-size: 1rem; }
 }
-
-/* No tema escuro, a logo completa (com "Hotel" grafite) não tem contraste:
-   usa-se o símbolo âmbar da marca + o nome em texto, sem fundo artificial. */
-.site-brand .site-brand-nome { display: none; font-weight: 700; font-size: 1.15rem; color: var(--hi-text); }
-.site-brand .site-logo-simbolo { display: none; width: 1.875rem; height: auto; }
-
-[data-bs-theme="dark"] .site-logo-completa { display: none; }
-[data-bs-theme="dark"] .site-logo-simbolo { display: block; }
-[data-bs-theme="dark"] .site-brand .site-brand-nome { display: inline; }
 
 .footer-simbolo {
     width: 1.375rem;
@@ -703,12 +748,13 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
 
 .site-nav-link {
     font-size: .875rem;
-    color: var(--hi-text-secondary);
+    color: var(--hi-nav-link);
     text-decoration: none;
 }
 
-.site-nav-link:hover { color: var(--hi-text); }
-.site-nav-link.active { color: var(--hi-accent-text); font-weight: 600; }
+.site-nav-link:hover { color: var(--hi-nav-link-hover); }
+.site-nav-link.active { color: var(--hi-nav-active); font-weight: 600; }
+.site-nav-link:focus-visible { outline: 2px solid var(--hi-sidebar-accent); outline-offset: 2px; border-radius: .25rem; }
 
 /* Hero claro: fotografia à direita, texto sobre fundo branco. */
 .site-hero {

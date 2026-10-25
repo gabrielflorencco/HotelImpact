@@ -31,6 +31,10 @@
             <a class="site-nav-link d-none d-sm-inline" th:href="@{/}" th:classappend="${ativo} == 'inicio' ? 'active' : ''">Início</a>
             <a class="site-nav-link d-none d-md-inline" th:href="@{/funcionalidades}" th:classappend="${ativo} == 'funcionalidades' ? 'active' : ''">Funcionalidades</a>
             <a class="site-nav-link d-none d-md-inline" th:href="@{/sobre}" th:classappend="${ativo} == 'sobre' ? 'active' : ''">Sobre</a>
+            <button type="button" id="botaoTema" class="btn btn-sm btn-tema"
+                    aria-pressed="false" title="Ativar modo escuro">
+                <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
+            </button>
             <a class="btn btn-primary btn-sm" th:href="@{/login}">Entrar no sistema</a>
         </div>
     </nav>

@@ -110,6 +110,8 @@
         var icone = botao.querySelector('i');
         if (icone) icone.className = escuro ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
         botao.title = escuro ? 'Mudar para modo claro' : 'Mudar para modo escuro';
+        botao.setAttribute('aria-pressed', escuro ? 'true' : 'false');
+        botao.setAttribute('aria-label', escuro ? 'Ativar modo claro' : 'Ativar modo escuro');
     }
 
     // Confirmação e tema por delegação — captura antes do submit da SPA.
@@ -212,6 +214,12 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         atualizarIconeTema();
+        var botaoInicial = document.getElementById('botaoTema');
+        if (botaoInicial) {
+            var escuro = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            botaoInicial.setAttribute('aria-pressed', escuro ? 'true' : 'false');
+            botaoInicial.setAttribute('aria-label', escuro ? 'Ativar modo claro' : 'Ativar modo escuro');
+        }
 
         // restaura estado dos grupos
         document.querySelectorAll('.sidebar-grupo-btn').forEach(function (grupo) {

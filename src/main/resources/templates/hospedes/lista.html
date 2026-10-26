@@ -29,7 +29,7 @@
             <div class="card shadow-sm mb-3">
                 <div class="card-body py-3">
                     <form method="get" th:action="@{/hospedes}" class="filtro-barra d-flex flex-wrap align-items-end gap-2">
-                        <div class="col">
+                        <div class="flex-grow-1" style="min-width: 260px">
                             <label for="termo" class="form-label small text-secondary mb-1">
                                 Buscar por nome, CPF, telefone ou e-mail
                             </label>
@@ -39,7 +39,7 @@
                                        th:value="${termo}" placeholder="Ex.: Ana, 529.982, 98888-0001, ana@exemplo.com">
                             </div>
                         </div>
-                        <div class="col-auto d-grid gap-1">
+                        <div class="filtro-acao">
                             <button type="submit" class="btn btn-sm btn-outline-primary">Buscar</button>
                             <a class="btn-filtro-limpar" th:href="@{/hospedes}">Limpar</a>
                         </div>

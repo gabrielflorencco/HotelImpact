@@ -152,16 +152,19 @@ public class HospedagemController {
                 .map(ConsumoResumoView::de)
                 .toList());
         model.addAttribute("itensAtivos", itens.findAllByAtivoTrueOrderByNomeAsc());
-        model.addAttribute("totalConsumos", consumoService.totalAtivos(hospedagem.getId()));
         model.addAttribute("podeLancar", hospedagem.getEstado() == EstadoHospedagem.EM_ANDAMENTO);
 
+        // Fechamento da conta como objeto de valor do domínio: total,
+        // pago e saldo vêm da mesma Conta (fórmulas em um único lugar).
+        com.gabrielflorencco.hotelimpact.domain.Conta conta = pagamentoService.contaDe(hospedagem.getId());
         model.addAttribute("pagamentos", pagamentoService.listarPorHospedagem(hospedagem.getId()).stream()
                 .map(PagamentoResumoView::de)
                 .toList());
         model.addAttribute("formas", FormaPagamento.values());
-        model.addAttribute("totalPago", pagamentoService.totalConfirmados(hospedagem.getId()));
-        model.addAttribute("totalConta", pagamentoService.totalConta(hospedagem.getId()));
-        model.addAttribute("saldo", pagamentoService.saldoDevedor(hospedagem.getId()));
+        model.addAttribute("totalConsumos", conta.totalConsumos());
+        model.addAttribute("totalPago", conta.pago());
+        model.addAttribute("totalConta", conta.total());
+        model.addAttribute("saldo", conta.saldoDevedor());
         model.addAttribute("podePagar", hospedagem.getEstado() != EstadoHospedagem.CANCELADA);
 
         if (!model.containsAttribute("consumoForm")) {

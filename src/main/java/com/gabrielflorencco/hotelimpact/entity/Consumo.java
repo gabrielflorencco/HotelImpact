@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 })
 @Getter
 @Setter
-public class Consumo {
+public class Consumo implements com.gabrielflorencco.hotelimpact.domain.Lancamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +81,18 @@ public class Consumo {
     @Size(max = 300)
     @Column(length = 300)
     private String observacoes;
+
+    /** Valor contábil do lançamento na conta (contrato Lancamento). */
+    @Override
+    public java.math.BigDecimal valorContabil() {
+        return getValorTotal();
+    }
+
+    /** Consumo conta no fechamento apenas quando ATIVO (BR-PAG-003). */
+    @Override
+    public boolean contaNoFechamento() {
+        return estado == EstadoConsumo.ATIVO;
+    }
 
     /**
      * Cancela o lançamento (estorno lógico único — BR-CON-002); a

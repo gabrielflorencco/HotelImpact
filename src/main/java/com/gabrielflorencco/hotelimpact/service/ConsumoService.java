@@ -42,9 +42,10 @@ public class ConsumoService {
     /** Soma dos lançamentos ativos: cancelados não entram na conta. */
     @Transactional(readOnly = true)
     public BigDecimal totalAtivos(Long hospedagemId) {
-        return consumos.findByHospedagemIdAndEstado(hospedagemId, EstadoConsumo.ATIVO).stream()
-                .map(Consumo::getValorTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Elegibilidade decidida pelo próprio lançamento (contrato Lancamento):
+        // consumos cancelados não contam, sem duplicar a fórmula de soma.
+        return com.gabrielflorencco.hotelimpact.domain.Fechamento
+                .totalElegivel(consumos.findByHospedagemIdComItem(hospedagemId));
     }
 
     /** Lança um consumo na hospedagem em andamento, capturando o preço histórico e baixando o estoque. */

@@ -41,26 +41,34 @@ public class PagamentoService {
     /** Soma dos pagamentos confirmados (estornados não contam como recebidos). */
     @Transactional(readOnly = true)
     public BigDecimal totalConfirmados(Long hospedagemId) {
-        return pagamentos.findByHospedagemIdAndEstado(hospedagemId, EstadoPagamento.CONFIRMADO).stream()
-                .map(Pagamento::getValor)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return contaDe(hospedagemId).pago();
+    }
+
+    /**
+     * Fechamento completo da conta da hospedagem como objeto de valor do
+     * domínio ({@link com.gabrielflorencco.hotelimpact.domain.Conta}):
+     * concentra total, pago e saldo com as fórmulas do negócio.
+     */
+    @Transactional(readOnly = true)
+    public com.gabrielflorencco.hotelimpact.domain.Conta contaDe(Long hospedagemId) {
+        Hospedagem hospedagem = hospedagens.findByIdComDetalhes(hospedagemId)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Hospedagem não encontrada."));
+        return new com.gabrielflorencco.hotelimpact.domain.Conta(
+                hospedagem.getReserva().getValorTotal(),
+                consumos.findByHospedagemIdComItem(hospedagemId),
+                pagamentos.findByHospedagemIdOrderByDataHoraAsc(hospedagemId));
     }
 
     /** Total da conta: reserva + consumos ativos (cancelados não entram). */
     @Transactional(readOnly = true)
     public BigDecimal totalConta(Long hospedagemId) {
-        Hospedagem hospedagem = hospedagens.findByIdComDetalhes(hospedagemId)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Hospedagem não encontrada."));
-        BigDecimal totalConsumos = consumos.findByHospedagemIdAndEstado(hospedagemId, EstadoConsumo.ATIVO).stream()
-                .map(c -> c.getValorTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return hospedagem.getReserva().getValorTotal().add(totalConsumos);
+        return contaDe(hospedagemId).total();
     }
 
     /** Saldo devedor: conta − pagamentos confirmados. Negativo significa crédito. */
     @Transactional(readOnly = true)
     public BigDecimal saldoDevedor(Long hospedagemId) {
-        return totalConta(hospedagemId).subtract(totalConfirmados(hospedagemId));
+        return contaDe(hospedagemId).saldoDevedor();
     }
 
     /** Registra um pagamento confirmado na conta da hospedagem. */

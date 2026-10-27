@@ -263,10 +263,22 @@ class HospedagensWebTest {
 
     /** Stubs da conta exigidos pelo template: consumos, total e saldo. */
     private void stubConta(BigDecimal saldo, BigDecimal totalPago) {
+        // O detalhe fecha a conta pelo objeto de valor do domínio: usa uma
+        // Conta REAL (reserva 360.00, sem consumos) com um pagamento
+        // confirmado — saldo e pago derivam das fórmulas verdadeiras.
         when(consumoService.totalAtivos(7L)).thenReturn(BigDecimal.ZERO);
-        when(pagamentoService.totalConta(7L)).thenReturn(new BigDecimal("360.00"));
-        when(pagamentoService.totalConfirmados(7L)).thenReturn(totalPago);
-        when(pagamentoService.saldoDevedor(7L)).thenReturn(saldo);
+        java.util.List<com.gabrielflorencco.hotelimpact.entity.Pagamento> pagamentos =
+                totalPago.signum() == 0 ? java.util.List.of()
+                        : java.util.List.of(pagamentoConfirmado(totalPago));
+        when(pagamentoService.contaDe(7L)).thenReturn(new com.gabrielflorencco.hotelimpact.domain.Conta(
+                new BigDecimal("360.00"), java.util.List.of(), pagamentos));
+    }
+
+    private com.gabrielflorencco.hotelimpact.entity.Pagamento pagamentoConfirmado(BigDecimal valor) {
+        com.gabrielflorencco.hotelimpact.entity.Pagamento p = new com.gabrielflorencco.hotelimpact.entity.Pagamento();
+        p.setValor(valor);
+        p.setEstado(com.gabrielflorencco.hotelimpact.enums.EstadoPagamento.CONFIRMADO);
+        return p;
     }
 
     private Hospedagem hospedagemMock(Long id, EstadoHospedagem estado) {

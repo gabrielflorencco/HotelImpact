@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
 })
 @Getter
 @Setter
-public class Pagamento {
+public class Pagamento implements com.gabrielflorencco.hotelimpact.domain.Lancamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,6 +70,18 @@ public class Pagamento {
     @Size(max = 300)
     @Column(length = 300)
     private String observacao;
+
+    /** Valor contábil do lançamento na conta (contrato Lancamento). */
+    @Override
+    public java.math.BigDecimal valorContabil() {
+        return getValor();
+    }
+
+    /** Pagamento conta como recebido apenas quando CONFIRMADO (BR-PAG-002). */
+    @Override
+    public boolean contaNoFechamento() {
+        return estado == EstadoPagamento.CONFIRMADO;
+    }
 
     /**
      * Estorno lógico, uma única vez (BR-PAG-002): o registro permanece no

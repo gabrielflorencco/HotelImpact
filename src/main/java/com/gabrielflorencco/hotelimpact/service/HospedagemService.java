@@ -144,16 +144,9 @@ public class HospedagemService {
             throw new NegocioException(
                     "O quarto " + quarto.getNumero() + " está desativado. Reative-o para recebê-la.");
         }
-        switch (quarto.getEstado()) {
-            case DISPONIVEL -> { /* quarto pronto para receber o hóspede */ }
-            case LIMPEZA -> throw new NegocioException(
-                    "O quarto " + quarto.getNumero() + " está aguardando limpeza.");
-            case OCUPADO -> throw new NegocioException(
-                    "O quarto " + quarto.getNumero() + " está ocupado por outra hospedagem.");
-            default -> throw new NegocioException(
-                    "O quarto " + quarto.getNumero() + " está fora de operação (" + quarto.getEstado()
-                            + ") e não pode receber hospedagens.");
-        }
+        // O próprio estado do quarto decide se pode receber o hóspede
+        // (despacho dinâmico — cada constante de EstadoQuarto responde).
+        quarto.getEstado().exigirRecepcao(quarto);
         if (hospedagens.existsByQuartoIdAndEstado(quarto.getId(), EstadoHospedagem.EM_ANDAMENTO)) {
             throw new NegocioException(
                     "Não é possível fazer check-in: já existe uma hospedagem em andamento no quarto "

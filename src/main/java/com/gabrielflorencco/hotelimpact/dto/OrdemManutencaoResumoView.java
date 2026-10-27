@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * FETCH no repositório, sem consultas adicionais por linha.
  */
 @Getter
-public class OrdemManutencaoResumoView {
+public final class OrdemManutencaoResumoView {
 
     private final Long id;
     private final String quartoNumero;

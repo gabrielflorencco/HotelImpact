@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  * estado que distingue o estorno lógico (CANCELADO) do lançamento ativo.
  */
 @Getter
-public class ConsumoResumoView {
+public final class ConsumoResumoView {
 
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

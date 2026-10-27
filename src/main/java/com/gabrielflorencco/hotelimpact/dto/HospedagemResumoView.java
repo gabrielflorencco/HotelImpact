@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * repositório (reserva, hóspede e quarto), sem consultas adicionais por linha.
  */
 @Getter
-public class HospedagemResumoView {
+public final class HospedagemResumoView {
 
     private final Long id;
     private final String reservaCodigo;

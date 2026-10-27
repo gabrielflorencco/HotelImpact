@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
  * Hóspede exibido na tela de detalhes, com dados formatados para leitura.
  */
 @Getter
-public class HospedeDetalheView {
+public final class HospedeDetalheView {
 
     private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

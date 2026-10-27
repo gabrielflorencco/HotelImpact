@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * as operações de estado possíveis (iniciar/concluir/cancelar).
  */
 @Getter
-public class OrdemManutencaoDetalheView {
+public final class OrdemManutencaoDetalheView {
 
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

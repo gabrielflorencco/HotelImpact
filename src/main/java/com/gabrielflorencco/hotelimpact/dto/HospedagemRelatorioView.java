@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * JOIN FETCH no repositório, sem consultas adicionais por linha.
  */
 @Getter
-public class HospedagemRelatorioView {
+public final class HospedagemRelatorioView {
 
     private final Long id;
     private final String reservaCodigo;

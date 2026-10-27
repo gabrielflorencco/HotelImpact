@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * e a indicação de quais operações de estado ainda são possíveis.
  */
 @Getter
-public class ReservaDetalheView {
+public final class ReservaDetalheView {
 
     private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

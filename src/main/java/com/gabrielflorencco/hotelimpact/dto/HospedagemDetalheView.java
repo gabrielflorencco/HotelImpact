@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * formatadas para leitura e o total histórico da reserva.
  */
 @Getter
-public class HospedagemDetalheView {
+public final class HospedagemDetalheView {
 
     private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

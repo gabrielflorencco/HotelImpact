@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
  * para preservar o histórico, mas não contam como recebidos.
  */
 @Getter
-public class PagamentoResumoView {
+public final class PagamentoResumoView {
 
     private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

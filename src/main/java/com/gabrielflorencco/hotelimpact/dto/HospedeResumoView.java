@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * (somente os três dígitos finais).
  */
 @Getter
-public class HospedeResumoView {
+public final class HospedeResumoView {
 
     private final Long id;
     private final String nome;

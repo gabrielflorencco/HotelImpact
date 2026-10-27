@@ -68,20 +68,23 @@ Os testes de integração usam Testcontainers e exigem o daemon Docker ativo:
 ./mvnw test
 ```
 
-A suíte cobre 203 testes em quatro níveis: validação de formulários,
-slices web por tela, integração contra PostgreSQL real e efêmero
-(Testcontainers), e a massa de demonstração.
+A suíte cobre 219 testes em quatro níveis: domínio puro (máquinas de
+estado e conta), validação de formulários, slices web por tela e
+integração contra PostgreSQL real e efêmero (Testcontainers).
 
 ## Documentação e conceitos de POO
 
 A documentação técnica completa está em [`docs/`](docs/) — comece pelo
 [índice](docs/README.md): arquitetura, regras de negócio rastreáveis,
 lacunas conhecidas e um guia de apresentação que mapeia os conceitos de
-orientação a objetos demonstráveis no código real (composição `@ManyToOne`
-entre as entidades, sobrescrita `@Override` nos contratos do Spring,
-sobrecarga em `HospedagemService.checkOut`, classes `*View` imutáveis
-declaradas `final`, polimorfismo de subtipos no `CpfValidator` e no
-`GlobalExceptionHandler` — sem herança artificial entre entidades).
+orientação a objetos demonstráveis no código real (composição `@ManyToOne` entre as entidades, máquinas de estado
+encapsuladas nas entidades — `Reserva.confirmar()`, `Quarto.ocupar()`,
+`Hospedagem.encerrar(...)` —, a interface de domínio `Lancamento` com as
+implementações `Consumo` e `Pagamento`, o value object `Conta` com o
+cálculo genérico `Fechamento`, o enum polimórfico `EstadoQuarto` e a
+sobrecarga de negócio `Hospedagem.encerrar(BigDecimal)` /
+`encerrar(BigDecimal, String)` — sem herança artificial entre entidades
+nem downcasting).
 
 A suíte cobre validação de formulários (unitário), regras de negócio contra
 PostgreSQL real (integração) e a camada web com MockMvc (Post/Redirect/Get,

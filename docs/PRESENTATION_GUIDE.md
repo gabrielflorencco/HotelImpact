@@ -97,6 +97,29 @@ implementado nesta refatoração e o que foi **deliberadamente descartado**:
 | Herança entre entidades | — | **descartado** | o domínio não tem especialização de tipos; estados são enums + transições de serviço (BR-RES-008), não subclasses |
 | `equals`/`hashCode`/`toString` em entidades | não existem | manter ausente | identidade JPA por `@Id`; métodos customizados trariam riscos de proxy/lazy |
 
+### 3.0.1 Matriz de evidências no domínio (pós-implementação)
+
+Cadeia completa — abstração, implementações, consumidor e fluxo real —
+para apresentar ao professor (conceitos **demonstrados no domínio**, não
+na infraestrutura):
+
+| Conceito | Arquivo/classe | Método relevante | Fluxo de negócio | Problema resolvido | Frase para apresentar |
+|---|---|---|---|---|---|
+| Interface de domínio | `domain/Lancamento` | `valorContabil()`, `contaNoFechamento()` | fechamento da conta (detalhe da hospedagem e check-out) | duas regras de elegibilidade distintas (consumo ATIVO vs pagamento CONFIRMADO) sob um contrato único | "a conta pergunta ao lançamento: você conta?" |
+| Sobrescrita + polimorfismo de subtipos (classes) | `entity/Consumo`, `entity/Pagamento` (implementam `Lancamento`) | `@Override contaNoFechamento()` | mesma soma serve aos dois tipos, com despacho dinâmico | elimina condicionais por tipo no fechamento | "o mesmo chamado, comportamentos diferentes" |
+| Sobrescrita + polimorfismo (enum) | `enums/EstadoQuarto` | `@Override exigirRecepcao(Quarto)` por constante | check-in (`HospedagemService.validarElegibilidadeCheckIn`) | o switch de elegibilidade virou comportamento de cada estado | "o próprio estado do quarto responde se recebe hóspede" |
+| Polimorfismo paramétrico | `domain/Fechamento` | `static <T extends Lancamento> totalElegivel(List<T>)` | `Conta.totalConsumos()/pago()` e `ConsumoService.totalAtivos` | uma única fórmula de soma para qualquer tipo de lançamento, com segurança de tipos e sem casts | "a soma é genérica no tipo do lançamento" |
+| Upcasting natural | `ContaTest.contratoLancamentoTemDuasRegrasReaisDistintas`; produção: `Fechamento` (filter via `Lancamento::contaNoFechamento`) | referências ao tipo-base | fechamento da conta | consumidor não conhece as classes concretas | "quem soma só conhece o contrato" |
+| Imutabilidade (value object) | `domain/Conta` (record) | `total()/saldoDevedor()/quitada()` | tela da hospedagem (`PagamentoService.contaDe`) | fórmulas BR-PAG-003/004 em um objeto de valor único e imutável | "a conta calcula a si mesma" |
+| Sobrecarga de negócio | `entity/Hospedagem` | `encerrar(BigDecimal)` vs `encerrar(BigDecimal, String)` | check-out (normal vs excepcional, BR-HSP-002) | assinaturas com semântica distinta: sem motivo exige conta quitada; com motivo registra exceção | "duas portas de saída, duas assinaturas" |
+| Encapsulamento + invariantes | `entity/Reserva`, `entity/Quarto`, `entity/OrdemManutencao`, `entity/Consumo`, `entity/Pagamento`, `entity/Hospedagem` | `confirmar()`, `ocupar()`, `iniciarExecucao()`, `cancelar()`, `estornar()`, `abrir()`… | todas as transições do sistema | nenhum service muda estado via setter: a entidade recusa transição inválida | "o objeto é dono do seu estado" |
+| Composição/associação | `@ManyToOne` reais (`Reserva→Hospede/Quarto` etc.) + `Conta` que **compõe** consumos e pagamentos | consultas `JOIN FETCH` | telas e fechamento | relação de persistência (associação) vs conta que agrega as partes (composição conceitual de leitura) | "a hospedagem tem muitos lançamentos — a conta os junta" |
+
+Ausências saudáveis (decisões de projeto, não lacunas): classes abstratas
+de domínio, herança entre entidades, `@MappedSuperclass`, coleções
+bidirecionais, downcasting (zero no projeto) e `equals/hashCode`
+custom em entidades — justificativas em §3.0 e `IMPLEMENTATION_GAPS.md`.
+
 Cada conceito: definição acessível → exemplo real do código → como é
 aplicado → benefício/limitação → frase para uso oral.
 
@@ -137,15 +160,22 @@ aplicado → benefício/limitação → frase para uso oral.
 
 - **Definição:** esconder o estado interno atrás de métodos, protegendo
   invariantes.
-- **O que existe:** todos os campos das entidades são `private`; o acesso
-  ocorre por getters/setters (gerados por **Lombok** `@Getter/@Setter`);
-  campos calculados (`valorBruto`, `capacidadeEfetiva`) não têm setter — são
-  **derivados**, ninguém consegue gravar um valor bruto inconsistente.
-- **Limitação declarada:** os setters das entidades são públicos — o projeto
-  não protege as invariantes apenas na entidade: as invariantes **fortes**
-  são garantidas nos **services transacionais** e no **banco**
-  (CHECKs, EXCLUDE, índice parcial). Não afirmar que as entidades se
-  auto-protegem sozinhas.
+- **O que existe (após a refatoração):** todos os campos das entidades são
+  `private`; campos calculados (`valorBruto`, `capacidadeEfetiva`) não têm
+  setter — são **derivados**; e as **máquinas de estado agora pertencem às
+  entidades**: `Reserva.confirmar()/cancelar()/registrarNoShow()/concluir()`,
+  `Quarto.ocupar()/enviarParaLimpeza()/concluirLimpeza()/interditar()/
+  liberarInterdicao()/iniciarManutencao()/disponibilizar()`,
+  `Hospedagem.abrir()/encerrar(...)`, `OrdemManutencao.iniciarExecucao()/
+  concluirOrdem()/cancelarOrdem()`, `Consumo.cancelar()`,
+  `Pagamento.estornar()` — cada método valida o estado de origem e recusa
+  transições inválidas. **Nenhum service transiciona estado via setter**
+  (restam apenas inicializações de registros novos).
+- **Divisão de responsabilidades:** a entidade protege a própria máquina de
+  estados; o service cuida do que depende do mundo externo (consultas,
+  hospedagem ativa, datas, persistência); e o banco garante as invariantes
+  de concorrência (CHECKs, EXCLUDE, índice parcial) — defesa em três
+  camadas, sem duplicar regra.
 - **Benefício real:** estado impossível (estoque negativo, estados inválidos)
   é barrado em duas camadas: service + banco
   (`ck_item_catalogo_estoque_nao_negativo`).
@@ -174,14 +204,16 @@ aplicado → benefício/limitação → frase para uso oral.
 
 - **Definição:** uma classe especializa outra, herdando comportamento.
 - **O que existe de verdade no código:**
-  - `config/HxRedirectEntryPoint.java` — **herança com sobrescrita real**:
-    `extends LoginUrlAuthenticationEntryPoint` e sobrescreve `commence()`
-    com `@Override` para tratar sessão expirada na navegação htmx.
+  - **Sobrescritas de negócio no domínio** (as mais fortes para a aula):
+    `entity/Consumo` e `entity/Pagamento` sobrescrevem `@Override
+    contaNoFechamento()/valorContabil()` do contrato de domínio
+    `domain/Lancamento`; cada constante de `enums/EstadoQuarto` sobrescreve
+    `@Override exigirRecepcao(Quarto)` — comportamento de recepção próprio.
+  - `config/HxRedirectEntryPoint.java` — herança com sobrescrita de
+    contrato do framework (`extends LoginUrlAuthenticationEntryPoint`,
+    sobrescreve `commence()`).
   - Hierarquia de exceções: `NegocioException` e
-    `RegistroNaoEncontradoException` **ambas** `extends RuntimeException`
-    (`exception/`).
-  - Interfaces de repositório estendem `JpaRepository` (herança de contrato,
-    implementação gerada pelo Spring Data — §6).
+    `RegistroNaoEncontradoException` **ambas** `extends RuntimeException`.
   - Nos testes: `support/AbstractIntegrationTest` é superclasse de
     infraestrutura (container PostgreSQL compartilhado).
 - **O que NÃO existe:** não há hierarquia de entidades (ex.: `ReservaOnline
@@ -194,7 +226,15 @@ aplicado → benefício/limitação → frase para uso oral.
 ### 3.6 Polimorfismo (com sobrescrita, não sobrecarga)
 
 - **Definição:** o mesmo chamado se comporta conforme o tipo real do objeto.
-- **Exemplos reais:**
+- **Exemplos reais (domínio primeiro):**
+  - **Fechamento da conta:** `domain/Fechamento.totalElegivel(List<T>)`
+    filtra via `Lancamento::contaNoFechamento` — a mesma chamada despacha
+    para `Consumo` (conta se ATIVO) ou `Pagamento` (conta se CONFIRMADO),
+    decidido em tempo de execução pela classe real de cada item. Teste:
+    `domain/ContaTest.contratoLancamentoTemDuasRegrasReaisDistintas`.
+  - **Check-in:** `HospedagemService.validarElegibilidadeCheckIn` chama
+    `quarto.getEstado().exigirRecepcao(quarto)` — cada constante de
+    `EstadoQuarto` responde com o próprio comportamento (sem switch).
   - **Sobrescrita (`@Override`):** `HxRedirectEntryPoint.commence()` — o
     Spring Security chama o método da superclasse; o objeto concreto decide
     se responde redirect HTTP ou header `HX-Redirect`.
@@ -216,11 +256,17 @@ aplicado → benefício/limitação → frase para uso oral.
 ### 3.7 Interfaces e contratos
 
 - **Definição:** contrato que desacopla "o que" de "quem faz".
-- **Exemplos reais:** `ConstraintValidator` (validação de CPF), `HandlerInterceptor`
-  (`config/HxUrlInterceptor.java`), `WebMvcConfigurer` (`config/WebConfig.java`),
-  `ApplicationRunner` (`DataSeeder`, `ConstraintsBancoRunner`) e os 10
-  repositórios — **interfaces** cuja implementação o Spring Data gera em
-  runtime (proxy).
+- **Exemplos reais (domínio primeiro):**
+  - **`domain/Lancamento`** — contrato **próprio do negócio**, com duas
+    implementações reais e com regras distintas: `entity/Consumo`
+    (conta no fechamento se ATIVO) e `entity/Pagamento` (conta se
+    CONFIRMADO). O consumidor é o fechamento (`domain/Fechamento`,
+    `domain/Conta` via `PagamentoService.contaDe`) — nunca `instanceof`
+    nem casts.
+  - Contratos de framework (contexto, não evidência principal):
+    `ConstraintValidator` (validação de CPF), `HandlerInterceptor`
+    (`config/HxUrlInterceptor.java`), `WebMvcConfigurer`, `ApplicationRunner`
+    e os 10 repositórios (interfaces implementadas por proxy do Spring Data).
 - **Benefício:** trocar a implementação de um contrato não afeta quem
   consome; os testes fazem exatamente isso (`@MockitoBean` substitui a
   implementação real nos slices `@WebMvcTest`).
@@ -241,7 +287,10 @@ aplicado → benefício/limitação → frase para uso oral.
   pagamentos — a conta da hospedagem é a soma das **suas** partes, e as
   partes não existem sem a hospedagem (FK não anulável). Excluir a
   hospedagem faria os lançamentos órfãos — por isso a regra proíbe excluir
-  hóspede/item com histórico (BR-HOS-003 em `docs/BUSINESS_RULES.md`).
+  hóspede/item com histórico (BR-HOS-003). A composição **sem coleções
+  bidirecionais** está expressa no value object `domain/Conta`: ele
+  **possui** as listas de consumos e pagamentos (Has-Many de leitura,
+  `List.copyOf` no record) sem que as entidades carreguem coleções.
 - **Diferença de herança:** a `Hospedagem` não "é uma" `Reserva` — ela
   **referencia** a reserva; reuso por associação, não por hierarquia.
 - *Fala:* "Consumo e pagamento são partes da conta da hospedagem —
@@ -264,12 +313,14 @@ aplicado → benefício/limitação → frase para uso oral.
 
 ### 3.10 Imutabilidade e invariantes
 
-- **O que existe de imutável:** os **records** `RelatorioService.ResumoPeriodo`
-  e `DashboardService.Indicadores` (Java `record` = imutável por
-  construção — ideal para agregados de leitura); as 11 classes `*View`
-  (agora `final`, com campos `final` e fábrica estática `de()` —
-  construção imutável verificada em `ViewsEContratosTest`);
-  `Consumo.precoUnitario` congela o **preço histórico**; `Reserva.valorDiaria` idem.
+- **O que existe de imutável:** o **value object `domain/Conta`**
+  (`record` imutável de domínio puro — recebe os lançamentos já consultados,
+  não toca no banco, e concentra as fórmulas do fechamento, verificadas em
+  `ContaTest`); os **records** `RelatorioService.ResumoPeriodo` e
+  `DashboardService.Indicadores` (agregados de leitura); as 11 classes
+  `*View` (`final`, campos `final`, fábrica estática `de()` —
+  `ViewsEContratosTest`); `Consumo.precoUnitario` congela o **preço
+  histórico**; `Reserva.valorDiaria` idem.
 - **Invariantes garantidas:** período semiaberto válido, estoque ≥ 0,
   uma hospedagem ativa por quarto (índice parcial), sem reservas ativas
   sobrepostas (EXCLUDE) — as duas últimas **no banco**, não em memória.
@@ -428,7 +479,7 @@ Tela da hospedagem → POST /hospedagens/{id}/pagamentos
 
 ## 10. Testes, benefícios e limitações
 
-- **203 testes, 4 níveis:** validação de forms (unitário), slice por tela
+- **219 testes, 4 níveis:** validação de forms (unitário), slice por tela
   (`@WebMvcTest` com `@MockitoBean`), integração com PostgreSQL real
   efêmero (**Testcontainers**, ex.: `ReservasIntegracaoTest`), seed
   (`DataSeederTest`: idempotência/integridade) e migração
@@ -485,20 +536,28 @@ claro/escuro; busca de hóspedes (um campo, quatro critérios).
    relacionamentos e comportamento. Misturá-los acoplaria HTTP ao domínio
    (e permitiria o cliente setar campos internos).
 3. **Por que separar Controller e Service?** Controller é tradução
-   HTTP→caso de uso (thin); service concentra a regra e a transação —
-   reutilizável por qualquer futuro canal (ex.: API REST) e testável sem
-   web. Evidência: `ReservasWebTest` testa o controller com service mockado;
-   `ReservasIntegracaoTest` testa o service com banco real.
-4. **Onde há encapsulamento?** Campos privados; valores derivados sem
-   setter (`getValorBruto`); e — o ponto forte — invariantes reforçadas no
-   banco (CHECK/EXCLUDE). Limitação honesta: setters públicos das entidades
-   existem; a proteção forte está nos services.
-5. **O sistema usa herança e polimorfismo? Evidências?** Herança:
-   `HxRedirectEntryPoint extends LoginUrlAuthenticationEntryPoint`
-   (sobrescreve `commence()` com `@Override`) e as exceções
-   `extends RuntimeException`. Polimorfismo: dispatch dos handlers de
-   exceção por tipo real; validador chamado pela interface
-   `ConstraintValidator`. Entre entidades: não há — por decisão de domínio.
+   HTTP→caso de uso (thin); service orquestra consultas e transações; e a
+   **entidade** guarda a máquina de estados — três níveis: HTTP, caso de
+   uso e invariante. Evidência: `ReservasWebTest` testa o controller com
+   service mockado; `ReservasIntegracaoTest` testa o fluxo com banco real;
+   `TransicoesDeEstadoTest` testa a entidade sem nada disso.
+4. **Onde há encapsulamento?** Nas **máquinas de estado das entidades**:
+   `Reserva.confirmar()` recusa uma reserva não pendente; `Quarto.ocupar()`
+   só sai de DISPONIVEL; `Hospedagem.encerrar(saldo)` exige conta quitada —
+   nenhum service muda estado via setter (verificado por
+   `TransicoesDeEstadoTest`). Além disso, valores derivados sem setter
+   (`getValorBruto`) e invariantes de concorrência no banco (CHECK/EXCLUDE).
+5. **O sistema usa herança e polimorfismo? Evidências?** Polimorfismo de
+   subtipos no domínio: `Consumo` e `Pagamento` implementam o contrato
+   `Lancamento` e sobrescrevem `@Override contaNoFechamento()` com regras
+   distintas — o fechamento (`Fechamento.totalElegivel`) despacha
+   dinamicamente sem conhecer as classes concretas (`ContaTest`); e cada
+   constante de `EstadoQuarto` sobrescreve `@Override exigirRecepcao(Quarto)`
+   no check-in (`EstadoQuartoRecepcaoTest`). Herança entre entidades: **não
+   há, por decisão de domínio** (estados são enums + transições de negócio,
+   não subclasses); herança pontual existe na infraestrutura
+   (`HxRedirectEntryPoint extends LoginUrlAuthenticationEntryPoint`,
+   exceções `extends RuntimeException`).
 6. **Associação vs composição?** Reserva→Hóspede é associação (a reserva
    referencia); Consumo/Pagamento→Hospedagem são partes da conta
    (composição conceitual, FK não anulável). Reuso por composição, não por
@@ -515,9 +574,25 @@ claro/escuro; busca de hóspedes (um campo, quatro critérios).
    de formato no form; regra de negócio no service
    (`NegocioException` → mensagem ao operador); invariante no banco
    (EXCLUDE/índice parcial/CHECK — sobrevive até a concorrência extrema).
-10. **Como os testes verificam as regras?** Integração contra PostgreSQL
-    real (Testcontainers) exercita as próprias constraints; os nomes dos
-    testes citam a regra (`checkOutComSaldoPendenteSemMotivoEBloqueadoSemAlterarEstado`).
+10. **Como os testes verificam as regras?** Três frentes: **domínio puro**
+    (`TransicoesDeEstadoTest`/`ContaTest` — entidades e conta sem Spring
+    nem banco), **integração** contra PostgreSQL real (Testcontainers,
+    exercitando as constraints — `checkOutComSaldoPendenteSemMotivoEBloqueadoSemAlterarEstado`)
+    e **slices web** por tela. Total: 219 testes.
+11. **Sobrecarga vs sobrescrita — onde está cada uma?** Sobrescrita:
+    `Consumo`/`Pagamento` redefinem `contaNoFechamento()` do contrato
+    `Lancamento` (mesma assinatura, comportamentos diferentes, despache
+    dinâmico). Sobrecarga: `Hospedagem.encerrar(BigDecimal)` vs
+    `encerrar(BigDecimal, String)` — assinaturas diferentes, semântica
+    diferente (encerramento normal exige conta quitada; com justificativa
+    aceita saldo pendente); a sobrescrita decide "como", a sobrecarga
+    decide "o que" chamar em tempo de compilação.
+12. **Polimorfismo paramétrico — onde?** `Fechamento.totalElegivel(List<T
+    extends Lancamento>)`: o `T` mantém a lista concretamente tipada
+    (`List<Consumo>`, `List<Pagamento>`) com segurança de tipos em
+    compilação e sem casts — a mesma fórmula de soma serve aos dois tipos,
+    usada por `Conta` e por `ConsumoService.totalAtivos`. Não é o uso
+    incidental de `List<String>`: é um método genérico próprio do domínio.
 11. **O que melhoraria arquiteturalmente?** Migrar Boot para GA; desligar
     `ddl-auto=update` após validação em produção; gestão de usuários com
     auditoria; edição de reserva; UI para `TarefaLimpeza`

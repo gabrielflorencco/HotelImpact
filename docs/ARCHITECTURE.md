@@ -79,6 +79,8 @@ hotelimpact/
     │   │                # HxRedirectEntryPoint, DataSeeder (APP_SEED_DEMO),
     │   │                # ConstraintsBancoRunner
     │   ├── controller/ # 11 controllers MVC + Pagina (decisão htmx)
+    │   ├── domain/     # abstrações puras de negócio: Lancamento,
+    │   │               # Fechamento (genérico) e Conta (record imutável)
     │   ├── dto/         # forms de entrada (@Valid) e *View de saída
     │   ├── entity/      # 10 entidades JPA
     │   ├── enums/       # 11 enumerações de estado/tipo
@@ -135,6 +137,8 @@ devolve apenas o fragmento `conteudo` e `HxUrlInterceptor` adiciona
 | **MVC (Spring MVC)** | Roteamento HTTP → view | `@Controller`, Thymeleaf, `Model` | Sem REST/JSON para a UI; respostas HTML/redirect |
 | **Repository** | Acesso a dados declarativo | `repository/*Repository.java` | Derivados + `@Query` JPQL/nativa (ex.: `buscarPorTermo`, `findConflitantes`, `somarPorEstadoEntre`) |
 | **Service Layer** | Regras de negócio transacionais | `service/*Service.java` (11) | `@Transactional` por método; exceções de domínio |
+| **Domínio rico (máquinas de estado)** | Entidades controlam as próprias transições e invariantes | Métodos de negócio nas entidades (`Reserva.confirmar/cancelar/registrarNoShow/concluir`, `Quarto.ocupar/enviarParaLimpeza/concluirLimpeza/interditar/liberarInterdicao/iniciarManutencao/disponibilizar`, `Hospedagem.abrir/encerrar`, `OrdemManutencao.iniciarExecucao/concluirOrdem/cancelarOrdem`, `Consumo.cancelar`, `Pagamento.estornar`) | Services orquestram verificações externas e chamam as operações; **nenhuma transição via setter resta nos services** (apenas inicializações de registros novos) |
+| **Interface de domínio + polimorfismo** | Contrato com regras distintas por tipo real | `domain/Lancamento` (impl: `Consumo` conta se ATIVO; `Pagamento` conta se CONFIRMADO); cálculo genérico `domain/Fechamento.totalElegivel(List<T>)`; `EstadoQuarto.exigirRecepcao(Quarto)` por constante | Despacho dinâmico no fechamento da conta e no check-in, sem switch e sem downcasting |
 | **DI / IoC** | Acoplamento | Construtores via Lombok `@RequiredArgsConstructor` | Sem field injection |
 | **DTO / ViewModel** | Fronteira segura e views dedicadas | `dto/*Form.java` (entrada, validada), `dto/*View.java` (projeções de leitura **final**, campos `final` imutáveis) | Não há mapeador genérico; conversores estáticos (`View.de(entity)`) |
 | **Tratamento centralizado de exceções** | Erros consistentes por página | `GlobalExceptionHandler` (`@ControllerAdvice`): `RegistroNãoEncontrado→404`, `NegocioException→mensagem flash 200/30x`, tipo inválido, genérico | Cada handler devolve a view de erro/mensagem adequada |
@@ -374,6 +378,7 @@ flowchart TD
     MNS[ManutencaoService] --> QRS2[QuartoRepository] & HGR
     DS[DashboardService] --> QRS3[Quarto/Reserva/Hospedagem/Pagamento/Item repos]
     RELS[RelatorioService] --> PR[PagamentoRepository] & HGR2 & RSR[ReservaRepository]
+    PGS[PagamentoService] --> CTA[domain.Conta - fechamento]
 ```
 
 Fluxos ponta a ponta implementados (detalhe regra a regra em `BUSINESS_RULES.md`):
@@ -394,10 +399,11 @@ Fluxos ponta a ponta implementados (detalhe regra a regra em `BUSINESS_RULES.md`
 
 ## 9. Testes e qualidade
 
-- **203 testes** em quatro níveis:
+- **219 testes** em quatro níveis:
   - unitários puros: validação de forms (`HospedeFormValidacaoTest`,
-    `ReservaFormValidacaoTest`), `CpfValidatorTest`, `ViewsEContratosTest`
-    (views + contrato polimórfico do validador), services de cálculo;
+    `ReservaFormValidacaoTest`), `CpfValidatorTest`, `ViewsEContratosTest`,
+    e domínio puro (`TransicoesDeEstadoTest`, `TransicoesDeEstadoIITest`,
+    `EstadoQuartoRecepcaoTest`, `ContaTest` — máquinas de estado e conta);
   - slice `@WebMvcTest`: uma classe por tela + `SecurityWebTest`, `SpaWebTest`
     (fragmento/`HX-Push-Url`/`HX-Redirect`), `SiteWebTest`;
   - integração Testcontainers (PostgreSQL 18 efêmero): um pacote por domínio

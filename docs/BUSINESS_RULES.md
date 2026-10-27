@@ -107,7 +107,7 @@ stateDiagram-v2
 ```
 
 - **Transições proibidas:** liberar fora de INTERDITADO e concluir limpeza fora de LIMPEZA são negadas com `NegocioException`.
-- **Implementação:** `QuartoService` (interditar/liberar/concluirLimpeza), `HospedagemService` (check-in/check-out), `ManutencaoService`.
+- **Implementação:** máquina de estados na entidade (`Quarto.ocupar/enviarParaLimpeza/concluirLimpeza/interditar/liberarInterdicao/iniciarManutencao/disponibilizar`, `entity/Quarto.java`), orquestrada por `QuartoService`/`HospedagemService`/`ManutencaoService`; o comportamento de recepção de cada estado é da constante (`EstadoQuarto.exigirRecepcao`).
 - **Evidências:** `concluirLimpezaRetornaQuartoADisponivelEForaDeEstadoBloqueia` (HospedagensIntegracaoTest); CHECK de estado.
 - **Status:** implementada.
 
@@ -180,7 +180,7 @@ stateDiagram-v2
 
 - **Confirmar:** somente de PENDENTE. **Cancelar:** somente ativas e **sem hospedagem** (check-in já realizado trava o cancelamento). **No-show:** ativa, sem hospedagem e `hoje > dataCheckIn` — deixa de bloquear o período. **Concluir:** exclusivamente pelo check-out da hospedagem.
 - **Nota de domínio:** reserva com check-in continua `PENDENTE/CONFIRMADA` durante a estadia; `CONCLUIDA` só no check-out (verificado em `HospedagemService.checkOut`).
-- **Implementação:** `ReservaService.confirmar/cancelar/registrarNoShow`, `HospedagemService.checkOut`.
+- **Implementação:** transições encapsuladas na entidade (`Reserva.confirmar/cancelar/registrarNoShow/concluir`, `entity/Reserva.java`), orquestradas por `ReservaService` (verificações externas) e `HospedagemService.checkOut` (conclusão).
 - **Evidências:** `confirmarECancelarTransicionamEstadosComValidacao`; testes de check-in/check-out.
 - **Status:** implementada. **Não existe** transição de reabertura/edição de reserva (ver GAPS).
 
@@ -204,7 +204,7 @@ stateDiagram-v2
 - **Fórmula de saldo:** ver BR-PAG-004.
 - **Comportamento:** somente `EM_ANDAMENTO`; com **saldo > 0** exige `motivoExcecao` → hospedagem vira `CANCELADA` (encerramento excepcional, motivo registrado); com saldo quitado (ou crédito) → `ENCERRADA` sem justificativa. Ambos: `checkOutReal = now()`, reserva→`CONCLUIDA`, quarto→`LIMPEZA`.
 - **Exceções:** saldo pendente sem motivo → negado **sem alterar estado**.
-- **Implementação:** `HospedagemService.checkOut:102-135`.
+- **Implementação:** `Hospedagem.encerrar(saldo)` e `encerrar(saldo, motivo)` (`entity/Hospedagem.java`, sobrecarga de negócio: normal exige conta quitada, excepcional exige justificativa), orquestradas por `HospedagemService.checkOut` (calcula o saldo e conclui reserva/quarto na mesma transação).
 - **Evidências:** `checkOutComSaldoPendenteSemMotivoEBloqueadoSemAlterarEstado`, `checkOutComSaldoPendenteComMotivoMarcaCanceladaERegistraJustificativa`, `checkOutComSaldoQuitadoEncerraNormalmenteSemJustificativa`, `checkOutEncerraHospedagemConcluiReservaEQuartoFicaEmLimpeza`.
 - **Status:** implementada.
 
@@ -227,7 +227,7 @@ stateDiagram-v2
 ### BR-CON-002 — Cancelamento com restituição única de estoque
 - **Comportamento:** apenas em hospedagem `EM_ANDAMENTO` e consumo `ATIVO`; marca `CANCELADO` e devolve a quantidade ao estoque. Repetir o cancelamento é negado ("O lançamento já está cancelado") — logo a restituição acontece **uma única vez**.
 - **Efeito:** consumo cancelado **sai** do total da conta (BR-PAG-003).
-- **Implementação:** `ConsumoService.cancelar:91-110`.
+- **Implementação:** `Consumo.cancelar()` (entidade, única vez) + `ConsumoService` (restituição de estoque).
 - **Status:** implementada.
 
 ### BR-ITE-001 — Catálogo: nome único, tipos e estoque
@@ -254,19 +254,21 @@ stateDiagram-v2
 
 ### BR-PAG-002 — Estorno lógico único
 - **Comportamento:** apenas pagamento `CONFIRMADO` da própria hospedagem; marca `ESTORNADO` (uma vez — segunda tentativa negada); o valor deixa de contar como recebido; o registro permanece no histórico.
-- **Evidências:** `estornarMarcaEstornadoERestituiUmaUnicaVez`, `estornarPagamentoDeOutraHospedagemGeraRegistroNaoEncontrado`.
+- **Implementação:** `Pagamento.estornar()` (transição na entidade, `entity/Pagamento.java`) + persistência em `PagamentoService.estornar`; a saída da conta vem do contrato `Lancamento.contaNoFechamento()` (CONFIRMADO conta, ESTORNADO não).
+- **Evidências:** `estornarMarcaEstornadoERestituiUmaUnicaVez`, `estornarPagamentoDeOutraHospedagemGeraRegistroNaoEncontrado`, `domain/ContaTest` (estorno sai do pago).
 - **Status:** implementada.
 
 ### BR-PAG-003 — Total da conta
 - **Fórmula:** `totalConta = reserva.valorTotal + Σ consumos_ATIVOS.valorTotal` (cancelados não contam).
-- **Implementação:** `PagamentoService.totalConta:51-60`.
+- **Implementação:** value object `domain/Conta.total()` (`record`, imutável) — a soma usa o contrato `domain/Lancamento.contaNoFechamento()` (Consumo conta se ATIVO) com o cálculo genérico `domain/Fechamento.totalElegivel(List<T>)`; exposto por `PagamentoService.contaDe/totalConta`.
 - **Evidências:** `saldoDevedorConsideraReservaConsumosAtivosEPagamentosConfirmados`.
 - **Status:** implementada.
 
 ### BR-PAG-004 — Saldo devedor
 - **Fórmula:** `saldoDevedor = totalConta − Σ pagamentos_CONFIRMADOS.valor` — negativo significa crédito.
-- **Momento do cálculo:** leitura (chamada por tela de hospedagem, check-out e relatórios); **não há campo persistido de saldo**.
-- **Evidências:** mesmos testes de BR-PAG-001/002/003.
+- **Momento do cálculo:** leitura (tela de hospedagem via `PagamentoService.contaDe`, check-out e relatórios); **não há campo persistido de saldo**.
+- **Implementação:** `domain/Conta.saldoDevedor()`; pagamentos elegíveis via `Lancamento.contaNoFechamento()` (conta se CONFIRMADO — estorno sai, BR-PAG-002).
+- **Evidências:** mesmos testes de BR-PAG-001/002/003 + `domain/ContaTest` (parcial, quitada, estorno, crédito).
 - **Status:** implementada.
 
 ---
@@ -277,7 +279,7 @@ stateDiagram-v2
 - **Pré-condições:** quarto sem hospedagem `EM_ANDAMENTO` e **sem outra ordem ativa** (ABERTA/EM_ANDAMENTO).
 - **Comportamento CRÍTICA:** interdita imediatamente o quarto se ainda não estiver interditado e registra `interditouQuarto = true` (para restaurar depois, apenas o que a ordem causou).
 - **Prioridades:** BAIXA/MEDIA/ALTA/CRITICA (CHECK).
-- **Implementação:** `ManutencaoService.abrir:61-93`.
+- **Implementação:** `ManutencaoService.abrir:61-93` + interdição via `Quarto.interditar()` (máquina da entidade).
 - **Evidências:** `ManutencoesIntegracaoTest`; seed demonstra os 4 estados.
 - **Status:** implementada.
 
@@ -295,7 +297,7 @@ stateDiagram-v2
 
 - **Restauração:** ao concluir/cancelar, o quarto volta a `DISPONIVEL` **somente** se a própria ordem o interditou (CRÍTICA) ou o estado atual é `MANUTENCAO` (posto pela execução); interdição **administrativa** prevalece.
 - **Iniciar:** apenas de ABERTA.
-- **Implementação:** `ManutencaoService.iniciar/concluir/cancelar`, `liberarQuartoSeCausadoPelaOrdem:139-149`.
+- **Implementação:** transições na entidade (`OrdemManutencao.iniciarExecucao/concluirOrdem/cancelarOrdem`) + `ManutencaoService.liberarQuartoSeCausadoPelaOrdem` (restaura via `Quarto.disponibilizar`).
 - **Status:** implementada.
 
 ---
@@ -381,7 +383,7 @@ Data passada sem justificativa; sobreposição de reservas (409 de domínio com 
 | BR-CAT-002 | Categorias | CategoriaQuartoService.excluir | categoria_quarto/quarto | mensagem formatada | parcial (sem desativação) |
 | BR-QRT-001 | Quartos | QuartoService.validarNumeroUnico | quarto.numero UNIQUE | FundacoesIntegracaoTest | implementada |
 | BR-QRT-002 | Quartos | Quarto.getCapacidadeEfetiva | quarto.capacidade_operacional | ReservasIntegracaoTest | implementada |
-| BR-QRT-003 | Quartos | Quarto/Hospedagem/Manutencao services | quarto.estado CHECK | HospedagensIntegracaoTest | implementada |
+| BR-QRT-003 | Quartos | Quarto.ocupar/enviarParaLimpeza/… (entidade) + EstadoQuarto.exigirRecepcao | quarto.estado CHECK | HospedagensIntegracaoTest + TransicoesDeEstadoTest | implementada |
 | BR-QRT-004 | Quartos | QuartoService.exigirSemHospedagemAtiva | quarto/hospedagem | mensagens | implementada |
 | BR-RES-001 | Reservas | ReservaService.validarPeriodo | reserva datas | ReservasIntegracaoTest | implementada |
 | BR-RES-002 | Reservas | exigirPeriodoLivre + EXCLUDE constraint | reserva | reservaSobrepostaEBloqueada… | implementada |
@@ -390,20 +392,20 @@ Data passada sem justificativa; sobreposição de reservas (409 de domínio com 
 | BR-RES-005 | Reservas | validarExcecaoDeDataPassada | reserva.motivo_excecao | reservaComDataPassada… | implementada |
 | BR-RES-006 | Reservas | getValorBruto/validarDesconto | reserva valores | descontoAcimaDoBruto… | implementada |
 | BR-RES-007 | Reservas | gerarCodigo | reserva.codigo UNIQUE | segundaReservaRecebeCodigo… | implementada |
-| BR-RES-008 | Reservas | confirmar/cancelar/registrarNoShow/checkOut | reserva.estado | confirmarECancelar… | implementada |
+| BR-RES-008 | Reservas | Reserva.confirmar/cancelar/registrarNoShow/concluir (entidade) | reserva.estado | confirmarECancelar… + TransicoesDeEstadoTest | implementada |
 | BR-HSP-001 | Hospedagens | HospedagemService.checkIn | hospedagem | 6 testes de check-in | implementada |
-| BR-HSP-002 | Hospedagens | HospedagemService.checkOut | hospedagem/reserva/quarto | 4 testes de check-out | implementada |
+| BR-HSP-002 | Hospedagens | Hospedagem.encerrar(saldo[, motivo]) (sobrecarga) | hospedagem/reserva/quarto | 4 testes de check-out + TransicoesDeEstadoIITest | implementada |
 | BR-HSP-003 | Hospedagens | — | hospedagem.estado + índice parcial | constraint V1 | implementada |
 | BR-CON-001 | Consumos | ConsumoService.lancar | consumo/item_catalogo | ConsumosIntegracaoTest | implementada |
-| BR-CON-002 | Consumos | ConsumoService.cancelar | consumo.estado | mensagem de duplicidade | implementada |
+| BR-CON-002 | Consumos | Consumo.cancelar (entidade) | consumo.estado | mensagem de duplicidade + TransicoesDeEstadoIITest | implementada |
 | BR-ITE-001 | Catálogo | ItemCatalogoService | item_catalogo CHECKs | ItensIntegracaoTest | implementada |
 | BR-ITE-002 | Catálogo | ItemCatalogoRepository.countComEstoqueBaixo | item_catalogo | DashboardIntegracaoTest | implementada |
 | BR-PAG-001 | Pagamentos | PagamentoService.registrar | pagamento CHECK forma | registrarPagamento… (4 testes) | implementada |
-| BR-PAG-002 | Pagamentos | PagamentoService.estornar | pagamento.estado | estornar… (2 testes) | implementada |
-| BR-PAG-003 | Pagamentos | PagamentoService.totalConta | consumo/pagamento | saldoDevedor… | implementada |
-| BR-PAG-004 | Pagamentos | PagamentoService.saldoDevedor | — (derivado) | saldoDevedor… | implementada |
+| BR-PAG-002 | Pagamentos | Pagamento.estornar + PagamentoService | pagamento.estado | estornar… (2 testes) + ContaTest | implementada |
+| BR-PAG-003 | Pagamentos | domain.Conta.total() via Fechamento | consumo/pagamento | saldoDevedor… + ContaTest | implementada |
+| BR-PAG-004 | Pagamentos | domain.Conta.saldoDevedor() | — (derivado) | saldoDevedor… + ContaTest | implementada |
 | BR-MNT-001 | Manutenção | ManutencaoService.abrir | ordem_manutencao | ManutencoesIntegracaoTest | implementada |
-| BR-MNT-002 | Manutenção | iniciar/concluir/cancelar | ordem/quarto | seed + testes | implementada |
+| BR-MNT-002 | Manutenção | OrdemManutencao.iniciarExecucao/concluirOrdem/cancelarOrdem (entidade) | ordem/quarto | seed + testes + TransicoesDeEstadoIITest | implementada |
 | BR-RPT-001 | Dashboard | DashboardService.indicadores | agregações | DashboardIntegracaoTest + ServiceTest | implementada |
 | BR-RPT-002 | Relatórios | RelatorioService.resumoPeriodo | agregações | RelatorioServiceTest | implementada |
 | BR-SEC-001..004 | Segurança | SecurityConfig/EntryPoints | — | SecurityWebTest/SpaWebTest | implementada |

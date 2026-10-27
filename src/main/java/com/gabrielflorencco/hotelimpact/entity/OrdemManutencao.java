@@ -1,6 +1,7 @@
 package com.gabrielflorencco.hotelimpact.entity;
 
 import com.gabrielflorencco.hotelimpact.enums.EstadoManutencao;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.enums.PrioridadeManutencao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -77,4 +78,36 @@ public class OrdemManutencao {
     @Size(max = 300)
     @Column(length = 300)
     private String observacoes;
+
+    /*
+     * Máquina de estados da ordem (BR-MNT-002): a ordem valida suas
+     * transições; o serviço orquestra o quarto e a persistência.
+     */
+
+    /** Inicia a execução da ordem. */
+    public void iniciarExecucao() {
+        if (estado != EstadoManutencao.ABERTA) {
+            throw new NegocioException("Somente ordens abertas podem ser iniciadas.");
+        }
+        estado = EstadoManutencao.EM_ANDAMENTO;
+    }
+
+    /** Conclui a ordem (a restauração do quarto é orquestrada pelo serviço). */
+    public void concluirOrdem() {
+        exigirAtiva();
+        estado = EstadoManutencao.CONCLUIDA;
+        concluidaEm = java.time.LocalDateTime.now();
+    }
+
+    /** Cancela a ordem (remoção lógica). */
+    public void cancelarOrdem() {
+        exigirAtiva();
+        estado = EstadoManutencao.CANCELADA;
+    }
+
+    private void exigirAtiva() {
+        if (estado != EstadoManutencao.ABERTA && estado != EstadoManutencao.EM_ANDAMENTO) {
+            throw new NegocioException("Somente ordens abertas ou em andamento permitem esta operação.");
+        }
+    }
 }

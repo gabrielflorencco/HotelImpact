@@ -91,10 +91,7 @@ public class PagamentoService {
     public void estornar(Long hospedagemId, Long pagamentoId) {
         Pagamento pagamento = pagamentos.findByIdAndHospedagemId(pagamentoId, hospedagemId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Pagamento não encontrado nesta hospedagem."));
-        if (pagamento.getEstado() == EstadoPagamento.ESTORNADO) {
-            throw new NegocioException("O pagamento já está estornado.");
-        }
-        pagamento.setEstado(EstadoPagamento.ESTORNADO);
+        pagamento.estornar();
         pagamentos.save(pagamento);
     }
 

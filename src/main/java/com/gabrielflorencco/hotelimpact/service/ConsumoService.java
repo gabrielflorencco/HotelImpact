@@ -97,11 +97,7 @@ public class ConsumoService {
 
         Consumo consumo = consumos.findByIdAndHospedagemId(consumoId, hospedagemId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Consumo não encontrado nesta hospedagem."));
-        if (consumo.getEstado() == EstadoConsumo.CANCELADO) {
-            throw new NegocioException("O lançamento já está cancelado.");
-        }
-
-        consumo.setEstado(EstadoConsumo.CANCELADO);
+        consumo.cancelar();
         consumos.save(consumo);
 
         ItemCatalogo item = consumo.getItem();

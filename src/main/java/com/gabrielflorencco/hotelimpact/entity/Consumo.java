@@ -1,6 +1,7 @@
 package com.gabrielflorencco.hotelimpact.entity;
 
 import com.gabrielflorencco.hotelimpact.enums.EstadoConsumo;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -80,4 +81,15 @@ public class Consumo {
     @Size(max = 300)
     @Column(length = 300)
     private String observacoes;
+
+    /**
+     * Cancela o lançamento (estorno lógico único — BR-CON-002); a
+     * restituição do estoque é orquestrada pelo serviço.
+     */
+    public void cancelar() {
+        if (estado == EstadoConsumo.CANCELADO) {
+            throw new NegocioException("O lançamento já está cancelado.");
+        }
+        estado = EstadoConsumo.CANCELADO;
+    }
 }

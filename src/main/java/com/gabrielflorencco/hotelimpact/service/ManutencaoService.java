@@ -95,10 +95,7 @@ public class ManutencaoService {
     @Transactional
     public void iniciar(Long id) {
         OrdemManutencao ordem = buscarPorId(id);
-        if (ordem.getEstado() != EstadoManutencao.ABERTA) {
-            throw new NegocioException("Somente ordens abertas podem ser iniciadas.");
-        }
-        ordem.setEstado(EstadoManutencao.EM_ANDAMENTO);
+        ordem.iniciarExecucao();
 
         Quarto quarto = ordem.getQuarto();
         if (quarto.getEstado() == EstadoQuarto.DISPONIVEL || quarto.getEstado() == EstadoQuarto.LIMPEZA) {
@@ -110,26 +107,17 @@ public class ManutencaoService {
     /** Conclui a ordem e devolve o quarto a DISPONIVEL quando o estado foi causado por ela. */
     @Transactional
     public void concluir(Long id) {
-        OrdemManutencao ordem = exigirOrdemAtiva(id);
-        ordem.setEstado(EstadoManutencao.CONCLUIDA);
-        ordem.setConcluidaEm(LocalDateTime.now());
+        OrdemManutencao ordem = buscarPorId(id);
+        ordem.concluirOrdem();
         liberarQuartoSeCausadoPelaOrdem(ordem);
     }
 
     /** Cancela a ordem (remoção lógica) com a mesma restauração do quarto. */
     @Transactional
     public void cancelar(Long id) {
-        OrdemManutencao ordem = exigirOrdemAtiva(id);
-        ordem.setEstado(EstadoManutencao.CANCELADA);
-        liberarQuartoSeCausadoPelaOrdem(ordem);
-    }
-
-    private OrdemManutencao exigirOrdemAtiva(Long id) {
         OrdemManutencao ordem = buscarPorId(id);
-        if (!ESTADOS_ATIVOS.contains(ordem.getEstado())) {
-            throw new NegocioException("Somente ordens abertas ou em andamento permitem esta operação.");
-        }
-        return ordem;
+        ordem.cancelarOrdem();
+        liberarQuartoSeCausadoPelaOrdem(ordem);
     }
 
     /**

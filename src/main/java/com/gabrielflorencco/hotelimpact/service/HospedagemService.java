@@ -75,8 +75,7 @@ public class HospedagemService {
         Hospedagem hospedagem = new Hospedagem();
         hospedagem.setReserva(reserva);
         hospedagem.setQuarto(reserva.getQuarto());
-        hospedagem.setCheckInReal(LocalDateTime.now());
-        hospedagem.setEstado(EstadoHospedagem.EM_ANDAMENTO);
+        hospedagem.abrir(LocalDateTime.now());
 
         Quarto quarto = reserva.getQuarto();
         quarto.ocupar();
@@ -101,22 +100,11 @@ public class HospedagemService {
     @Transactional
     public void checkOut(Long hospedagemId, String motivoExcecao) {
         Hospedagem hospedagem = buscarPorId(hospedagemId);
-        if (hospedagem.getEstado() != EstadoHospedagem.EM_ANDAMENTO) {
-            throw new NegocioException("Somente hospedagens em andamento podem ser encerradas.");
-        }
-
         java.math.BigDecimal saldo = pagamentoService.saldoDevedor(hospedagemId);
-        if (saldo.signum() > 0) {
-            if (motivoExcecao == null || motivoExcecao.isBlank()) {
-                throw new NegocioException("A conta possui saldo pendente de R$ "
-                        + saldo.toPlainString() + ". Informe a justificativa do encerramento excepcional.");
-            }
-            hospedagem.setMotivoExcecaoEncerramento(motivoExcecao.trim());
-            hospedagem.setEstado(EstadoHospedagem.CANCELADA);
-        } else {
-            hospedagem.setEstado(EstadoHospedagem.ENCERRADA);
-        }
-        hospedagem.setCheckOutReal(LocalDateTime.now());
+
+        // A sobrecarga de domínio decide o tipo de encerramento pelo saldo
+        // e pela justificativa (BR-HSP-002).
+        hospedagem.encerrar(saldo, motivoExcecao);
 
         Reserva reserva = hospedagem.getReserva();
         if (reserva.isAtiva()) {

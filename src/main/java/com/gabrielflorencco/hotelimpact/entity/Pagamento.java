@@ -1,6 +1,7 @@
 package com.gabrielflorencco.hotelimpact.entity;
 
 import com.gabrielflorencco.hotelimpact.enums.EstadoPagamento;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import com.gabrielflorencco.hotelimpact.enums.FormaPagamento;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,4 +70,15 @@ public class Pagamento {
     @Size(max = 300)
     @Column(length = 300)
     private String observacao;
+
+    /**
+     * Estorno lógico, uma única vez (BR-PAG-002): o registro permanece no
+     * histórico e deixa de contar como recebido.
+     */
+    public void estornar() {
+        if (estado == EstadoPagamento.ESTORNADO) {
+            throw new NegocioException("O pagamento já está estornado.");
+        }
+        estado = EstadoPagamento.ESTORNADO;
+    }
 }

@@ -98,10 +98,7 @@ public class ReservaService {
     @Transactional
     public void confirmar(Long id) {
         Reserva reserva = buscarPorId(id);
-        if (reserva.getEstado() != EstadoReserva.PENDENTE) {
-            throw new NegocioException("Somente reservas pendentes podem ser confirmadas.");
-        }
-        reserva.setEstado(EstadoReserva.CONFIRMADA);
+        reserva.confirmar();
         reservas.save(reserva);
     }
 
@@ -114,7 +111,7 @@ public class ReservaService {
         if (hospedagens.existsByReservaId(id)) {
             throw new NegocioException("Não é possível cancelar a reserva: o check-in já foi realizado.");
         }
-        reserva.setEstado(EstadoReserva.CANCELADA);
+        reserva.cancelar();
         reservas.save(reserva);
     }
 
@@ -135,7 +132,7 @@ public class ReservaService {
             }
             throw new NegocioException("Somente reservas pendentes ou confirmadas podem ser registradas como no-show.");
         }
-        reserva.setEstado(EstadoReserva.NO_SHOW);
+        reserva.registrarNoShow();
         reservas.save(reserva);
     }
 

@@ -1,6 +1,7 @@
 package com.gabrielflorencco.hotelimpact.entity;
 
 import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -132,5 +133,44 @@ public class Reserva {
     /** Reservas em estado que bloqueia a disponibilidade do quarto. */
     public boolean isAtiva() {
         return estado == EstadoReserva.PENDENTE || estado == EstadoReserva.CONFIRMADA;
+    }
+
+    /*
+     * Máquina de estados da reserva (BR-RES-008): a própria reserva é a
+     * única capaz de transitar seu estado. Os serviços orquestram as
+     * verificações que dependem do mundo externo (check-in existente,
+     * data passada, persistência) e chamam estas operações de domínio.
+     */
+
+    /** Confirma uma reserva pendente. */
+    public void confirmar() {
+        if (estado != EstadoReserva.PENDENTE) {
+            throw new NegocioException("Somente reservas pendentes podem ser confirmadas.");
+        }
+        estado = EstadoReserva.CONFIRMADA;
+    }
+
+    /** Cancela uma reserva ativa — o serviço garante que ainda não houve check-in. */
+    public void cancelar() {
+        if (!isAtiva()) {
+            throw new NegocioException("Somente reservas pendentes ou confirmadas podem ser canceladas.");
+        }
+        estado = EstadoReserva.CANCELADA;
+    }
+
+    /** Registra o não-comparecimento — o serviço garante data de chegada passada e ausência de check-in. */
+    public void registrarNoShow() {
+        if (!isAtiva()) {
+            throw new NegocioException("Somente reservas pendentes ou confirmadas podem ser registradas como no-show.");
+        }
+        estado = EstadoReserva.NO_SHOW;
+    }
+
+    /** Conclui a reserva no check-out da hospedagem. */
+    public void concluir() {
+        if (!isAtiva()) {
+            throw new NegocioException("Somente reservas ativas podem ser concluídas.");
+        }
+        estado = EstadoReserva.CONCLUIDA;
     }
 }

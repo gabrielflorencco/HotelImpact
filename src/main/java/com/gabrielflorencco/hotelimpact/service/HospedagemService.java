@@ -79,7 +79,7 @@ public class HospedagemService {
         hospedagem.setEstado(EstadoHospedagem.EM_ANDAMENTO);
 
         Quarto quarto = reserva.getQuarto();
-        quarto.setEstado(EstadoQuarto.OCUPADO);
+        quarto.ocupar();
         quartos.save(quarto);
 
         return hospedagens.save(hospedagem);
@@ -120,12 +120,12 @@ public class HospedagemService {
 
         Reserva reserva = hospedagem.getReserva();
         if (reserva.isAtiva()) {
-            reserva.setEstado(EstadoReserva.CONCLUIDA);
+            reserva.concluir();
             reservas.save(reserva);
         }
 
         Quarto quarto = hospedagem.getQuarto();
-        quarto.setEstado(EstadoQuarto.LIMPEZA);
+        quarto.enviarParaLimpeza();
         quartos.save(quarto);
     }
 

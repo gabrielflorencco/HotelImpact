@@ -85,7 +85,7 @@ public class ManutencaoService {
                 && quarto.getEstado() != EstadoQuarto.INTERDITADO;
         ordem.setInterditouQuarto(criticaInterditando);
         if (criticaInterditando) {
-            quarto.setEstado(EstadoQuarto.INTERDITADO);
+            quarto.interditar();
             quartos.save(quarto);
         }
         return ordens.save(ordem);
@@ -102,7 +102,7 @@ public class ManutencaoService {
 
         Quarto quarto = ordem.getQuarto();
         if (quarto.getEstado() == EstadoQuarto.DISPONIVEL || quarto.getEstado() == EstadoQuarto.LIMPEZA) {
-            quarto.setEstado(EstadoQuarto.MANUTENCAO);
+            quarto.iniciarManutencao();
             quartos.save(quarto);
         }
     }
@@ -141,7 +141,7 @@ public class ManutencaoService {
         Quarto quarto = ordem.getQuarto();
         if (Boolean.TRUE.equals(ordem.getInterditouQuarto())
                 || quarto.getEstado() == EstadoQuarto.MANUTENCAO) {
-            quarto.setEstado(EstadoQuarto.DISPONIVEL);
+            quarto.disponibilizar();
             quartos.save(quarto);
         }
     }

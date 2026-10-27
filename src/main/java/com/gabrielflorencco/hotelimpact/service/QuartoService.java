@@ -110,17 +110,14 @@ public class QuartoService {
     public void interditar(Long id) {
         Quarto quarto = buscarPorId(id);
         exigirSemHospedagemAtiva(quarto, "interditar o quarto");
-        quarto.setEstado(EstadoQuarto.INTERDITADO);
+        quarto.interditar();
         quartos.save(quarto);
     }
 
     @Transactional
     public void liberar(Long id) {
         Quarto quarto = buscarPorId(id);
-        if (quarto.getEstado() != EstadoQuarto.INTERDITADO) {
-            throw new NegocioException("Somente quartos interditados podem ser liberados.");
-        }
-        quarto.setEstado(EstadoQuarto.DISPONIVEL);
+        quarto.liberarInterdicao();
         quartos.save(quarto);
     }
 
@@ -128,10 +125,7 @@ public class QuartoService {
     @Transactional
     public void concluirLimpeza(Long id) {
         Quarto quarto = buscarPorId(id);
-        if (quarto.getEstado() != EstadoQuarto.LIMPEZA) {
-            throw new NegocioException("Somente quartos aguardando limpeza podem ser liberados.");
-        }
-        quarto.setEstado(EstadoQuarto.DISPONIVEL);
+        quarto.concluirLimpeza();
         quartos.save(quarto);
     }
 

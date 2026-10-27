@@ -76,6 +76,27 @@ backend renderizando HTML."
 
 ## 3. Fundamentos de POO aplicados ao projeto
 
+### 3.0 Matriz de decisão (análise antes da refatoração)
+
+Levantamento sistemático do código existente (out/2025) — o que cada
+conceito tem de evidência real, o que foi aproveitado, o que foi
+implementado nesta refatoração e o que foi **deliberadamente descartado**:
+
+| Conceito | Evidência já existente | Decisão | Justificativa |
+|---|---|---|---|
+| Has-A / Has-Many | 10+ `@ManyToOne` reais (`Reserva`→`Hospede`/`Quarto`; `Hospedagem`→`Reserva`/`Quarto`; `Consumo`/`Pagamento`→`Hospedagem`…) | aproveitar/documentar | relações são o domínio; lado N proprietário, sem coleções bidirecionais por decisão (evitar estado duplicado e N+1) |
+| Sobrescrita `@Override` | `HxRedirectEntryPoint.commence()`, `CpfValidator.isValid()`, `HxUrlInterceptor.postHandle()`, `WebConfig.addInterceptors()`, 2× `ApplicationRunner.run()` | aproveitar | especializações reais de contratos do framework |
+| Sobrecarga | `HospedagemService.checkOut(Long)` e `checkOut(Long, String)` | aproveitar | assinaturas com semântica distinta (com/sem justificativa de exceção) |
+| Classe abstrata | `support/AbstractIntegrationTest` (superclasse abstrata de infraestrutura de teste) | aproveitar | compartilha o container PostgreSQL efêmero entre suítes |
+| `final` | `Pagina` (classe final + construtor privado), campos `final` nas 11 views, campos injetados `final` (Lombok), `static final` nos services | **implementar: `final` nas classes `*View`** | views já são imutáveis por campos `final`; `final` na classe declara que projeções de leitura não devem ser especializadas |
+| Classes abstratas JPA (`@MappedSuperclass` de `id`) | — | **descartado** | duplicação de `@Id` é idiomática e pequena; superclasse genérica adiciona acoplamento sem invariante de domínio |
+| Interface nova | contratos existentes: `ConstraintValidator`, `HandlerInterceptor`, `WebMvcConfigurer`, `ApplicationRunner`, `JpaRepository` | **descartado criar novas** | nenhuma fronteira com 2+ implementações plausíveis; interface de implementação única é artificialismo |
+| Polimorfismo de subtipos | dispatch de exceções no `GlobalExceptionHandler`; validador e entry point chamados pelos contratos | aproveitar + teste explícito | o chamador depende do contrato, não do concreto |
+| Upcasting | implícito em todo uso de contrato (ex.: `SecurityConfig` registra o entry point como `AuthenticationEntryPoint`) | aproveitar + teste explícito | seguro e natural |
+| Downcasting | **nenhum encontrado** (os `cast` do código são SQL/JPQL) | nada a eliminar | — |
+| Herança entre entidades | — | **descartado** | o domínio não tem especialização de tipos; estados são enums + transições de serviço (BR-RES-008), não subclasses |
+| `equals`/`hashCode`/`toString` em entidades | não existem | manter ausente | identidade JPA por `@Id`; métodos customizados trariam riscos de proxy/lazy |
+
 Cada conceito: definição acessível → exemplo real do código → como é
 aplicado → benefício/limitação → frase para uso oral.
 

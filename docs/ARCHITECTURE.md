@@ -136,7 +136,7 @@ devolve apenas o fragmento `conteudo` e `HxUrlInterceptor` adiciona
 | **Repository** | Acesso a dados declarativo | `repository/*Repository.java` | Derivados + `@Query` JPQL/nativa (ex.: `buscarPorTermo`, `findConflitantes`, `somarPorEstadoEntre`) |
 | **Service Layer** | Regras de negócio transacionais | `service/*Service.java` (11) | `@Transactional` por método; exceções de domínio |
 | **DI / IoC** | Acoplamento | Construtores via Lombok `@RequiredArgsConstructor` | Sem field injection |
-| **DTO / ViewModel** | Fronteira segura e views dedicadas | `dto/*Form.java` (entrada, validada), `dto/*View.java` (projeções de leitura) | Não há mapeador genérico; conversores estáticos (`View.de(entity)`) |
+| **DTO / ViewModel** | Fronteira segura e views dedicadas | `dto/*Form.java` (entrada, validada), `dto/*View.java` (projeções de leitura **final**, campos `final` imutáveis) | Não há mapeador genérico; conversores estáticos (`View.de(entity)`) |
 | **Tratamento centralizado de exceções** | Erros consistentes por página | `GlobalExceptionHandler` (`@ControllerAdvice`): `RegistroNãoEncontrado→404`, `NegocioException→mensagem flash 200/30x`, tipo inválido, genérico | Cada handler devolve a view de erro/mensagem adequada |
 | **Validação declarativa** | Entradas seguras | `@Valid` + Bean Validation nos forms; `@Cpf` custom | `bindingResult` re-renderiza o formulário com erros inline |
 | **Transações declarativas** | Integridade multi-entidade | `@Transactional` nos services | Ex.: check-out conclui reserva + muda quarto na mesma transação |
@@ -345,6 +345,9 @@ rate limiting, headers de segurança customizados além dos padrões do Boot.
 - **Formulários**: validação server-side com re-render inline
   (`BindingResult`), campos com `@DateTimeFormat(iso=DATE)`, confirmação JS
   para ações destrutivas (`form[data-confirmar]`), CSRF automático.
+- **Privacidade na apresentação**: listagens de hóspedes exibem o CPF
+  mascarado (`•••.•••.•••-725`) por `HospedeResumoView.mascararCpf` — regra
+  de view, coberta por `ViewsEContratosTest`.
 - **Landing pública**: hero claro (texto + fotografia licenciada), cards,
   seções editoriais, login split; navbar escura com símbolo da marca + nome.
 
@@ -391,9 +394,10 @@ Fluxos ponta a ponta implementados (detalhe regra a regra em `BUSINESS_RULES.md`
 
 ## 9. Testes e qualidade
 
-- **200 testes** em quatro níveis:
+- **203 testes** em quatro níveis:
   - unitários puros: validação de forms (`HospedeFormValidacaoTest`,
-    `ReservaFormValidacaoTest`), `CpfValidatorTest`, services de cálculo;
+    `ReservaFormValidacaoTest`), `CpfValidatorTest`, `ViewsEContratosTest`
+    (views + contrato polimórfico do validador), services de cálculo;
   - slice `@WebMvcTest`: uma classe por tela + `SecurityWebTest`, `SpaWebTest`
     (fragmento/`HX-Push-Url`/`HX-Redirect`), `SiteWebTest`;
   - integração Testcontainers (PostgreSQL 18 efêmero): um pacote por domínio

@@ -50,6 +50,7 @@ Evidências · Status.
 - **Comportamento:** JPQL com `LOWER(...) LIKE` nos três campos + CPF exato por dígitos; resultado paginado.
 - **Implementação:** `repository/HospedeRepository.java` (`@Query buscarPorTermo`), `HospedeService.buscar`, `HospedeController.listar` (`?termo=`).
 - **Evidências:** consulta no repositório; fluxo validado no navegador (busca "Ana" → 2 resultados, "Limpar" → lista completa).
+- **Apresentação (regra de view):** o resultado em listagem exibe o CPF **mascarado** por privacidade (`HospedeResumoView.mascararCpf` — `•••.•••.•••-725`), coberto por `ViewsEContratosTest`.
 - **Status:** implementada.
 
 ---

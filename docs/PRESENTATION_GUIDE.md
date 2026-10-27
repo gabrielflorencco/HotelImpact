@@ -88,7 +88,7 @@ implementado nesta refatoração e o que foi **deliberadamente descartado**:
 | Sobrescrita `@Override` | `HxRedirectEntryPoint.commence()`, `CpfValidator.isValid()`, `HxUrlInterceptor.postHandle()`, `WebConfig.addInterceptors()`, 2× `ApplicationRunner.run()` | aproveitar | especializações reais de contratos do framework |
 | Sobrecarga | `HospedagemService.checkOut(Long)` e `checkOut(Long, String)` | aproveitar | assinaturas com semântica distinta (com/sem justificativa de exceção) |
 | Classe abstrata | `support/AbstractIntegrationTest` (superclasse abstrata de infraestrutura de teste) | aproveitar | compartilha o container PostgreSQL efêmero entre suítes |
-| `final` | `Pagina` (classe final + construtor privado), campos `final` nas 11 views, campos injetados `final` (Lombok), `static final` nos services | **implementar: `final` nas classes `*View`** | views já são imutáveis por campos `final`; `final` na classe declara que projeções de leitura não devem ser especializadas |
+| `final` | `Pagina` (classe final + construtor privado), campos `final` nas 11 views, campos injetados `final` (Lombok), `static final` nos services | **implementado nesta refatoração: classes `*View` declaradas `final`** | views já eram imutáveis por campos `final`; `final` na classe declara que projeções de leitura não devem ser especializadas |
 | Classes abstratas JPA (`@MappedSuperclass` de `id`) | — | **descartado** | duplicação de `@Id` é idiomática e pequena; superclasse genérica adiciona acoplamento sem invariante de domínio |
 | Interface nova | contratos existentes: `ConstraintValidator`, `HandlerInterceptor`, `WebMvcConfigurer`, `ApplicationRunner`, `JpaRepository` | **descartado criar novas** | nenhuma fronteira com 2+ implementações plausíveis; interface de implementação única é artificialismo |
 | Polimorfismo de subtipos | dispatch de exceções no `GlobalExceptionHandler`; validador e entry point chamados pelos contratos | aproveitar + teste explícito | o chamador depende do contrato, não do concreto |
@@ -266,8 +266,10 @@ aplicado → benefício/limitação → frase para uso oral.
 
 - **O que existe de imutável:** os **records** `RelatorioService.ResumoPeriodo`
   e `DashboardService.Indicadores` (Java `record` = imutável por
-  construção — ideal para agregados de leitura); `Consumo.precoUnitario`
-  congela o **preço histórico**; `Reserva.valorDiaria` idem.
+  construção — ideal para agregados de leitura); as 11 classes `*View`
+  (agora `final`, com campos `final` e fábrica estática `de()` —
+  construção imutável verificada em `ViewsEContratosTest`);
+  `Consumo.precoUnitario` congela o **preço histórico**; `Reserva.valorDiaria` idem.
 - **Invariantes garantidas:** período semiaberto válido, estoque ≥ 0,
   uma hospedagem ativa por quarto (índice parcial), sem reservas ativas
   sobrepostas (EXCLUDE) — as duas últimas **no banco**, não em memória.
@@ -426,7 +428,7 @@ Tela da hospedagem → POST /hospedagens/{id}/pagamentos
 
 ## 10. Testes, benefícios e limitações
 
-- **200 testes, 4 níveis:** validação de forms (unitário), slice por tela
+- **203 testes, 4 níveis:** validação de forms (unitário), slice por tela
   (`@WebMvcTest` com `@MockitoBean`), integração com PostgreSQL real
   efêmero (**Testcontainers**, ex.: `ReservasIntegracaoTest`), seed
   (`DataSeederTest`: idempotência/integridade) e migração

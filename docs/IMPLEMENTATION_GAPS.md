@@ -43,7 +43,9 @@
   não possui slice próprio) — **melhoria recomendada**, gravidade baixa.
 - Os cenários da massa de demonstração são testados por `DataSeederTest`,
   mas os **textos exatos** do painel (nomes de hóspedes em listas) não são
-  asserted — apenas na validação por navegador.
+  asserted — apenas na validação por navegador. As projeções de leitura,
+  porém, agora têm cobertura direta (`ViewsEContratosTest`: mapeamento e
+  máscara de privacidade do CPF).
 - Nenhum teste automatizado de acessibilidade (contraste/teclado) na suíte;
   as auditorias foram feitas com scripts de validação nos ciclos de UI.
 

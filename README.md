@@ -68,6 +68,21 @@ Os testes de integração usam Testcontainers e exigem o daemon Docker ativo:
 ./mvnw test
 ```
 
+A suíte cobre 203 testes em quatro níveis: validação de formulários,
+slices web por tela, integração contra PostgreSQL real e efêmero
+(Testcontainers), e a massa de demonstração.
+
+## Documentação e conceitos de POO
+
+A documentação técnica completa está em [`docs/`](docs/) — comece pelo
+[índice](docs/README.md): arquitetura, regras de negócio rastreáveis,
+lacunas conhecidas e um guia de apresentação que mapeia os conceitos de
+orientação a objetos demonstráveis no código real (composição `@ManyToOne`
+entre as entidades, sobrescrita `@Override` nos contratos do Spring,
+sobrecarga em `HospedagemService.checkOut`, classes `*View` imutáveis
+declaradas `final`, polimorfismo de subtipos no `CpfValidator` e no
+`GlobalExceptionHandler` — sem herança artificial entre entidades).
+
 A suíte cobre validação de formulários (unitário), regras de negócio contra
 PostgreSQL real (integração) e a camada web com MockMvc (Post/Redirect/Get,
 validação, renderização e páginas de erro).

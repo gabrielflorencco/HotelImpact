@@ -116,6 +116,13 @@
                                             </button>
                                         </form>
                                         <form th:if="${quarto.estado.name() == 'LIMPEZA'}"
+                                              th:action="@{'/quartos/' + ${quarto.id} + '/iniciar-limpeza'}" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                    title="Iniciar limpeza (tarefa em andamento)">
+                                                <i class="bi bi-brush" aria-hidden="true"></i>
+                                            </button>
+                                        </form>
+                                        <form th:if="${quarto.estado.name() == 'LIMPEZA'}"
                                               th:action="@{'/quartos/' + ${quarto.id} + '/concluir-limpeza'}" method="post">
                                             <button type="submit" class="btn btn-sm btn-outline-success"
                                                     title="Concluir limpeza (quarto volta a ficar disponível)">

@@ -66,6 +66,7 @@ public class DataSeeder implements ApplicationRunner {
     private final com.gabrielflorencco.hotelimpact.repository.ConsumoRepository consumos;
     private final PagamentoRepository pagamentos;
     private final OrdemManutencaoRepository manutencoes;
+    private final com.gabrielflorencco.hotelimpact.repository.TarefaLimpezaRepository tarefasLimpeza;
 
     @Override
     @Transactional
@@ -311,6 +312,14 @@ public class DataSeeder implements ApplicationRunner {
                 2, "280.00", null, EstadoReserva.PENDENTE);
         reserva("RES-DEMO-000012", elisa, q304, hoje.plusDays(5), hoje.plusDays(7),
                 4, "450.00", null, EstadoReserva.PENDENTE);
+
+        /* ---- Limpeza: o 104 aguarda governança com a tarefa aberta pela saída anterior ---- */
+        com.gabrielflorencco.hotelimpact.entity.TarefaLimpeza limpeza104 =
+                new com.gabrielflorencco.hotelimpact.entity.TarefaLimpeza();
+        limpeza104.setQuarto(quartoPorNumero("104"));
+        limpeza104.setEstado(com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza.PENDENTE);
+        limpeza104.setObservacoes("Saída de hoje pela manhã; cama a trocar.");
+        tarefasLimpeza.save(limpeza104);
 
         /* ---- Manutenção ---- */
 

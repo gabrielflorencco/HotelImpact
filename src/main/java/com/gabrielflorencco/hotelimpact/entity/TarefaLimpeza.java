@@ -1,6 +1,7 @@
 package com.gabrielflorencco.hotelimpact.entity;
 
 import com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza;
+import com.gabrielflorencco.hotelimpact.exception.NegocioException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -57,4 +58,33 @@ public class TarefaLimpeza {
     @Size(max = 300)
     @Column(length = 300)
     private String observacoes;
+
+    /*
+     * Máquina de estados da tarefa de limpeza: PENDENTE → EM_EXECUCAO →
+     * CONCLUIDA. Uma tarefa concluída é histórico — nunca é reiniciada
+     * (o quarto em LIMPEZA é a ponta "viva" do ciclo; a tarefa registra
+     * quem ficou pendente, quando foi executada e quando terminou).
+     */
+
+    /** Inicia a execução da limpeza pelo governo do quarto. */
+    public void iniciar() {
+        if (estado != EstadoTarefaLimpeza.PENDENTE) {
+            throw new NegocioException("Somente tarefas de limpeza pendentes podem ser iniciadas.");
+        }
+        estado = EstadoTarefaLimpeza.EM_EXECUCAO;
+    }
+
+    /** Conclui a tarefa e registra o encerramento — o histórico fica preservado. */
+    public void concluir() {
+        if (estado == EstadoTarefaLimpeza.CONCLUIDA) {
+            throw new NegocioException("A tarefa de limpeza já foi concluída.");
+        }
+        estado = EstadoTarefaLimpeza.CONCLUIDA;
+        concluidaEm = LocalDateTime.now();
+    }
+
+    /** Tarefa ainda em aberto (pendente ou em execução). */
+    public boolean aberta() {
+        return estado != EstadoTarefaLimpeza.CONCLUIDA;
+    }
 }

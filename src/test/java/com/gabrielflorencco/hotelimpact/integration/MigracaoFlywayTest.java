@@ -109,6 +109,10 @@ class MigracaoFlywayTest {
         void simulaBancoPopuladoAnteriorAoFlyway() {
             // Sem histórico: como qualquer banco criado antes da Fase 7.
             jdbc.execute("DROP TABLE IF EXISTS flyway_schema_history");
+            // Fidelidade da simulação: um banco pré-Flyway também não possui
+            // os objetos criados por migrations posteriores ao baseline (V2 em
+            // diante) — sem isto, a fase 3 re-aplicaria a V2 já existente.
+            jdbc.execute("DROP INDEX IF EXISTS uk_tarefa_limpeza_aberta");
 
             categorias.save(categoria("Categoria Antiga Pré-Flyway"));
 

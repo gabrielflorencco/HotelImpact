@@ -13,4 +13,13 @@ public interface TarefaLimpezaRepository extends JpaRepository<TarefaLimpeza, Lo
     List<TarefaLimpeza> findByEstadoOrderByCriadaEmAsc(EstadoTarefaLimpeza estado);
 
     List<TarefaLimpeza> findByQuartoIdOrderByCriadaEmDesc(Long quartoId);
+
+    long countByEstado(EstadoTarefaLimpeza estado);
+
+    java.util.Optional<TarefaLimpeza> findFirstByQuartoIdAndEstadoNotOrderByCriadaEmDesc(
+            Long quartoId, EstadoTarefaLimpeza estado);
+
+    List<TarefaLimpeza> findByEstadoNotOrderByCriadaEmDesc(EstadoTarefaLimpeza estado);
+
+    long countByConcluidaEmBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
 }

@@ -125,8 +125,32 @@ public class QuartoService {
     @Transactional
     public void concluirLimpeza(Long id) {
         Quarto quarto = buscarPorId(id);
+        // A tarefa aberta do quarto (se houver) é concluída na mesma
+        // transação — o histórico de limpeza preserva início e fim.
+        tarefasLimpeza.findFirstByQuartoIdAndEstadoNotOrderByCriadaEmDesc(
+                        id, com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza.CONCLUIDA)
+                .ifPresent(tarefa -> {
+                    tarefa.concluir();
+                    tarefasLimpeza.save(tarefa);
+                });
         quarto.concluirLimpeza();
         quartos.save(quarto);
+    }
+
+    /** Inicia a execução da tarefa de limpeza aberta do quarto (governança em ação). */
+    @Transactional
+    public void iniciarLimpeza(Long id) {
+        Quarto quarto = buscarPorId(id);
+        if (quarto.getEstado() != EstadoQuarto.LIMPEZA) {
+            throw new NegocioException("Somente quartos aguardando limpeza têm tarefa de limpeza.");
+        }
+        com.gabrielflorencco.hotelimpact.entity.TarefaLimpeza tarefa =
+                tarefasLimpeza.findFirstByQuartoIdAndEstadoNotOrderByCriadaEmDesc(
+                                id, com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza.CONCLUIDA)
+                        .orElseThrow(() -> new NegocioException(
+                                "Não há tarefa de limpeza aberta para o quarto " + quarto.getNumero() + "."));
+        tarefa.iniciar();
+        tarefasLimpeza.save(tarefa);
     }
 
     private void validarNumeroUnico(String numero, Long id) {

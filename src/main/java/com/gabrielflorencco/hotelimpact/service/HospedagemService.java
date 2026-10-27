@@ -40,6 +40,7 @@ public class HospedagemService {
     private final HospedagemRepository hospedagens;
     private final ReservaRepository reservas;
     private final QuartoRepository quartos;
+    private final com.gabrielflorencco.hotelimpact.repository.TarefaLimpezaRepository tarefasLimpeza;
     private final PagamentoService pagamentoService;
 
     @Transactional(readOnly = true)
@@ -115,6 +116,13 @@ public class HospedagemService {
         Quarto quarto = hospedagem.getQuarto();
         quarto.enviarParaLimpeza();
         quartos.save(quarto);
+
+        // A saída do hóspede abre a tarefa de limpeza do quarto: o estado
+        // LIMPEZA passa a ter registro rastreável, com início e fim no histórico.
+        com.gabrielflorencco.hotelimpact.entity.TarefaLimpeza tarefa =
+                new com.gabrielflorencco.hotelimpact.entity.TarefaLimpeza();
+        tarefa.setQuarto(quarto);
+        tarefasLimpeza.save(tarefa);
     }
 
     /**

@@ -72,6 +72,13 @@
                                            title="Editar">
                                             <i class="bi bi-pencil" aria-hidden="true"></i>
                                         </a>
+                                        <form th:action="@{'/categorias/' + ${categoria.id} + '/alternar-ativo'}" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                    th:title="${categoria.ativo} ? 'Desativar categoria (quartos existentes são preservados)' : 'Reativar categoria'"
+                                                    th:aria-label="${categoria.ativo} ? 'Desativar categoria' : 'Reativar categoria'">
+                                                <i class="bi" th:classappend="${categoria.ativo} ? 'bi-pause-circle' : 'bi-play-circle'" aria-hidden="true"></i>
+                                            </button>
+                                        </form>
                                         <form th:action="@{'/categorias/' + ${categoria.id} + '/excluir'}" method="post"
                                               th:attr="data-confirmar='Excluir a categoria ' + ${categoria.nome} + '? Esta ação não pode ser desfeita.'">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">

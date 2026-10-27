@@ -29,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * check-in são reprogramáveis, com todas as validações da criação —
  * inclusive a disponibilidade ignorando a própria reserva.
  */
-@SpringBootTest(properties = {"app.seed-demo=true",
-        "spring.flyway.enabled=true",
-        "spring.jpa.hibernate.ddl-auto=none"})
+@SpringBootTest
 class ReservaEdicaoIntegracaoTest extends AbstractIntegrationTest {
 
     @Autowired

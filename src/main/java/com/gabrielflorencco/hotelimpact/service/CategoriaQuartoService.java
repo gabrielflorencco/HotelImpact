@@ -54,6 +54,14 @@ public class CategoriaQuartoService {
      * Exclusão física permitida apenas quando nenhum quarto referencia a categoria;
      * caso contrário, orienta-se a desativação, preservando o histórico.
      */
+    /** Desativa/reativa a categoria; quartos e históricos existentes são preservados. */
+    @Transactional
+    public boolean alternarAtivo(Long id) {
+        CategoriaQuarto categoria = buscarPorId(id);
+        categoria.alternarAtivo();
+        return categorias.save(categoria).getAtivo();
+    }
+
     @Transactional
     public void excluir(Long id) {
         CategoriaQuarto categoria = buscarPorId(id);

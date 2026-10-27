@@ -59,4 +59,13 @@ public class CategoriaQuarto {
     @NotNull
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    /**
+     * Alterna a categoria entre ativa e inativa. Categorias inativas não
+     * podem ser vinculadas a novos quartos (QuartoService.exigirCategoriaAtiva),
+     * mas quartos e históricos existentes são preservados.
+     */
+    public void alternarAtivo() {
+        this.ativo = !Boolean.TRUE.equals(this.ativo);
+    }
 }

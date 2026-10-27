@@ -38,9 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * preservado e o índice parcial único (V2) impedindo duas tarefas abertas
  * para o mesmo quarto.
  */
-@SpringBootTest(properties = {"app.seed-demo=true",
-        "spring.flyway.enabled=true",
-        "spring.jpa.hibernate.ddl-auto=none"})
+@SpringBootTest(properties = {"app.seed-demo=true"})
 class LimpezaIntegracaoTest extends AbstractIntegrationTest {
 
     @Autowired

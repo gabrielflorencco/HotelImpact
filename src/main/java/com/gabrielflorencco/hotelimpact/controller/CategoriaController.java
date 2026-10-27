@@ -85,6 +85,14 @@ public class CategoriaController {
         return "redirect:/categorias";
     }
 
+    @PostMapping("/{id}/alternar-ativo")
+    public String alternarAtivo(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
+        boolean ativo = service.alternarAtivo(id);
+        redirect.addAttribute("sucesso",
+                ativo ? "Categoria reativada." : "Categoria desativada — quartos existentes foram preservados.");
+        return "redirect:/categorias";
+    }
+
     @PostMapping("/{id}/excluir")
     public String excluir(HttpServletRequest request, @PathVariable Long id, RedirectAttributes redirect) {
         try {

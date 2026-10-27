@@ -95,6 +95,52 @@ public class ReservaService {
         return reservas.save(reserva);
     }
 
+    /**
+     * Edição controlada de reserva (BR-RES-009): apenas reservas ativas e
+     * sem check-in podem ser reprogramadas. Reaproveita todas as validações
+     * da criação (quarto reservável, capacidade, período livre — exceto a
+     * própria reserva — e exceção de data passada); o total é recalculado
+     * pela entidade.
+     */
+    @Transactional
+    public Reserva atualizar(Long id, ReservaForm form) {
+        Reserva reserva = buscarPorId(id);
+        if (!reserva.isAtiva()) {
+            throw new NegocioException(
+                    "Somente reservas pendentes ou confirmadas podem ser editadas.");
+        }
+        if (hospedagens.existsByReservaId(id)) {
+            throw new NegocioException(
+                    "Não é possível editar a reserva: o check-in já foi realizado.");
+        }
+
+        Hospede hospede = hospedes.findById(form.getHospedeId())
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Hóspede não encontrado."));
+        Quarto quarto = quartos.findByIdComCategoria(form.getQuartoId())
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Quarto não encontrado."));
+
+        exigirQuartoReservavel(quarto);
+        validarCapacidade(quarto, form.getQuantidadeHospedes());
+        if (!reservas.findConflitantesExceto(quarto.getId(), id,
+                form.getDataCheckIn(), form.getDataCheckOut(), ESTADOS_ATIVOS).isEmpty()) {
+            throw new NegocioException("Já existe uma reserva ativa para o quarto " + quarto.getNumero()
+                    + " no período informado.");
+        }
+        validarExcecaoDeDataPassada(form);
+
+        reserva.reprogramar(hospede, quarto,
+                form.getDataCheckIn(), form.getDataCheckOut(),
+                form.getQuantidadeHospedes(), form.getValorDiaria(),
+                form.getDesconto(), form.getMotivoExcecao(), form.getObservacoes());
+        return reservas.save(reserva);
+    }
+
+    /** Editável para exibição: ativa e sem hospedagem iniciada. */
+    @Transactional(readOnly = true)
+    public boolean podeEditar(Reserva reserva) {
+        return reserva.isAtiva() && !hospedagens.existsByReservaId(reserva.getId());
+    }
+
     @Transactional
     public void confirmar(Long id) {
         Reserva reserva = buscarPorId(id);

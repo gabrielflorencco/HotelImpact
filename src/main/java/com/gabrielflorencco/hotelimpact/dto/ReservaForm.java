@@ -27,6 +27,9 @@ import java.time.LocalDate;
 @Setter
 public class ReservaForm {
 
+    /** Presente apenas na edição (action do formulário); nulo na criação. */
+    private Long id;
+
     @NotNull
     private Long hospedeId;
 

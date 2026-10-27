@@ -166,6 +166,38 @@ public class Reserva {
         estado = EstadoReserva.NO_SHOW;
     }
 
+    /**
+     * Reprograma a reserva (edição controlada): período e desconto são
+     * validados localmente e o total é recalculado no servidor —
+     * diária × noites − desconto. Verificações externas (disponibilidade,
+     * capacidade, quarto em operação) pertencem ao serviço.
+     */
+    public void reprogramar(Hospede novoHospede, Quarto novoQuarto,
+                            LocalDate novoCheckIn, LocalDate novoCheckOut,
+                            Integer novaQuantidade, BigDecimal novaDiaria,
+                            BigDecimal novoDesconto, String motivoExcecao, String observacoes) {
+        if (!novoCheckOut.isAfter(novoCheckIn)) {
+            throw new NegocioException("A data de check-out deve ser posterior à data de check-in.");
+        }
+        BigDecimal descontos = novoDesconto == null ? BigDecimal.ZERO : novoDesconto;
+        BigDecimal bruto = novaDiaria.multiply(
+                BigDecimal.valueOf(novoCheckOut.toEpochDay() - novoCheckIn.toEpochDay()));
+        if (descontos.compareTo(bruto) > 0) {
+            throw new NegocioException(
+                    "O desconto não pode exceder o valor bruto da reserva (R$ " + bruto.toPlainString() + ").");
+        }
+        this.hospede = novoHospede;
+        this.quarto = novoQuarto;
+        this.dataCheckIn = novoCheckIn;
+        this.dataCheckOut = novoCheckOut;
+        this.quantidadeHospedes = novaQuantidade;
+        this.valorDiaria = novaDiaria;
+        this.desconto = descontos;
+        this.valorTotal = bruto.subtract(descontos);
+        this.motivoExcecao = motivoExcecao == null || motivoExcecao.isBlank() ? null : motivoExcecao.trim();
+        this.observacoes = observacoes == null || observacoes.isBlank() ? null : observacoes.trim();
+    }
+
     /** Conclui a reserva no check-out da hospedagem. */
     public void concluir() {
         if (!isAtiva()) {

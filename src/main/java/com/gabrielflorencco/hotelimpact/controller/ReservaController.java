@@ -89,6 +89,43 @@ public class ReservaController {
         return "redirect:/reservas/" + reserva.getId();
     }
 
+    @GetMapping("/{id}/editar")
+    public String editar(HttpServletRequest request, @PathVariable Long id, Model model) {
+        Reserva reserva = service.buscarPorId(id);
+        ReservaForm form = new ReservaForm();
+        form.setId(reserva.getId());
+        form.setHospedeId(reserva.getHospede().getId());
+        form.setQuartoId(reserva.getQuarto().getId());
+        form.setDataCheckIn(reserva.getDataCheckIn());
+        form.setDataCheckOut(reserva.getDataCheckOut());
+        form.setQuantidadeHospedes(reserva.getQuantidadeHospedes());
+        form.setValorDiaria(reserva.getValorDiaria());
+        form.setDesconto(reserva.getDesconto());
+        form.setMotivoExcecao(reserva.getMotivoExcecao());
+        form.setObservacoes(reserva.getObservacoes());
+        prepararFormulario(model, form, "Editar reserva " + reserva.getCodigo());
+        return Pagina.renderizar(request, "reservas/formulario");
+    }
+
+    @PostMapping("/{id}")
+    public String atualizar(HttpServletRequest request, @PathVariable Long id,
+                            @Valid @ModelAttribute("form") ReservaForm form, BindingResult result,
+                            Model model, RedirectAttributes redirect) {
+        if (result.hasErrors()) {
+            prepararFormulario(model, form, "Editar reserva");
+            return Pagina.renderizar(request, "reservas/formulario");
+        }
+        try {
+            service.atualizar(id, form);
+        } catch (NegocioException ex) {
+            prepararFormulario(model, form, "Editar reserva");
+            model.addAttribute("erro", ex.getMessage());
+            return Pagina.renderizar(request, "reservas/formulario");
+        }
+        redirect.addAttribute("sucesso", "Reserva atualizada com sucesso.");
+        return "redirect:/reservas/" + id;
+    }
+
     @GetMapping("/{id}")
     public String detalhe(HttpServletRequest request, @PathVariable Long id, Model model) {
         Reserva reserva = service.buscarPorId(id);
@@ -97,6 +134,7 @@ public class ReservaController {
                 hospedagemService.buscarPorReserva(id).map(Hospedagem::getId).orElse(null));
         model.addAttribute("podeCheckIn", hospedagemService.podeFazerCheckIn(reserva));
         model.addAttribute("podeNoShow", service.podeRegistrarNoShow(reserva));
+        model.addAttribute("podeEditar", service.podeEditar(reserva));
         model.addAttribute("titulo", "Detalhes da reserva");
         return Pagina.renderizar(request, "reservas/detalhe");
     }
@@ -154,6 +192,10 @@ public class ReservaController {
      * formulário sem consultas adicionais por linha.
      */
     private void prepararFormulario(Model model, ReservaForm form) {
+        prepararFormulario(model, form, "Nova reserva");
+    }
+
+    private void prepararFormulario(Model model, ReservaForm form, String titulo) {
         model.addAttribute("form", form);
         model.addAttribute("hospedes", hospedes.findAllByOrderByNomeAsc());
         model.addAttribute("quartos", quartos.findAllComCategoria().stream()
@@ -161,6 +203,6 @@ public class ReservaController {
                 .filter(q -> q.getEstado() != EstadoQuarto.INTERDITADO
                         && q.getEstado() != EstadoQuarto.MANUTENCAO)
                 .toList());
-        model.addAttribute("titulo", "Nova reserva");
+        model.addAttribute("titulo", titulo);
     }
 }

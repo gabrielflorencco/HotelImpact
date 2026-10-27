@@ -37,7 +37,8 @@
                                 da categoria do quarto escolhido.
                             </div>
 
-                            <form th:action="@{/reservas}" th:object="${form}" method="post" novalidate>
+                            <form th:action="${form.id == null} ? @{/reservas} : @{'/reservas/' + ${form.id}}"
+                      th:object="${form}" method="post" novalidate>
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-6">
                                         <label for="hospedeId" class="form-label campo-obrigatorio">Hóspede</label>

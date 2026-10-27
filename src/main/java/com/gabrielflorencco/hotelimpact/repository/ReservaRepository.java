@@ -38,6 +38,24 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
                                    @Param("fim") LocalDate fim,
                                    @Param("estadosAtivos") List<EstadoReserva> estadosAtivos);
 
+    /**
+     * Conflitos para a edição: ignora a própria reserva — o período atual
+     * dela não conflita consigo mesma (semiaberto).
+     */
+    @Query("""
+            SELECT r FROM Reserva r
+            WHERE r.quarto.id = :quartoId
+              AND r.id <> :reservaId
+              AND r.estado IN :estadosAtivos
+              AND r.dataCheckIn < :fim
+              AND r.dataCheckOut > :inicio
+            """)
+    List<Reserva> findConflitantesExceto(@Param("quartoId") Long quartoId,
+                                         @Param("reservaId") Long reservaId,
+                                         @Param("inicio") LocalDate inicio,
+                                         @Param("fim") LocalDate fim,
+                                         @Param("estadosAtivos") List<EstadoReserva> estadosAtivos);
+
     @Query("""
             SELECT r FROM Reserva r
             JOIN FETCH r.hospede

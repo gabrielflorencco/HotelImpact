@@ -41,6 +41,7 @@ public class HospedagemService {
     private final ReservaRepository reservas;
     private final QuartoRepository quartos;
     private final com.gabrielflorencco.hotelimpact.repository.TarefaLimpezaRepository tarefasLimpeza;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
     private final PagamentoService pagamentoService;
 
     @Transactional(readOnly = true)
@@ -77,6 +78,8 @@ public class HospedagemService {
         hospedagem.setReserva(reserva);
         hospedagem.setQuarto(reserva.getQuarto());
         hospedagem.abrir(LocalDateTime.now());
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.CHECK_IN,
+                "Hospedagem", reserva.getId(), "Reserva " + reserva.getCodigo());
 
         Quarto quarto = reserva.getQuarto();
         quarto.ocupar();
@@ -102,6 +105,8 @@ public class HospedagemService {
     public void checkOut(Long hospedagemId, String motivoExcecao) {
         Hospedagem hospedagem = buscarPorId(hospedagemId);
         java.math.BigDecimal saldo = pagamentoService.saldoDevedor(hospedagemId);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.CHECK_OUT,
+                "Hospedagem", hospedagemId, "Reserva " + hospedagem.getReserva().getCodigo());
 
         // A sobrecarga de domínio decide o tipo de encerramento pelo saldo
         // e pela justificativa (BR-HSP-002).

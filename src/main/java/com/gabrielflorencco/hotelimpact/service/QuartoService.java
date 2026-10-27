@@ -34,6 +34,7 @@ public class QuartoService {
     private final HospedagemRepository hospedagens;
     private final TarefaLimpezaRepository tarefasLimpeza;
     private final OrdemManutencaoRepository ordensManutencao;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
 
     @Transactional(readOnly = true)
     public List<Quarto> buscar(String numero, EstadoQuarto estado, Long categoriaId) {
@@ -135,6 +136,8 @@ public class QuartoService {
                 });
         quarto.concluirLimpeza();
         quartos.save(quarto);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.LIMPEZA_CONCLUIDA,
+                "Quarto", quarto.getId(), "Quarto " + quarto.getNumero());
     }
 
     /** Inicia a execução da tarefa de limpeza aberta do quarto (governança em ação). */
@@ -151,6 +154,8 @@ public class QuartoService {
                                 "Não há tarefa de limpeza aberta para o quarto " + quarto.getNumero() + "."));
         tarefa.iniciar();
         tarefasLimpeza.save(tarefa);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.LIMPEZA_INICIADA,
+                "TarefaLimpeza", tarefa.getId(), "Quarto " + quarto.getNumero());
     }
 
     private void validarNumeroUnico(String numero, Long id) {

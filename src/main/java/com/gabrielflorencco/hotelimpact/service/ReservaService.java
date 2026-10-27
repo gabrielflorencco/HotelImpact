@@ -48,6 +48,7 @@ public class ReservaService {
     private final HospedeRepository hospedes;
     private final QuartoRepository quartos;
     private final HospedagemRepository hospedagens;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
 
     @Transactional(readOnly = true)
     public Page<Reserva> buscar(EstadoReserva estado, Pageable pageable) {
@@ -92,7 +93,10 @@ public class ReservaService {
 
         reserva.setMotivoExcecao(nuloSeVazio(form.getMotivoExcecao()));
         reserva.setObservacoes(nuloSeVazio(form.getObservacoes()));
-        return reservas.save(reserva);
+        Reserva salva = reservas.save(reserva);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.RESERVA_CRIADA,
+                "Reserva", salva.getId(), "Código " + salva.getCodigo());
+        return salva;
     }
 
     /**
@@ -132,7 +136,10 @@ public class ReservaService {
                 form.getDataCheckIn(), form.getDataCheckOut(),
                 form.getQuantidadeHospedes(), form.getValorDiaria(),
                 form.getDesconto(), form.getMotivoExcecao(), form.getObservacoes());
-        return reservas.save(reserva);
+        Reserva salva = reservas.save(reserva);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.RESERVA_EDITADA,
+                "Reserva", salva.getId(), "Código " + salva.getCodigo());
+        return salva;
     }
 
     /** Editável para exibição: ativa e sem hospedagem iniciada. */
@@ -159,6 +166,8 @@ public class ReservaService {
         }
         reserva.cancelar();
         reservas.save(reserva);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.RESERVA_CANCELADA,
+                "Reserva", id, "Código " + reserva.getCodigo());
     }
 
     /**
@@ -180,6 +189,8 @@ public class ReservaService {
         }
         reserva.registrarNoShow();
         reservas.save(reserva);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.RESERVA_NO_SHOW,
+                "Reserva", id, "Código " + reserva.getCodigo());
     }
 
     /** Elegibilidade de no-show para exibição em telas: ativa, sem check-in e data já passada. */

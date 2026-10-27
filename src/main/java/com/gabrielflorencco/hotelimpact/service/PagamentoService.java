@@ -31,6 +31,7 @@ public class PagamentoService {
     private final PagamentoRepository pagamentos;
     private final HospedagemRepository hospedagens;
     private final ConsumoRepository consumos;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
 
     /** Pagamentos da conta, do mais antigo ao mais recente. */
     @Transactional(readOnly = true)
@@ -88,7 +89,11 @@ public class PagamentoService {
         pagamento.setForma(form.getForma());
         pagamento.setEstado(EstadoPagamento.CONFIRMADO);
         pagamento.setObservacao(nuloSeVazio(form.getObservacao()));
-        return pagamentos.save(pagamento);
+        Pagamento salvo = pagamentos.save(pagamento);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.PAGAMENTO_REGISTRADO,
+                "Pagamento", salvo.getId(),
+                "Hospedagem " + hospedagemId + " · " + form.getForma());
+        return salvo;
     }
 
     /**
@@ -101,6 +106,8 @@ public class PagamentoService {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Pagamento não encontrado nesta hospedagem."));
         pagamento.estornar();
         pagamentos.save(pagamento);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.PAGAMENTO_ESTORNADO,
+                "Pagamento", pagamentoId, "Hospedagem " + hospedagemId);
     }
 
     private String nuloSeVazio(String valor) {

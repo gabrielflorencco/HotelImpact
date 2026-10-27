@@ -40,6 +40,7 @@ public class ManutencaoService {
             List.of(EstadoManutencao.ABERTA, EstadoManutencao.EM_ANDAMENTO);
 
     private final OrdemManutencaoRepository ordens;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
     private final QuartoRepository quartos;
     private final HospedagemRepository hospedagens;
 
@@ -88,7 +89,11 @@ public class ManutencaoService {
             quarto.interditar();
             quartos.save(quarto);
         }
-        return ordens.save(ordem);
+        OrdemManutencao salva = ordens.save(ordem);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.MANUTENCAO_ABERTA,
+                "OrdemManutencao", salva.getId(),
+                "Quarto " + quarto.getNumero() + " · " + salva.getTitulo());
+        return salva;
     }
 
     /** Inicia a execução: o quarto em operação passa a MANUTENCAO. */
@@ -96,6 +101,8 @@ public class ManutencaoService {
     public void iniciar(Long id) {
         OrdemManutencao ordem = buscarPorId(id);
         ordem.iniciarExecucao();
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.MANUTENCAO_INICIADA,
+                "OrdemManutencao", id, "Quarto " + ordem.getQuarto().getNumero());
 
         Quarto quarto = ordem.getQuarto();
         if (quarto.getEstado() == EstadoQuarto.DISPONIVEL || quarto.getEstado() == EstadoQuarto.LIMPEZA) {
@@ -109,6 +116,8 @@ public class ManutencaoService {
     public void concluir(Long id) {
         OrdemManutencao ordem = buscarPorId(id);
         ordem.concluirOrdem();
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.MANUTENCAO_CONCLUIDA,
+                "OrdemManutencao", id, "Quarto " + ordem.getQuarto().getNumero());
         liberarQuartoSeCausadoPelaOrdem(ordem);
     }
 
@@ -117,6 +126,8 @@ public class ManutencaoService {
     public void cancelar(Long id) {
         OrdemManutencao ordem = buscarPorId(id);
         ordem.cancelarOrdem();
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.MANUTENCAO_CANCELADA,
+                "OrdemManutencao", id, "Quarto " + ordem.getQuarto().getNumero());
         liberarQuartoSeCausadoPelaOrdem(ordem);
     }
 

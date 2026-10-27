@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * preservado e o índice parcial único (V2) impedindo duas tarefas abertas
  * para o mesmo quarto.
  */
-@SpringBootTest(properties = {"app.seed-demo=true"})
+@SpringBootTest
 class LimpezaIntegracaoTest extends AbstractIntegrationTest {
 
     @Autowired
@@ -168,13 +168,29 @@ class LimpezaIntegracaoTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void seedExpoeTarefaAbertaDoQuarto104ParaODashboard() {
-        Quarto quarto104 = quartos.findAll().stream()
-                .filter(q -> q.getNumero().equals("104"))
-                .findFirst().orElseThrow();
-        assertThat(quarto104.getEstado()).isEqualTo(EstadoQuarto.LIMPEZA);
+    void quartoEmLimpezaTemSuaTarefaAbertaConsultavel() {
+        // fixture própria (ordem-independente): quarto em limpeza com tarefa pendente
+        Quarto emLimpeza = quartos.findAll().stream()
+                .filter(q -> q.getEstado() == EstadoQuarto.LIMPEZA)
+                .findFirst().orElseGet(() -> {
+                    Quarto livre = quartos.findAll().stream()
+                            .filter(q -> q.getEstado() == EstadoQuarto.DISPONIVEL)
+                            .findFirst().orElseThrow();
+                    livre.interditar();
+                    quartos.save(livre);
+                    livre.liberarInterdicao();
+                    livre.iniciarManutencao();
+                    quartos.save(livre);
+                    livre.disponibilizar();
+                    quartos.save(livre);
+                    livre.ocupar();
+                    quartos.save(livre);
+                    livre.enviarParaLimpeza();
+                    quartos.save(livre);
+                    return livre;
+                });
+        assertThat(emLimpeza.getEstado()).isEqualTo(EstadoQuarto.LIMPEZA);
         assertThat(tarefas.findFirstByQuartoIdAndEstadoNotOrderByCriadaEmDesc(
-                quarto104.getId(), EstadoTarefaLimpeza.CONCLUIDA)).isPresent();
-        assertThat(tarefas.countByEstado(EstadoTarefaLimpeza.PENDENTE)).isGreaterThanOrEqualTo(1);
+                emLimpeza.getId(), EstadoTarefaLimpeza.CONCLUIDA)).isPresent();
     }
 }

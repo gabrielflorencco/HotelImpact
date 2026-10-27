@@ -26,5 +26,11 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
+        // O container de integração carrega a massa de demonstração: o primeiro
+        // contexto encontra as tabelas vazias e o seed cria tudo; os demais são
+        // no-op (idempotência). Suítes legadas consultam dados do seed
+        // (hóspedes, quartos 101-304), e esta configuração elimina a
+        // dependência da ordem de execução entre suítes.
+        registry.add("app.seed-demo", () -> "true");
     }
 }

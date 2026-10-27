@@ -111,8 +111,9 @@ class MigracaoFlywayTest {
             jdbc.execute("DROP TABLE IF EXISTS flyway_schema_history");
             // Fidelidade da simulação: um banco pré-Flyway também não possui
             // os objetos criados por migrations posteriores ao baseline (V2 em
-            // diante) — sem isto, a fase 3 re-aplicaria a V2 já existente.
+            // diante) — sem isto, a fase 3 re-aplicaria o que já existe.
             jdbc.execute("DROP INDEX IF EXISTS uk_tarefa_limpeza_aberta");
+            jdbc.execute("DROP TABLE IF EXISTS registro_auditoria");
 
             categorias.save(categoria("Categoria Antiga Pré-Flyway"));
 

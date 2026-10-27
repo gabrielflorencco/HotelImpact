@@ -32,6 +32,7 @@ public class ConsumoService {
     private final ConsumoRepository consumos;
     private final HospedagemRepository hospedagens;
     private final ItemCatalogoRepository itens;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
 
     /** Lançamentos da conta da hospedagem (com item buscado, anti-N+1), mais recentes primeiro. */
     @Transactional(readOnly = true)
@@ -81,7 +82,10 @@ public class ConsumoService {
             item.setEstoqueAtual(item.getEstoqueAtual() - form.getQuantidade());
             itens.save(item);
         }
-        return consumos.save(consumo);
+        Consumo salvo = consumos.save(consumo);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.CONSUMO_LANCADO,
+                "Consumo", salvo.getId(), "Hospedagem " + hospedagemId + " · " + item.getNome());
+        return salvo;
     }
 
     /**
@@ -100,6 +104,8 @@ public class ConsumoService {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Consumo não encontrado nesta hospedagem."));
         consumo.cancelar();
         consumos.save(consumo);
+        auditoria.registrar(com.gabrielflorencco.hotelimpact.enums.OperacaoAuditoria.CONSUMO_CANCELADO,
+                "Consumo", consumoId, "Hospedagem " + hospedagemId);
 
         ItemCatalogo item = consumo.getItem();
         if (item.isEstoqueControladoEfetivo()) {

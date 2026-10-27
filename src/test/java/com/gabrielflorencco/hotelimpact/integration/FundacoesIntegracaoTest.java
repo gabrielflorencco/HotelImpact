@@ -14,12 +14,15 @@ import com.gabrielflorencco.hotelimpact.repository.HospedagemRepository;
 import com.gabrielflorencco.hotelimpact.repository.ItemCatalogoRepository;
 import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
 import com.gabrielflorencco.hotelimpact.repository.ReservaRepository;
-import com.gabrielflorencco.hotelimpact.support.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,9 +34,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Valida a fundação do sistema: carga de demonstração idempotente e as restrições
  * de integridade aplicadas diretamente no PostgreSQL.
+ *
+ * Container PostgreSQL PRÓPRIO e isolado (padrão já usado por DataSeederTest e
+ * MigracaoFlywayTest): este teste pressupõe o estado criado pelo seed no
+ * startup e chamadas idempotentes — dependência de ordem entre suítes no
+ * container compartilhado foi eliminada sem tocar nas asserções.
  */
 @SpringBootTest(properties = "app.seed-demo=true")
-class FundacoesIntegracaoTest extends AbstractIntegrationTest {
+class FundacoesIntegracaoTest {
+
+    private static final PostgreSQLContainer<?> POSTGRES =
+            new PostgreSQLContainer<>(DockerImageName.parse("postgres:18-alpine"))
+                    .withDatabaseName("hotelimpact")
+                    .withUsername("fundacoes")
+                    .withPassword("fundacoes");
+
+    static {
+        POSTGRES.start();
+    }
+
+    @DynamicPropertySource
+    static void registrarBanco(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
 
     @Autowired
     private DataSeeder seeder;

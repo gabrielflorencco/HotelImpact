@@ -29,6 +29,7 @@ public class HomeController {
         model.addAttribute("saidas", dashboardService.saidasDeHoje().stream()
                 .map(ReservaResumoView::de)
                 .toList());
+        model.addAttribute("atividades", dashboardService.atividadesRecentes());
         model.addAttribute("titulo", "Dashboard");
         return Pagina.renderizar(request, "dashboard/index");
     }

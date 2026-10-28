@@ -43,7 +43,7 @@ class HomeControllerWebTest {
     @Test
     void painelRenderizaIndicadoresListasDoDiaEBarraDeEstados() throws Exception {
         when(dashboardService.indicadores()).thenReturn(new DashboardService.Indicadores(
-                12, 4, 5, 1, 1, 1, 5, 3, 2, new BigDecimal("1234.50"), 0));
+                12, 4, 5, 1, 1, 1, 5, 3, 2, new BigDecimal("1234.50"), 0, 1, 0));
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of(reservaMock("RES-2026-000123")));
         when(dashboardService.saidasDeHoje()).thenReturn(List.of(reservaMock("RES-2026-000124")));
 
@@ -63,7 +63,7 @@ class HomeControllerWebTest {
     @Test
     void painelSemDadosRenderizaZerosEstadosVaziosESemAlertaDeEstoque() throws Exception {
         when(dashboardService.indicadores()).thenReturn(new DashboardService.Indicadores(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, BigDecimal.ZERO, 0));
+                0, 0, 0, 0, 0, 0, 0, 0, 0, BigDecimal.ZERO, 0, 0, 0));
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of());
         when(dashboardService.saidasDeHoje()).thenReturn(List.of());
 
@@ -78,7 +78,7 @@ class HomeControllerWebTest {
     @Test
     void alertaDeEstoqueApareceQuandoHaItensNoMinimo() throws Exception {
         when(dashboardService.indicadores()).thenReturn(new DashboardService.Indicadores(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, BigDecimal.ZERO, 2));
+                0, 0, 0, 0, 0, 0, 0, 0, 0, BigDecimal.ZERO, 2, 0, 0));
         when(dashboardService.chegadasDeHoje()).thenReturn(List.of());
         when(dashboardService.saidasDeHoje()).thenReturn(List.of());
 

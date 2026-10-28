@@ -37,6 +37,8 @@ public class DashboardService {
     private final ReservaRepository reservas;
     private final PagamentoRepository pagamentos;
     private final ItemCatalogoRepository itens;
+    private final com.gabrielflorencco.hotelimpact.repository.TarefaLimpezaRepository tarefas;
+    private final com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
 
     /** Fotografia dos indicadores operacionais do hotel num único instante. */
     public record Indicadores(
@@ -50,7 +52,9 @@ public class DashboardService {
             long chegadasPrevistasHoje,
             long saidasPrevistasHoje,
             BigDecimal receitaConfirmadaHoje,
-            long itensComEstoqueBaixo) {
+            long itensComEstoqueBaixo,
+            long tarefasLimpezaPendentes,
+            long tarefasLimpezaEmAndamento) {
     }
 
     @Transactional(readOnly = true)
@@ -70,7 +74,23 @@ public class DashboardService {
                 reservas.countByEstadoInAndDataCheckInEquals(RESERVAS_ATIVAS, hoje),
                 reservas.countByEstadoInAndDataCheckOutEquals(RESERVAS_ATIVAS, hoje),
                 pagamentos.somarPorEstadoEntre(EstadoPagamento.CONFIRMADO, inicioDoDia, inicioDoDiaSeguinte),
-                itens.countComEstoqueBaixo());
+                itens.countComEstoqueBaixo(),
+                // Estado da TAREFA ≠ estado do QUARTO: tarefas abertas contam
+                // governança pendente sobre quartos em limpeza (um quarto com
+                // tarefa pendente não é "dois quartos").
+                tarefas.countByEstado(com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza.PENDENTE),
+                tarefas.countByEstado(com.gabrielflorencco.hotelimpact.enums.EstadoTarefaLimpeza.EM_EXECUCAO));
+    }
+
+    /**
+     * Atividades recentes da operação (auditoria de negócio): operação,
+     * usuário, horário e referência ao registro afetado — trilha resumida
+     * para a recepção; a auditoria completa é a tabela persistida.
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<com.gabrielflorencco.hotelimpact.entity.RegistroAuditoria> atividadesRecentes() {
+        return auditoria.listarRecentes(
+                org.springframework.data.domain.PageRequest.of(0, 6)).getContent();
     }
 
     /** Reservas ativas que chegam hoje, com hóspede e quarto já buscados (anti-N+1). */

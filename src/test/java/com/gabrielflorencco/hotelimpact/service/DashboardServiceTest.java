@@ -9,6 +9,7 @@ import com.gabrielflorencco.hotelimpact.repository.ItemCatalogoRepository;
 import com.gabrielflorencco.hotelimpact.repository.PagamentoRepository;
 import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
 import com.gabrielflorencco.hotelimpact.repository.ReservaRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,8 +51,19 @@ class DashboardServiceTest {
     @Mock
     private ItemCatalogoRepository itens;
 
+    @Mock
+    private com.gabrielflorencco.hotelimpact.repository.TarefaLimpezaRepository tarefas;
+
+    @Mock
+    private com.gabrielflorencco.hotelimpact.service.AuditoriaService auditoria;
+
     @InjectMocks
     private DashboardService service;
+
+    @BeforeEach
+    void stubTarefas() {
+        org.mockito.BDDMockito.given(tarefas.countByEstado(any())).willReturn(0L);
+    }
 
     @Test
     void semDadosDevolveZerosComReceitaZeroNuncaNula() {

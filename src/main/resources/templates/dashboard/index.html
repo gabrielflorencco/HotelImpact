@@ -93,6 +93,17 @@
                 <a class="btn btn-sm btn-outline-warning ms-auto" th:href="@{/itens}">Ver catálogo</a>
             </div>
 
+            <!-- Limpeza: estado das TAREFAS (não dos quartos) -->
+            <div class="hi-alerta alert alert-info" th:if="${ind.tarefasLimpezaPendentes > 0 or ind.tarefasLimpezaEmAndamento > 0}" role="status">
+                <i class="bi bi-brush" aria-hidden="true"></i>
+                <span>
+                    <strong th:text="${ind.tarefasLimpezaPendentes}">0</strong> tarefa(s) de limpeza pendente(s) e
+                    <strong th:text="${ind.tarefasLimpezaEmAndamento}">0</strong> em andamento —
+                    quartos aguardando governança.
+                </span>
+                <a class="btn btn-sm btn-outline-info ms-auto" th:href="@{/quartos}">Ver quartos</a>
+            </div>
+
             <!-- Listas operacionais do dia -->
             <div class="row g-3">
                 <div class="col-lg-6">
@@ -165,6 +176,26 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Atividades recentes (auditoria resumida da operação) -->
+            <div class="card shadow-sm mt-3" th:if="${!#lists.isEmpty(atividades)}">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-clock-history me-1" aria-hidden="true"></i>Atividades recentes</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center small"
+                        th:each="ev : ${atividades}">
+                        <span>
+                            <i class="bi bi-activity me-1" aria-hidden="true" style="color: var(--hi-accent-text)"></i>
+                            <span class="fw-semibold" th:text="${ev.operacao}">CHECK_IN</span>
+                            <span class="text-secondary" th:text="${ev.detalhe}">detalhe</span>
+                        </span>
+                        <span class="text-secondary text-nowrap">
+                            <i class="bi bi-person me-1" aria-hidden="true"></i><span th:text="${ev.usuario}">sistema</span>
+                        </span>
+                    </li>
+                </ul>
             </div>
         </th:block>
         </main>

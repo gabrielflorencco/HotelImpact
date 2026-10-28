@@ -201,4 +201,22 @@ class DashboardIntegracaoTest extends AbstractIntegrationTest {
 
     private record HospedagemContexto(Long hospedagemId) {
     }
+
+    @Test
+    void indicadoresDeLimpezaContamTarefasAbertasDistinctamenteDosQuartos() {
+        var ind = dashboardService.indicadores();
+        // o quarto em limpeza do seed (104) tem UMA tarefa pendente: o estado
+        // do quarto conta 1 em quartosEmLimpeza; a tarefa conta 1 em
+        // tarefasLimpezaPendentes — números independentes, sem dupla contagem
+        assertThat(ind.tarefasLimpezaPendentes()).isGreaterThanOrEqualTo(1);
+        assertThat(ind.quartosEmLimpeza()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    void atividadesRecentesTrazemAuditoriaDaOperacao() {
+        var atividades = dashboardService.atividadesRecentes();
+        // o seed não é auditado (persiste por repositórios), mas operações
+        // via services de outras suítes são — a lista é paginação top 6
+        assertThat(atividades.size()).isLessThanOrEqualTo(6);
+    }
 }

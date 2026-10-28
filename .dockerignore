@@ -1,0 +1,102 @@
+# Git e metadados
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# IDEs e editores
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.idea/
+.classpath
+.project
+.settings/
+
+# Build artifacts
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.idea/
+
+# Logs e arquivos temporários
+*.log
+logs/
+*.tmp
+*.temp
+tmp/
+
+# Arquivos de ambiente e segredos
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testes e cobertura
+**/target/
+!src/main/resources/
+!src/main/resources/**
+!src/main/resources/static/**
+!src/main/resources/templates/**
+!src/main/resources/db/migration/
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Arquivos de segredo
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+.env
+.env.*
+
+# Build
+*.jar
+!target/*.jar
+
+# Maven wrapper jar
+.mvn/wrapper/maven-wrapper.jar

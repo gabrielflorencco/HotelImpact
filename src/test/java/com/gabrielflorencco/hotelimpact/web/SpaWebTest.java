@@ -51,6 +51,12 @@ class SpaWebTest {
     @MockitoBean
     private com.gabrielflorencco.hotelimpact.repository.QuartoRepository quartos;
 
+    @MockitoBean
+    private com.gabrielflorencco.hotelimpact.service.HospedeService hospedeService;
+
+    @MockitoBean
+    private com.gabrielflorencco.hotelimpact.service.QuartoService quartoService;
+
     @Test
     @WithMockUser
     void pedidoHtmxRenderizaApenasOFragmentoComHeaderDeUrl() throws Exception {

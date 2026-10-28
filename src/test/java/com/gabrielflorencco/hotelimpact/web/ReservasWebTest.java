@@ -63,6 +63,12 @@ class ReservasWebTest {
     @MockitoBean
     private QuartoRepository quartos;
 
+    @MockitoBean
+    private com.gabrielflorencco.hotelimpact.service.HospedeService hospedeService;
+
+    @MockitoBean
+    private com.gabrielflorencco.hotelimpact.service.QuartoService quartoService;
+
     // ---- Listagem e detalhe ---------------------------------------------------------
 
     @Test

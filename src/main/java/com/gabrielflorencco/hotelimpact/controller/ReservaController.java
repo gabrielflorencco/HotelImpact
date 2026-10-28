@@ -10,8 +10,6 @@ import com.gabrielflorencco.hotelimpact.entity.Reserva;
 import com.gabrielflorencco.hotelimpact.enums.EstadoQuarto;
 import com.gabrielflorencco.hotelimpact.enums.EstadoReserva;
 import com.gabrielflorencco.hotelimpact.exception.NegocioException;
-import com.gabrielflorencco.hotelimpact.repository.HospedeRepository;
-import com.gabrielflorencco.hotelimpact.repository.QuartoRepository;
 import com.gabrielflorencco.hotelimpact.service.HospedagemService;
 import com.gabrielflorencco.hotelimpact.service.ReservaService;
 import jakarta.validation.Valid;
@@ -45,8 +43,8 @@ public class ReservaController {
 
     private final ReservaService service;
     private final HospedagemService hospedagemService;
-    private final HospedeRepository hospedes;
-    private final QuartoRepository quartos;
+    private final com.gabrielflorencco.hotelimpact.service.HospedeService hospedeService;
+    private final com.gabrielflorencco.hotelimpact.service.QuartoService quartoService;
 
     @GetMapping
     public String listar(HttpServletRequest request, @RequestParam(required = false) EstadoReserva estado,
@@ -197,12 +195,8 @@ public class ReservaController {
 
     private void prepararFormulario(Model model, ReservaForm form, String titulo) {
         model.addAttribute("form", form);
-        model.addAttribute("hospedes", hospedes.findAllByOrderByNomeAsc());
-        model.addAttribute("quartos", quartos.findAllComCategoria().stream()
-                .filter(Quarto::getAtivo)
-                .filter(q -> q.getEstado() != EstadoQuarto.INTERDITADO
-                        && q.getEstado() != EstadoQuarto.MANUTENCAO)
-                .toList());
+        model.addAttribute("hospedes", hospedeService.listarTodos());
+        model.addAttribute("quartos", quartoService.listarReservaveis());
         model.addAttribute("titulo", titulo);
     }
 }

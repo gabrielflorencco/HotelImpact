@@ -41,7 +41,16 @@ public class QuartoService {
         return quartos.buscar(vazioParaNulo(numero), estado, categoriaId);
     }
 
+    /** Quartos elegíveis para novas reservas: ativos e em operação (seletores). */
     @Transactional(readOnly = true)
+    public List<Quarto> listarReservaveis() {
+        return quartos.findAllComCategoria().stream()
+                .filter(Quarto::getAtivo)
+                .filter(q -> q.getEstado() != EstadoQuarto.INTERDITADO
+                        && q.getEstado() != EstadoQuarto.MANUTENCAO)
+                .toList();
+    }
+
     public Quarto buscarPorId(Long id) {
         return quartos.findByIdComCategoria(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Quarto não encontrado."));

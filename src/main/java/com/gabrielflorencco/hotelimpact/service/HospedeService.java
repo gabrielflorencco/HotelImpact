@@ -24,7 +24,12 @@ public class HospedeService {
     private final HospedeRepository hospedes;
     private final ReservaRepository reservas;
 
+    /** Todos os hóspedes, por nome — seletores de reserva. */
     @Transactional(readOnly = true)
+    public java.util.List<Hospede> listarTodos() {
+        return hospedes.findAllByOrderByNomeAsc();
+    }
+
     public Page<Hospede> buscar(String termo, Pageable pageable) {
         String termoLimpo = termo == null || termo.isBlank() ? null : termo.trim();
         return hospedes.buscar(termoLimpo, apenasDigitos(termoLimpo), pageable);

@@ -113,7 +113,10 @@ na infraestrutura):
 | Imutabilidade (value object) | `domain/Conta` (record) | `total()/saldoDevedor()/quitada()` | tela da hospedagem (`PagamentoService.contaDe`) | fórmulas BR-PAG-003/004 em um objeto de valor único e imutável | "a conta calcula a si mesma" |
 | Sobrecarga de negócio | `entity/Hospedagem` | `encerrar(BigDecimal)` vs `encerrar(BigDecimal, String)` | check-out (normal vs excepcional, BR-HSP-002) | assinaturas com semântica distinta: sem motivo exige conta quitada; com motivo registra exceção | "duas portas de saída, duas assinaturas" |
 | Encapsulamento + invariantes | `entity/Reserva`, `entity/Quarto`, `entity/OrdemManutencao`, `entity/Consumo`, `entity/Pagamento`, `entity/Hospedagem` | `confirmar()`, `ocupar()`, `iniciarExecucao()`, `cancelar()`, `estornar()`, `abrir()`… | todas as transições do sistema | nenhum service muda estado via setter: a entidade recusa transição inválida | "o objeto é dono do seu estado" |
-| Composição/associação | `@ManyToOne` reais (`Reserva→Hospede/Quarto` etc.) + `Conta` que **compõe** consumos e pagamentos | consultas `JOIN FETCH` | telas e fechamento | relação de persistência (associação) vs conta que agrega as partes (composição conceitual de leitura) | "a hospedagem tem muitos lançamentos — a conta os junta" |
+| Composição/associação | `@ManyToOne` reais (`Reserva→Hospede/Quarto` etc.) + `Conta` que **compõe** consumos e pagamentos; `TarefaLimpeza→Quarto` | consultas `JOIN FETCH` | telas e fechamento | relação de persistência (associação) vs conta que agrega as partes (composição conceitual de leitura) | "a hospedagem tem muitos lançamentos — a conta os junta" |
+| Edição controlada (imutabilidade seletiva) | `entity/Reserva.reprogramar(...)` | período/desconto validados na entidade; total recalculado | edição de reservas (BR-RES-009) | campos históricos (código, criação) intactos; o que muda é recalculado no servidor | "a reserva se reprograma sem apagar o contrato" |
+| Auditoria imutável (value object histórico) | `entity/RegistroAuditoria` (sem setters) + `AuditoriaService` | `registrar(...)` na mesma transação | 16 operações críticas + atividades recentes no painel | quem fez o quê fica registrado sem dados sensíveis | "o histórico da operação é um fato imutável" |
+| Tarefa de limpeza (máquina de estados própria) | `entity/TarefaLimpeza.iniciar/concluir` | check-out abre; conclusão integra tarefa e quarto | limpeza de quartos (BR-LMP) | estado da TAREFA ≠ estado do QUARTO, com índice parcial único (V2) | "cada saída de hóspede abre uma tarefa rastreável" |
 
 Ausências saudáveis (decisões de projeto, não lacunas): classes abstratas
 de domínio, herança entre entidades, `@MappedSuperclass`, coleções
@@ -479,7 +482,7 @@ Tela da hospedagem → POST /hospedagens/{id}/pagamentos
 
 ## 10. Testes, benefícios e limitações
 
-- **219 testes, 4 níveis:** validação de forms (unitário), slice por tela
+- **244 testes, 4 níveis:** validação de forms (unitário), slice por tela
   (`@WebMvcTest` com `@MockitoBean`), integração com PostgreSQL real
   efêmero (**Testcontainers**, ex.: `ReservasIntegracaoTest`), seed
   (`DataSeederTest`: idempotência/integridade) e migração

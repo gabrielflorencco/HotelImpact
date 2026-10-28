@@ -69,7 +69,14 @@ Evidências · Status.
 - **Comportamento:** `excluir` conta quartos vinculados e nega se > 0.
 - **Implementação:** `CategoriaQuartoService.excluir:58-67`.
 - **Evidências:** mensagem de exceção com contagem formatada.
-- **Status:** parcialmente implementada (o bloqueio existe; a desativação sugerida não).
+- **Status:** ~~parcial~~ **implementada** — `CategoriaQuarto.alternarAtivo()` (BR-CAT-003 abaixo) resolve a ação recomendada.
+
+### BR-CAT-003 — Ativação/desativação de categoria
+- **Domínio:** Categorias.
+- **Descrição:** a categoria pode ser desativada/reativida; inativa, não recebe novos vínculos de quarto (criação e troca), mas quartos e históricos existentes são preservados.
+- **Implementação:** `entity/CategoriaQuarto.alternarAtivo` (transição na entidade), `service/CategoriaQuartoService.alternarAtivo`, `QuartoService.exigirCategoriaAtiva` (bloqueio pré-existente).
+- **Evidências:** `CategoriaAtivacaoIntegracaoTest` (desativa, bloqueia novo quarto, preserva histórico, reativa).
+- **Status:** implementada.
 
 ---
 
@@ -182,7 +189,17 @@ stateDiagram-v2
 - **Nota de domínio:** reserva com check-in continua `PENDENTE/CONFIRMADA` durante a estadia; `CONCLUIDA` só no check-out (verificado em `HospedagemService.checkOut`).
 - **Implementação:** transições encapsuladas na entidade (`Reserva.confirmar/cancelar/registrarNoShow/concluir`, `entity/Reserva.java`), orquestradas por `ReservaService` (verificações externas) e `HospedagemService.checkOut` (conclusão).
 - **Evidências:** `confirmarECancelarTransicionamEstadosComValidacao`; testes de check-in/check-out.
-- **Status:** implementada. **Não existe** transição de reabertura/edição de reserva (ver GAPS).
+- **Status:** implementada.
+
+### BR-RES-009 — Edição controlada de reserva
+- **Domínio:** Reservas.
+- **Descrição:** reservas ativas sem check-in podem ser reprogramadas (datas, quarto, hóspede, diária, desconto), reaproveitando as validações da criação; conflitos ignoram a própria reserva; o total é recalculado pela entidade.
+- **Pré-condições:** ativa (PENDENTE/CONFIRMADA); sem hospedagem.
+- **Comportamento:** `ReservaService.atualizar` valida quarto reservável, capacidade, período livre exceto a própria e exceção de data passada; `Reserva.reprogramar(...)` valida período/desconto e recalcula `valorTotal = diária × noites − desconto`.
+- **Exceções:** estado final → "Somente reservas pendentes ou confirmadas podem ser editadas."; com check-in → "Não é possível editar a reserva: o check-in já foi realizado.".
+- **Implementação:** `entity/Reserva.reprogramar`, `service/ReservaService.atualizar/podeEditar`, `ReservaRepository.findConflitantesExceto`.
+- **Evidências:** `ReservaEdicaoTest` (domínio), `ReservaEdicaoIntegracaoTest` (7 cenários).
+- **Status:** implementada.
 
 ---
 

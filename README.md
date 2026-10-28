@@ -68,9 +68,10 @@ Os testes de integração usam Testcontainers e exigem o daemon Docker ativo:
 ./mvnw test
 ```
 
-A suíte cobre 219 testes em quatro níveis: domínio puro (máquinas de
-estado e conta), validação de formulários, slices web por tela e
-integração contra PostgreSQL real e efêmero (Testcontainers).
+A suíte cobre 244 testes em quatro níveis: domínio puro (máquinas de
+estado, conta, limpeza, edição de reserva), validação de formulários,
+slices web por tela e integração contra PostgreSQL real e efêmero
+(Testcontainers).
 
 ## Documentação e conceitos de POO
 
@@ -78,13 +79,16 @@ A documentação técnica completa está em [`docs/`](docs/) — comece pelo
 [índice](docs/README.md): arquitetura, regras de negócio rastreáveis,
 lacunas conhecidas e um guia de apresentação que mapeia os conceitos de
 orientação a objetos demonstráveis no código real (composição `@ManyToOne` entre as entidades, máquinas de estado
-encapsuladas nas entidades — `Reserva.confirmar()`, `Quarto.ocupar()`,
-`Hospedagem.encerrar(...)` —, a interface de domínio `Lancamento` com as
-implementações `Consumo` e `Pagamento`, o value object `Conta` com o
-cálculo genérico `Fechamento`, o enum polimórfico `EstadoQuarto` e a
-sobrecarga de negócio `Hospedagem.encerrar(BigDecimal)` /
-`encerrar(BigDecimal, String)` — sem herança artificial entre entidades
-nem downcasting).
+encapsuladas nas entidades — `Reserva.confirmar()/reprogramar()`,
+`Quarto.ocupar()`, `Hospedagem.encerrar(...)`, `TarefaLimpeza.iniciar()/
+concluir()` —, a interface de domínio `Lancamento` com as implementações
+`Consumo` e `Pagamento`, o value object `Conta` com o cálculo genérico
+`Fechamento`, o enum polimórfico `EstadoQuarto`, a sobrecarga de negócio
+`Hospedagem.encerrar(BigDecimal)` / `encerrar(BigDecimal, String)` e a
+auditoria de operações críticas em registro imutável — sem herança
+artificial entre entidades nem downcasting). Funcionalidades recentes:
+módulo de limpeza com histórico e índice único parcial (V2), edição
+segura de reservas, desativação de categorias e auditoria (V3).
 
 A suíte cobre validação de formulários (unitário), regras de negócio contra
 PostgreSQL real (integração) e a camada web com MockMvc (Post/Redirect/Get,

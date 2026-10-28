@@ -301,7 +301,12 @@ erDiagram
   **explicitamente** nos services (`LocalDateTime.now()`) — `@CreationTimestamp`
   permanece apenas em campos de auditoria invisíveis (ex.: `Reserva.dataCriacao`).
 - **Migrations**: Flyway com `baseline-on-migrate=true` (`baseline-version=1`);
-  `V1` é a fotografia do esquema (originada de `pg_dump`), sem `OWNER TO`.
+  `V1` é a fotografia do esquema (originada de `pg_dump`), sem `OWNER TO`;
+  `V2` adiciona o índice parcial único de tarefa de limpeza aberta por quarto
+  (`uk_tarefa_limpeza_aberta`, o mesmo padrão da hospedagem ativa);
+  `V3` cria a tabela `registro_auditoria` (CHECK de operação, índices por
+  data e por entidade afetada). Bancos já populados recebem baseline na V1
+  e aplicam V2/V3 normalmente.
 - **Seed**: `DataSeeder` com `APP_SEED_DEMO` (default `false`; `prod` força
   `false`), idempotente por blocos de tabela vazia; massa relativa à data
   corrente (histórico, dia atual e agenda futura).
@@ -399,7 +404,7 @@ Fluxos ponta a ponta implementados (detalhe regra a regra em `BUSINESS_RULES.md`
 
 ## 9. Testes e qualidade
 
-- **219 testes** em quatro níveis:
+- **244 testes** em quatro níveis:
   - unitários puros: validação de forms (`HospedeFormValidacaoTest`,
     `ReservaFormValidacaoTest`), `CpfValidatorTest`, `ViewsEContratosTest`,
     e domínio puro (`TransicoesDeEstadoTest`, `TransicoesDeEstadoIITest`,
@@ -410,8 +415,12 @@ Fluxos ponta a ponta implementados (detalhe regra a regra em `BUSINESS_RULES.md`
     (`ReservasIntegracaoTest`, `HospedagensIntegracaoTest`, `PagamentosIntegracaoTest`,
     `ConsumosIntegracaoTest`, `ManutencoesIntegracaoTest`, `ItensIntegracaoTest`,
     `CadastroIntegracaoTest`, `FundacoesIntegracaoTest`, `DashboardIntegracaoTest`),
-    além de `MigracaoFlywayTest` (3 fases de migração) e `DataSeederTest`
-    (idempotência/integridade/cenários);
+    além de `MigracaoFlywayTest` (3 fases de migração), `DataSeederTest`
+    (idempotência/integridade/cenários), `LimpezaIntegracaoTest`,
+    `ReservaEdicaoIntegracaoTest`, `CategoriaAtivacaoIntegracaoTest` e
+    `AuditoriaIntegracaoTest` — o container de integração compartilhado
+    garante o seed (ordem-independente) e `FundacoesIntegracaoTest` tem
+    container próprio;
   - contexto: `HotelimpactApplicationTests`.
 - CI: GitHub Actions roda `./mvnw --batch-mode test` a cada push/PR em `main`
   (o Docker do runner é usado pelo Testcontainers).

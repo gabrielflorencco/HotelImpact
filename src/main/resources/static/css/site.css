@@ -927,6 +927,134 @@ body.sidebar-colapsada .sidebar-simbolo { width: 1.875rem; }
     }
 }
 
+/* ---- Movimento: tokens e princípios -----------------------------------------------------------
+   Animações têm função de feedback e orientação — nunca decorativa.
+   Durações curtas (100-250ms), easing de saída; reduced-motion desliga. */
+:root {
+    --hi-duracao-rapida: 100ms;
+    --hi-duracao: 160ms;
+    --hi-duracao-lenta: 240ms;
+    --hi-easing: ease-out;
+    --hi-elevacao: 0 1px 3px rgba(15, 23, 42, .12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+
+    /* O spinner comunica estado sem girar: círculo estático. */
+    .hi-spinner { animation: none !important; }
+}
+
+/* Smooth scrolling para âncoras internas (não interfere no htmx nem no histórico). */
+html { scroll-behavior: smooth; }
+
+/* ---- Botões: feedback discreto de interação ----------------------------------------------- */
+.btn {
+    transition:
+        color var(--hi-duracao) var(--hi-easing),
+        background-color var(--hi-duracao) var(--hi-easing),
+        border-color var(--hi-duracao) var(--hi-easing),
+        box-shadow var(--hi-duracao) var(--hi-easing),
+        transform var(--hi-duracao-rapida) var(--hi-easing);
+}
+
+/* Elevação de 1px no hover dos botões enfatizados (sem escala, sem salto). */
+.btn-primary:not(:disabled):hover {
+    box-shadow: var(--hi-elevacao);
+    transform: translateY(-1px);
+}
+
+/* Pressionado: retorna ao plano imediatamente — sensação de clique físico. */
+.btn:not(:disabled):active { transform: translateY(0); }
+
+/* Desabilitado: sem elevação, cursor explícito, sem transição de transform. */
+.btn:disabled { cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ---- Sidebar: transição de recolhimento suave ---------------------------------------------- */
+@media (min-width: 992px) {
+    .sidebar,
+    .app-main { transition: width var(--hi-duracao-lenta) var(--hi-easing); }
+}
+
+.sidebar-colapsada .sidebar { transition: width var(--hi-duracao-lenta) var(--hi-easing); }
+
+/* Itens e rótulos da sidebar entram/saem com o recolhimento (opacity curta). */
+.sidebar-brand-nome,
+.sidebar-grupo-nome,
+.sidebar-nav a span,
+.sidebar-perfil .perfil-nome,
+.sidebar-perfil .perfil-papel,
+.sidebar-footer .sidebar-brand-nome {
+    transition: opacity var(--hi-duracao) var(--hi-easing);
+}
+
+/* ---- Alertas flash: entrada discreta de conteúdo ------------------------------------------- */
+.hi-alerta {
+    animation: hi-entrada-suave var(--hi-duracao-lenta) var(--hi-easing);
+}
+
+@keyframes hi-entrada-suave {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---- Spinner circular (feedback de carregamento) --------------------------------------------- */
+.hi-spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--hi-border-strong);
+    border-top-color: var(--hi-accent);
+    border-radius: 50%;
+    animation: hi-girar 700ms linear infinite;
+    vertical-align: -0.2em;
+}
+
+/* Versão compacta para dentro de botões. */
+.hi-spinner--btn {
+    width: .9375rem;
+    height: .9375rem;
+    border-width: 2px;
+    vertical-align: -0.125em;
+}
+
+/* Botão em processamento: rótulo trocado por spinner + texto curto. */
+.btn.hi-carregando {
+    pointer-events: none;
+    opacity: .85;
+}
+
+@keyframes hi-girar {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Camada de carregamento de área (navegação parcial demorada) ----------------------------
+   Aparece sobre o conteúdo com atraso (controlado pelo JS) para não
+   cintilar em operações rápidas; não cobre a tela inteira. */
+.carregando-area {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .625rem;
+    background-color: color-mix(in srgb, var(--hi-surface) 72%, transparent);
+    border-radius: var(--hi-radius);
+    color: var(--hi-text-secondary);
+    font-size: .875rem;
+}
+
+/* O contêiner do conteúdo vira referência do overlay. */
+#app-conteudo { position: relative; }
+
 /* Indicador de navegação SPA: sutil, no topo, apenas durante a troca. */
 .indicador-nav {
     display: inline-flex;

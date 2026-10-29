@@ -23,15 +23,107 @@
             && a.target !== '_blank';
     }
 
+    /* Atraso antes de qualquer indicador visível: operações rápidas
+       (a maioria) terminam antes e nada pisca na tela. */
+    var ATRASO_INDICADOR = 220;
+
+    var timerIndicador = null;
+
     function mostrarIndicador() {
         var el = document.getElementById('indicador-nav');
-        if (el) el.classList.add('ativo');
+        if (el && !timerIndicador) {
+            timerIndicador = setTimeout(function () {
+                el.classList.add('ativo');
+            }, ATRASO_INDICADOR);
+        }
     }
 
     function esconderIndicador() {
+        if (timerIndicador) {
+            clearTimeout(timerIndicador);
+            timerIndicador = null;
+        }
         var el = document.getElementById('indicador-nav');
         if (el) el.classList.remove('ativo');
+        removerCarregamentoArea();
     }
+
+    /* Overlay discreto sobre o conteúdo quando a navegação demora —
+       atrasado como o indicador do topo; nunca cobre a tela inteira. */
+    var timerArea = null;
+
+    function aplicarCarregamentoArea() {
+        var alvo = document.querySelector(ALVO_CONTEUDO);
+        if (!alvo) return;
+        alvo.setAttribute('aria-busy', 'true');
+        if (timerArea) return;
+        timerArea = setTimeout(function () {
+            var atual = document.querySelector(ALVO_CONTEUDO);
+            if (!atual || atual.getAttribute('aria-busy') !== 'true') return;
+            if (atual.querySelector('.carregando-area')) return;
+            var overlay = document.createElement('div');
+            overlay.className = 'carregando-area';
+            overlay.setAttribute('role', 'status');
+            overlay.setAttribute('aria-label', 'Carregando');
+            overlay.innerHTML = '<span class="hi-spinner" aria-hidden="true"></span><span>Carregando…</span>';
+            atual.appendChild(overlay);
+        }, ATRASO_INDICADOR);
+    }
+
+    function removerCarregamentoArea() {
+        if (timerArea) {
+            clearTimeout(timerArea);
+            timerArea = null;
+        }
+        var alvo = document.querySelector(ALVO_CONTEUDO);
+        if (alvo) {
+            alvo.removeAttribute('aria-busy');
+            var overlay = alvo.querySelector('.carregando-area');
+            if (overlay) overlay.remove();
+        }
+    }
+
+    /* Botão em processamento: spinner compacto + rótulo de estado; o botão
+       original é restaurado em erro (no sucesso, o swap substitui o form). */
+    function botaoEmCarregamento(form) {
+        var botao = form.querySelector('button[type=submit]');
+        if (!botao || botao.classList.contains('hi-carregando')) return;
+        botao.dataset.rotuloOriginal = botao.innerHTML;
+        botao.classList.add('hi-carregando');
+        botao.setAttribute('aria-busy', 'true');
+        botao.disabled = true;
+        botao.innerHTML = '<span class="hi-spinner hi-spinner--btn" aria-hidden="true"></span> Processando…';
+    }
+
+    function restaurarBotoesDoFormulario(form) {
+        if (!form) return;
+        var botao = form.querySelector('button.hi-carregando');
+        if (botao && botao.dataset.rotuloOriginal) {
+            botao.innerHTML = botao.dataset.rotuloOriginal;
+            botao.classList.remove('hi-carregando');
+            botao.removeAttribute('aria-busy');
+            botao.disabled = false;
+            delete botao.dataset.rotuloOriginal;
+        }
+    }
+
+    /* Rede de segurança: qualquer resposta htmx (sucesso, erro HTTP ou
+       falha de rede) limpa o estado de carregamento — nenhum botão
+       permanece travado. Registrado uma única vez (delegação global). */
+    document.addEventListener('htmx:afterRequest', function (evento) {
+        esconderIndicador();
+        var form = evento.detail && evento.detail.elt && evento.detail.elt.closest
+                ? evento.detail.elt.closest('form')
+                : null;
+        if (form && !evento.detail.successful) {
+            restaurarBotoesDoFormulario(form);
+        }
+    });
+    document.addEventListener('htmx:sendError', function (evento) {
+        esconderIndicador();
+        var elt = evento.detail && evento.detail.elt;
+        if (elt && elt.closest) restaurarBotoesDoFormulario(elt.closest('form'));
+    });
 
     function trocarConteudo(url, verbo, dados) {
         if (!htmxDisponivel()) {
@@ -39,6 +131,7 @@
             return;
         }
         mostrarIndicador();
+        aplicarCarregamentoArea();
         var opcoes = {target: ALVO_CONTEUDO, swap: 'innerHTML'};
         if (dados) opcoes.values = dados;
         window.htmx.ajax(verbo, url, opcoes).then(function () {
@@ -52,6 +145,7 @@
         }).catch(function () {
             // Falha de rede ou resposta inválida: recarrega o documento para
             // alcançar o tratamento de erro completo do servidor.
+            esconderIndicador();
             location.assign(url);
         });
     }
@@ -165,6 +259,9 @@
             trocarConteudo(acao + (query ? (acao.indexOf('?') === -1 ? '?' : '&') + query : ''), 'GET');
             return;
         }
+        // Ação demorada (POST): feedback no botão e defesa contra dupla
+        // submissão enquanto a operação está em andamento.
+        botaoEmCarregamento(form);
         trocarConteudo(form.getAttribute('action') || location.pathname, 'POST', new FormData(form));
     });
 

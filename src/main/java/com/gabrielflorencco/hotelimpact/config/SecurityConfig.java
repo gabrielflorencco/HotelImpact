@@ -24,10 +24,15 @@ public class SecurityConfig {
                         .requestMatchers("/", "/sobre", "/funcionalidades").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/css/*", "/js/*", "/vendor/**", "/img/*", "/images/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/painel", true)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HxRedirectEntryPoint("/login")))
                 .logout(logout -> logout

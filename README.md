@@ -1,31 +1,51 @@
 # HotelImpact
 
-Sistema de gestão hoteleira (PMS — Property Management System) desenvolvido como
-trabalho acadêmico de desenvolvimento de software.
+Sistema de gestão hoteleira (PMS — Property Management System) desenvolvido como trabalho acadêmico de desenvolvimento de software.
 
-## Stack
+---
 
-- Java 21 · Spring Boot (4.2.0-M2) · Maven
-- Spring MVC + Thymeleaf (renderização no servidor)
-- Spring Data JPA + Hibernate
-- Flyway (migrações de esquema)
-- PostgreSQL (via Docker em desenvolvimento)
-- Bootstrap 5 (vendorizado em `src/main/resources/static/vendor`)
+## 📦 Stack Tecnológica
 
-## Interface
+| Categoria | Tecnologias |
+|-----------|-------------|
+| **Linguagem** | Java 21 |
+| **Framework** | Spring Boot 4.2.0-M2 |
+| **Build** | Maven |
+| **Web** | Spring MVC, Thymeleaf (renderização no servidor) |
+| **Persistência** | Spring Data JPA, Hibernate, PostgreSQL |
+| **Migrações** | Flyway |
+| **CSS/Design** | Bootstrap 5 (vendorizado), CSS custom properties em `static/css/site.css` |
+| **Testes** | JUnit 5, Mockito, Testcontainers |
 
-O design system "operação hoteleira" vive em `static/css/site.css` como
-tokens CSS custom properties (cores semânticas por tema claro/escuro,
-escala de espaçamento, raios e estados) sobre a fundação do Bootstrap 5.
-Os componentes compartilhados — sidebar agrupada pela rotina do hotel,
-cabeçalho de página com contexto do módulo, badges de status com ponto e
-rótulo legível, tabela operacional densa com numerais tabulares e
-mensagens de feedback acessíveis — ficam nos fragments de
-`templates/layout/fragments.html` e são reutilizados por todas as telas.
-O painel inicial mostra a rotina de abertura da recepção: indicadores do
-dia, barra de estados dos quartos e as listas de chegadas e saídas.
+---
 
-## Execução local
+## 🏗️ Arquitetura e Organização
+
+O projeto segue uma arquitetura layered com pacotes por camada:
+
+```
+src/main/java/com/gabrielflorencco/hotelimpact/
+├── config/           # Constraints de banco, configuração de dados demo
+├── controller/       # Controllers MVC (Spring)
+├── dto/              # Objetos de formulário e de saída
+├── entity/           # Entidades JPA
+├── enums/            # Estados e tipos controlados (EstadoQuarto, etc.)
+├── exception/        # Exceções de negócio e tratamento centralizado
+├── repository/       # Interfaces Spring Data JPA
+├── service/          # Regras de negócio
+└── validation/       # Validadores (CPF)
+```
+
+### Migrações Flyway
+
+- `db/migration/`: Versionado pelas migrações V1, V2, V3...
+- V1: Fotografia fiel do esquema existente (pg_dump + Hibernate constraints PostgreSQL)
+- Baseline: Bancos pré-Flyway recebem baseline na versão 1
+- `ddl-auto=validate` em produção (Hibernate valida contra migrações)
+
+---
+
+## 🚀 Execução Local
 
 Pré-requisitos: Java 21 e Docker.
 
@@ -42,137 +62,173 @@ APP_SEED_DEMO=true ./mvnw spring-boot:run
 # http://localhost:8080/painel   → área administrativa (após login)
 ```
 
-O site público (`/`, `/funcionalidades`, `/sobre`) é aberto a qualquer
-visitante; todo o restante do sistema exige usuário autenticado. Após o
-login, a recepção cai direto no painel operacional.
+### Credenciais
 
-Credenciais e endereço do banco são lidos de variáveis de ambiente, com padrões
-adequados ao `docker-compose.yml` local:
+| Variável | Padrão local | Uso |
+|----------|--------------|-----|
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/hotelimpact` | URL do banco |
+| `SPRING_DATASOURCE_USERNAME` | `hotelimpact` | Usuário do banco |
+| `SPRING_DATASOURCE_PASSWORD` | `hotelimpact_dev` | Senha do banco |
+| `HOTELIMPACT_USER` | `recepcao` | Usuário de acesso (dev) |
+| `HOTELIMPACT_PASSWORD` | `recepcao-dev` | Senha de acesso (dev) |
+| `PORT` | `8080` | Porta HTTP |
+| `APP_SEED_DEMO` | `false` | Dados fictícios (apenas desenvolvimento) |
 
-| Variável | Padrão local |
-|---|---|
-| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/hotelimpact` |
-| `SPRING_DATASOURCE_USERNAME` | `hotelimpact` |
-| `SPRING_DATASOURCE_PASSWORD` | `hotelimpact_dev` |
-| `PORT` | `8080` |
-| `APP_SEED_DEMO` | `false` |
+> ⚠️ **Importante**: Em produção, troque as credenciais padrão pelas definidas por variáveis de ambiente. O usuário `recepcao` com senha `recepcao-dev` é criado automaticamente em desenvolvimento.
 
-Os dados de demonstração são fictícios e a carga é idempotente (não duplica
-registros ao reiniciar).
+---
 
-## Testes
+## 🧪 Testes
 
-Os testes de integração usam Testcontainers e exigem o daemon Docker ativo:
+Os testes de integração usam **Testcontainers** e exigem o daemon Docker ativo:
 
 ```bash
-./mvnw test
+./mvnw --batch-mode test
 ```
 
-A suíte cobre 244 testes em quatro níveis: domínio puro (máquinas de
-estado, conta, limpeza, edição de reserva), validação de formulários,
-slices web por tela e integração contra PostgreSQL real e efêmero
-(Testcontainers).
+### Cobertura de testes
 
-## Documentação e conceitos de POO
+A suíte cobre **244 testes** em quatro níveis:
 
-A documentação técnica completa está em [`docs/`](docs/) — comece pelo
-[índice](docs/README.md): arquitetura, regras de negócio rastreáveis,
-lacunas conhecidas e um guia de apresentação que mapeia os conceitos de
-orientação a objetos demonstráveis no código real (composição `@ManyToOne` entre as entidades, máquinas de estado
-encapsuladas nas entidades — `Reserva.confirmar()/reprogramar()`,
-`Quarto.ocupar()`, `Hospedagem.encerrar(...)`, `TarefaLimpeza.iniciar()/
-concluir()` —, a interface de domínio `Lancamento` com as implementações
-`Consumo` e `Pagamento`, o value object `Conta` com o cálculo genérico
-`Fechamento`, o enum polimórfico `EstadoQuarto`, a sobrecarga de negócio
-`Hospedagem.encerrar(BigDecimal)` / `encerrar(BigDecimal, String)` e a
-auditoria de operações críticas em registro imutável — sem herança
-artificial entre entidades nem downcasting). Funcionalidades recentes:
-módulo de limpeza com histórico e índice único parcial (V2), edição
-segura de reservas, desativação de categorias e auditoria (V3).
+| Nível | Descrição |
+|-------|-----------|
+| **Domínio puro** | Máquinas de estado, conta, limpeza, edição de reserva |
+| **Validação de formulários** | Regras de negócio contra PostgreSQL real (integração) |
+| **Slices web** | Camada web com MockMvc (Post/Redirect/Get, validação, páginas de erro) |
+| **Integração** | PostgreSQL real e efêmero (Testcontainers) |
 
-A suíte cobre validação de formulários (unitário), regras de negócio contra
-PostgreSQL real (integração) e a camada web com MockMvc (Post/Redirect/Get,
-validação, renderização e páginas de erro).
+### Funcionalidades recentes (via migrations V2/V3)
 
-## Integração contínua
+- Módulo de limpeza com histórico e índice único parcial (V2)
+- Edição segura de reservas (BR-RES-009)
+- Desativação de categorias (BR-CAT-003)
+- Auditoria de operações críticas (BR-AUD-001)
 
-O GitHub Actions (`.github/workflows/ci.yml`) roda a suíte completa a cada
-push e pull request em `main`, com Java 21 e o Docker do runner para os
-Testcontainers.
+---
 
-## Estrutura
+## 📐 Documentação e Conceitos de POO
+
+A documentação técnica completa está em [`docs/`](docs/) — comece pelo [índice](docs/README.md):
+
+- Arquitetura do sistema
+- Regras de negócio rastreáveis (BR-XXX)
+- Lacunas conhecidas
+- **Guia de apresentação**: mapeia os conceitos de orientação a objetos demonstráveis no código real
+
+### Conceitos de POO mapeados no código
+
+| Conceito | Demonstração no Código |
+|----------|------------------------|
+| Composição `@ManyToOne` | Entre as entidades |
+| Máquinas de estado encapsuladas | `Reserva.confirmar()/reprogramar()`, `Quarto.ocupar()`, `Hospedagem.encerrar(...)` |
+| Interface de domínio `Lancamento` | Implementações `Consumo` e `Pagamento` |
+| Value object `Conta` | Cálculo genérico `Fechamento` |
+| Enum polimórfico `EstadoQuarto` | Sobrecarga de negócio `Hospedagem.encerrar(BigDecimal)` / `encerrar(BigDecimal, String)` |
+| Auditoria em registro imutável | Operações críticas (sem herança artificial nem downcasting) |
+
+---
+
+## 🗄️ Situação do Desenvolvimento
+
+O projeto é desenvolvido em fases:
+
+| Fase | Status | Descrição |
+|------|--------|-----------|
+| **Fase 1** | ✅ Planejamento | — |
+| **Fase 2** | ✅ Fundação | Entidades, persistência, layout e infraestrutura de testes |
+| **Fase 3** | ✅ Cadastros | Categorias, quartos e hóspedes |
+| **Fase 4** | ✅ Reservas e hospedagens | Ciclo completo: check-in, check-out, confirmação, cancelamento |
+
+### Ciclo Operacional Completo
+
+1. **Criação de reservas** — Verificação de disponibilidade, cálculo de capacidade efetiva e total no servidor
+2. **Confirmação e cancelamento** — Com validação de período e desconto; recálculo do total
+3. **Check-in** — A partir de reservas elegíveis
+4. **Check-out** — Conclui a reserva e envia o quarto para limpeza; exige conta quitada
+5. **Conclusão de limpeza** — Devolve o quarto ao estado disponível
+6. **Lançamento/cancelamento de consumos** — Com preço histórico, baixa de estoque e estorno lógico
+7. **Registro/estorno de pagamentos** — Saldo devedor calculado no servidor (reserva + consumos ativos − pagamentos confirmados)
+
+### Módulos Adicionais
+
+- **Catálogo de produtos e serviços** — Gestão própria (nome único, preço, controle de estoque, alerta de estoque baixo, exclusão bloqueada por histórico)
+- **Ordens de manutenção** — Ciclo completo: abertura proibida com hospedagem em andamento ou ordem ativa; prioridade CRÍCTICA interdita o quarto; execução põe quarto em manutenção; conclusão/cancelamento apenas quando causado pela própria ordem
+- **Painel inicial (Fase 6)** — Indicadores reais: ocupação atual, quartos por estado, chegadas/saídas previstas, receita confirmada do dia, alerta de itens com estoque baixo
+- **Módulo de relatórios** — Resumo de qualquer período: receita confirmada, check-ins/check-outs reais, reservas criadas (com cancelamentos e no-shows), lista de hospedagens iniciadas no período
+
+---
+
+## 🔐 Autenticação e Execução em Produção
+
+Todo o sistema exige usuário autenticado (login por formulário próprio em pt-BR, logout na barra superior e proteção CSRF — padrões do Spring Security).
+
+### Variáveis de ambiente para produção
+
+| Variável | Padrão local | Uso |
+|----------|--------------|-----|
+| `HOTELIMPACT_USER` | `recepcao` | Usuário de acesso |
+| `HOTELIMPACT_PASSWORD` | `recepcao-dev` | Senha (troque em produção) |
+| `SPRING_PROFILES_ACTIVE` | — | Ative `prod` para validar o esquema contra o Flyway (`ddl-auto=validate`) |
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/hotelimpact` | Conexão do banco |
+| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | `hotelimpact` / `hotelimpact_dev` | Credenciais do banco |
+| `PORT` | `8080` | Porta HTTP |
+| `APP_SEED_DEMO` | `false` | Dados fictícios (apenas desenvolvimento) |
+
+---
+
+## 📦 Integração Contínua
+
+O GitHub Actions (`.github/workflows/ci.yml`) roda a suíte completa de testes a cada push e pull request em `main`, com Java 21 e o Docker do runner para os Testcontainers.
+
+---
+
+## 📁 Estrutura Completa
 
 ```
 src/main/java/com/gabrielflorencco/hotelimpact/
-├── config/       Configurações (constraints de banco, dados demo)
-├── controller/   Controllers MVC
-├── dto/          Objetos de formulário e de saída
-├── entity/       Entidades JPA
-├── enums/        Estados e tipos controlados
-├── exception/    Exceções de negócio e tratamento centralizado
-├── repository/   Interfaces Spring Data JPA
-├── service/      Regras de negócio
-└── validation/   Validadores (CPF)
+├── config/                   # Configurações (constraints de banco, dados demo)
+├── controller/               # Controllers MVC
+├── dto/                      # Objetos de formulário e de saída
+├── entity/                   # Entidades JPA
+├── enums/                    # Estados e tipos controlados
+├── exception/                # Exceções de negócio e tratamento centralizado
+├── repository/               # Interfaces Spring Data JPA
+├── service/                  # Regras de negócio
+└── validation/               # Validadores (CPF)
 ```
 
-## Situação do desenvolvimento
+```
+docs/
+├── README.md                 # Índice da documentação técnica
+├── arquitetura.md            # Arquitetura do sistema
+├── regras-negocio.md         # Regras de negócio rastreáveis (BR-XXX)
+├── lacunas-conhecidas.md     # Lacunas e aberturas
+└── poo-guide.md              # Guia de apresentação de conceitos POO
+```
 
-O projeto é desenvolvido em fases. Fase 1 (planejamento), Fase 2 (fundação:
-entidades, persistência, layout e infraestrutura de testes), Fase 3 (cadastros
-de categorias, quartos e hóspedes) e Fase 4 (reservas e hospedagens) concluídas.
+```
+db/migration/
+├── V1__...sql                # Migração baseline (gerada por pg_dump)
+├── V2__...sql                # Evoluções futuras do esquema
+├── V3__...sql
+└── ...
+```
 
-O ciclo operacional completo está disponível: criação de reservas com
-verificação de disponibilidade, capacidade efetiva e total calculado no
-servidor; confirmação, cancelamento e registro de no-show; check-in a partir
-de reservas elegíveis; check-out que conclui a reserva e envia o quarto para
-limpeza; conclusão de limpeza que devolve o quarto ao estado disponível;
-lançamento/cancelamento de consumos na conta da hospedagem, com preço
-histórico, baixa de estoque e estorno lógico que restitui o estoque; e
-registro/estorno de pagamentos com saldo devedor calculado no servidor
-(reserva + consumos ativos − pagamentos confirmados). O check-out exige a
-conta quitada; com saldo pendente, é preciso registrar a justificativa do
-encerramento excepcional, que marca a hospedagem como cancelada.
+---
 
-O catálogo de produtos e serviços tem gestão própria (nome único, preço,
-controle de estoque apenas para produtos, alerta de estoque baixo e
-exclusão bloqueada por histórico de consumos). As ordens de manutenção
-cobrem o ciclo completo: abertura proibida com hospedagem em andamento ou
-outra ordem ativa, prioridade CRÍTICA interdita o quarto, execução põe o
-quarto em manutenção e a conclusão/cancelamento restauram o estado apenas
-quando foi causado pela própria ordem.
+## 📜 Licença
 
-O painel inicial (Fase 6) exibe indicadores reais calculados no banco:
-ocupação atual, quartos por estado, chegadas e saídas previstas para o
-dia, receita confirmada do dia e alerta de itens com estoque baixo. O
-módulo de relatórios complementa com o resumo de qualquer período:
-receita confirmada, check-ins/check-outs reais, reservas criadas (com
-cancelamentos e no-shows) e a lista de hospedagens iniciadas no período.
+Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## Autenticação e execução em produção
+---
 
-Todo o sistema exige usuário autenticado (login por formulário próprio em
-pt-BR, logout na barra superior e proteção CSRF — padrões do Spring
-Security). Em desenvolvimento, o usuário
-`recepcao` com a senha `recepcao-dev` é criado automaticamente; em produção
-defina as credenciais por variável de ambiente:
+## 👨‍💻 Autor
 
-| Variável | Padrão local | Uso |
-|---|---|---|
-| `HOTELIMPACT_USER` | `recepcao` | usuário de acesso |
-| `HOTELIMPACT_PASSWORD` | `recepcao-dev` | senha (troque em produção) |
-| `SPRING_PROFILES_ACTIVE` | — | ative `prod` para validar o esquema contra o Flyway (`ddl-auto=validate`) |
-| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/hotelimpact` | conexão do banco |
-| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | `hotelimpact` / `hotelimpact_dev` | credenciais do banco |
-| `PORT` | `8080` | porta HTTP |
-| `APP_SEED_DEMO` | `false` | dados fictícios (apenas desenvolvimento) |
+**Gabriel Florenço** — Desenvolvedor Java / Spring Boot  
+GitHub: [@gabrielflorencco](https://github.com/gabrielflorencco)  
+Contexto: Projeto acadêmico avançado demonstrando arquitetura Clean Architecture, DDD, Testcontainers e CI/CD integrados.
 
-## Migrações de esquema (Flyway)O esquema é versionado por migrações Flyway em `db/migration`. A `V1` é a
-fotografia fiel do esquema existente (gerada por `pg_dump` do próprio
-esquema criado pelo Hibernate, incluindo as constraints específicas do
-PostgreSQL). Bancos novos executam a `V1` normalmente; bancos já populados
-anteriores ao Flyway recebem baseline na versão 1
-(`spring.flyway.baseline-on-migrate=true`) e tratam a `V1` como já
-aplicada — nenhum dado é tocado. Evoluções futuras do esquema entram como
-`V2__...`, `V3__...` e assim por diante; nunca edite uma migração já
-publicada. O `ddl-auto` do Hibernate permanece como rede de segurança
-até a migração ser validada em produção.
+---
+
+**Última atualização:** 2026-11-02  
+**Status:** Em desenvolvimento — Fases 1-4 concluídas. Próximas fases focadas em relatórios e módulo de manutenção.
